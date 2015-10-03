@@ -24,7 +24,7 @@ public:
 		//
 		return false;
 	}
-	bool delete()
+	bool remove()
 	{
 		//
 		return false;

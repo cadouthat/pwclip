@@ -3,7 +3,8 @@ Global variables
 by: Connor Douthat
 10/1/2015
 */
-#define USAGE_TEXT "Usage: pwclip <action> <password name> [flags] [database file]\n  Actions\n    load\n    save\n    replace\n    delete\n  Flags\n    -k        Keep password in clipboard indefinitely\n"
+#define MICRO 1000000
+#define USAGE_TEXT "\nUsage: pwclip <action> <password name> [flags] [database file]\n\n  Actions\n    load\n    save\n    replace\n    delete\n\n  Flags\n    -k    Keep password in clipboard indefinitely\n"
 
 //Global configuration
 int clip_wipe_delay = 10;

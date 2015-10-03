@@ -5,6 +5,29 @@ by: Connor Douthat
 */
 bool LocalUserAppData(const char *app_name, char *path_out)
 {
-	//
-	return false;
+	char path[256] = {0};
+	//Get local user app data base path
+	SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, path);
+	if(!path[0]) return false;
+	//Append desired folder name
+	strcat(path, "\\");
+	strcat(path, app_name);
+	DWORD pathAttribs = GetFileAttributes(path);
+	//Check whether directory exists
+	if(pathAttribs == INVALID_FILE_ATTRIBUTES || (pathAttribs & FILE_ATTRIBUTE_DIRECTORY) == 0)
+	{
+		//Attempt to create directory
+		if(!CreateDirectory(path, NULL)) return false;
+	}
+	//Return result with trailing backslash
+	strcat(path, "\\");
+	strcpy(path_out, path);
+	return true;
+}
+bool FileExists(const char *path)
+{
+	DWORD attribs = GetFileAttributes(path);
+	if(attribs == INVALID_FILE_ATTRIBUTES) return false;
+	if(attribs & FILE_ATTRIBUTE_DIRECTORY) return false;
+	return true;
 }
