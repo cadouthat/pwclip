@@ -5,6 +5,12 @@ by: Connor Douthat
 */
 bool ProcessArguments(int argc, char **argv)
 {
+	//Enforce max entry name length
+	if(strlen(argv[2]) > ENTRY_NAME_MAX)
+	{
+		printf("Entry name must not exceed %d characters\n", ENTRY_NAME_MAX);
+		return false;
+	}
 	//Optional arguments
 	for(int opt = 3; opt < argc; opt++)
 	{

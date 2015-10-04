@@ -11,12 +11,15 @@ by: Connor Douthat
 
 //Standard
 #include <unistd.h>
+#include <conio.h>
 #include <cstdlib>
 #include <stdio.h>
 #include <ctype.h>
 
 //Third party
 #include <sqlite3/sqlite3.h>
+#include <openssl/evp.h>
+#include <openssl/rand.h>
 
 #ifdef __WIN32__
 //Windows macros

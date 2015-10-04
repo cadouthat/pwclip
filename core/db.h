@@ -37,7 +37,7 @@ bool OpenDB()
 	if(needs_init)
 	{
 		char *err;
-		if(SQLITE_OK != sqlite3_exec(db, "CREATE TABLE `entries` (`key` VARCHAR(50) PRIMARY KEY, `value` TEXT NOT NULL)", NULL, NULL, &err))
+		if(SQLITE_OK != sqlite3_exec(db, "CREATE TABLE `entries` (`key` VARCHAR(50) PRIMARY KEY, `value` TEXT NOT NULL, `iv` TEXT NOT NULL)", NULL, NULL, &err))
 		{
 			//Abort
 			printf("Failed to initialize '%s'\n", db_path);

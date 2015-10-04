@@ -5,26 +5,41 @@ by: Connor Douthat
 */
 class PWClipEntry
 {
+	PasswordCipher *crypto;
 	sqlite3 *db;
 	const char *key;
 	char *value;
+	char *iv;
+
+	bool getCrypto()
+	{
+		if(!crypto && !(crypto = CryptoInit()))
+		{
+			printf("Crypto init failed\n");
+			return false;
+		}
+		return true;
+	}
 
 public:
 	PWClipEntry(sqlite3 *db_in, const char *key_in)
 	{
+		crypto = NULL;
 		db = db_in;
 		key = key_in;
 		//Find existing value (if any)
 		value = NULL;
+		iv = NULL;
 		sqlite3_stmt *stmt;
-		if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT value FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
+		if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT `value`, `iv` FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
 		{
 			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC))
 			{
 				if(sqlite3_step(stmt) == SQLITE_ROW)
 				{
-					//Keep internal copy of value
+					//Keep internal copy of value/iv
 					value = strdup((const char*)sqlite3_column_text(stmt, 0));
+					iv = strdup((const char*)sqlite3_column_text(stmt, 1));
 				}
 			}
 			sqlite3_finalize(stmt);
@@ -33,19 +48,36 @@ public:
 	~PWClipEntry()
 	{
 		if(value) free(value);
+		if(iv) free(iv);
+		if(crypto) delete crypto;
 	}
 	bool load()
 	{
-		if(!value)
+		if(!value || !iv)
 		{
 			printf("Entry not found\n");
 			return false;
 		}
-		if(!SetClipboardText(value))
+		//Decode IV to binary
+		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
+		hex2bin(iv, iv_raw, sizeof(iv_raw));
+		//Decrypt value
+		if(!getCrypto()) return false;
+		char *value_plain = crypto->decrypt(value, iv_raw);
+		if(!value_plain)
+		{
+			printf("Failed to decrypt value\n");
+			return false;
+		}
+		//Move to clipboard
+		if(!SetClipboardText(value_plain))
 		{
 			printf("Failed to set clipboard text\n");
 			return false;
 		}
+		//Wipe and free plaintext
+		memset(value_plain, 0, strlen(value_plain));
+		free(value_plain);
 		printf("Entry successfully loaded to clipboard\n");
 		return true;
 	}
@@ -56,18 +88,35 @@ public:
 			printf("Entry already exists\n");
 			return false;
 		}
-		if(!(value = GetClipboardText()))
+		char *value_plain = GetClipboardText();
+		if(!value_plain)
 		{
 			printf("Failed to get clipboard text\n");
 			return false;
 		}
+		//Encrypt plaintext from clipboard
+		if(!getCrypto()) return false;
+		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
+		value = crypto->encrypt(value_plain, iv_raw);
+		//Wipe and free plaintext
+		memset(value_plain, 0, strlen(value_plain));
+		free(value_plain);
+		//Verify encryption success
+		if(!value)
+		{
+			printf("Failed to encrypt value\n");
+			return false;
+		}
+		//Convert IV to hex encoding
+		iv = bin2hex(iv_raw, sizeof(iv_raw));
 		//Attempt insert
 		bool insert_ok = false;
 		sqlite3_stmt *stmt;
-		if(SQLITE_OK == sqlite3_prepare_v2(db, "INSERT INTO `entries` (`key`, `value`) VALUES (?, ?)", -1, &stmt, NULL))
+		if(SQLITE_OK == sqlite3_prepare_v2(db, "INSERT INTO `entries` (`key`, `value`, `iv`) VALUES (?, ?, ?)", -1, &stmt, NULL))
 		{
 			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC) &&
-				SQLITE_OK == sqlite3_bind_text(stmt, 2, value, -1, SQLITE_STATIC))
+				SQLITE_OK == sqlite3_bind_text(stmt, 2, value, -1, SQLITE_STATIC) &&
+				SQLITE_OK == sqlite3_bind_text(stmt, 3, iv, -1, SQLITE_STATIC))
 			{
 				insert_ok = (sqlite3_step(stmt) == SQLITE_DONE);
 			}
@@ -78,6 +127,8 @@ public:
 			printf("Unknown error creating entry\n");
 			free(value);
 			value = NULL;
+			free(iv);
+			iv = NULL;
 			return false;
 		}
 		printf("Entry successfully saved\n");
@@ -108,6 +159,11 @@ public:
 		}
 		free(value);
 		value = NULL;
+		if(iv)
+		{
+			free(iv);
+			iv = NULL;
+		}
 		printf("Entry successfully removed\n");
 		return true;
 	}
