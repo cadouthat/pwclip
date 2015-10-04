@@ -17,3 +17,11 @@ by: Connor Douthat
 
 //Third party
 #include <sqlite3/sqlite3.h>
+
+#ifdef __WIN32__
+//Windows macros
+#define SleepSeconds(x) Sleep(x * 1000)
+#else
+//Non-windows macros
+#define SleepSeconds(x) usleep(x * 1000000)
+#endif

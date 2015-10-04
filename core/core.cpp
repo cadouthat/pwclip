@@ -27,9 +27,9 @@ int main(int argc, char **argv)
 	CloseDB();
 	if(wipe_clip && !flag_keep)
 	{
-		printf("Clipboard will be wiped shortly..\n");
-		usleep(clip_wipe_delay * MICRO);
-		if(!WipeClipboard())
+		printf("The clipboard will be wiped shortly..\n");
+		SleepSeconds(clip_wipe_delay);
+		if(!WipeClipboardText())
 		{
 			printf("Warning: failed to wipe clipboard\n");
 			return 2;

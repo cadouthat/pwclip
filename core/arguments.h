@@ -9,7 +9,7 @@ bool ProcessArguments(int argc, char **argv)
 	for(int opt = 3; opt < argc; opt++)
 	{
 		//Last argument might be a database file
-		if(opt + 1 == argc && FileExists(argv[opt]))
+		if(opt + 1 == argc && *argv[opt] != '-')
 		{
 			strcpy(db_path, argv[opt]);
 		}
