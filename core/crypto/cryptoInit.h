@@ -7,7 +7,7 @@ PasswordCipher *CryptoInit()
 {
 	//Silent password input
 	char pass[PASSWORD_MAX + 1] = {0};
-	printf("Password: ");
+	printf("Encryption password: ");
 	for(int i = 0; i < PASSWORD_MAX; i++)
 	{
 		char c = getch();
