@@ -14,8 +14,11 @@ bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 	}
 	else if(!stricmp(action, "save"))
 	{
-		//If the force flag was set, make sure existing entry is removed before saving
-		if(flag_force) entry.remove();
+		//If the force flag was set, any existing entry is removed before saving
+		if(flag_force && entry.exists())
+		{
+			if(!entry.remove()) return false;
+		}
 		//Wipe clipboard after successful save
 		*wipe_clip = entry.save();
 		return *wipe_clip;

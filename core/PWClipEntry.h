@@ -63,9 +63,13 @@ public:
 		clearValue();
 		if(crypto) delete crypto;
 	}
+	bool exists()
+	{
+		return (value && iv);
+	}
 	bool load()
 	{
-		if(!value || !iv)
+		if(!exists())
 		{
 			printf("Entry not found\n");
 			return false;
@@ -95,7 +99,7 @@ public:
 	}
 	bool save()
 	{
-		if(value)
+		if(exists())
 		{
 			printf("Entry already exists\n");
 			return false;
@@ -145,7 +149,7 @@ public:
 	}
 	bool remove()
 	{
-		if(!value)
+		if(!exists())
 		{
 			printf("Entry not found\n");
 			return false;
