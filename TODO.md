@@ -1,7 +1,7 @@
 Core
 ====
-* Change the replace action to a flag
-* Command to generate random password
+* Add a flag to generate random password
+* Add a flag to skip password
 * Command to export raw passwords to a backup file
 
 Tray

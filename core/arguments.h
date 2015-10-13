@@ -33,6 +33,9 @@ bool ProcessArguments(int argc, char **argv)
 			case 'k':
 				flag_keep = true;
 				break;
+			case 'f':
+				flag_force = true;
+				break;
 			default:
 				printf("Invalid flag: '%s'\n", argv[opt]);
 				return false;
