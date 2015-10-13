@@ -20,6 +20,19 @@ class PWClipEntry
 		}
 		return true;
 	}
+	void clearValue()
+	{
+		if(value)
+		{
+			free(value);
+			value = NULL;
+		}
+		if(iv)
+		{
+			free(iv);
+			iv = NULL;
+		}
+	}
 
 public:
 	PWClipEntry(sqlite3 *db_in, const char *key_in)
@@ -47,8 +60,7 @@ public:
 	}
 	~PWClipEntry()
 	{
-		if(value) free(value);
-		if(iv) free(iv);
+		clearValue();
 		if(crypto) delete crypto;
 	}
 	bool load()
@@ -125,10 +137,7 @@ public:
 		if(!insert_ok)
 		{
 			printf("Unknown error creating entry\n");
-			free(value);
-			value = NULL;
-			free(iv);
-			iv = NULL;
+			clearValue();
 			return false;
 		}
 		printf("Entry successfully saved\n");
@@ -152,19 +161,12 @@ public:
 			}
 			sqlite3_finalize(stmt);
 		}
-		if(!delete_ok)
+		if(delete_ok)
 		{
-			printf("Unknown error removing entry\n");
-			return false;
+			clearValue();
+			printf("Entry successfully removed\n");
 		}
-		free(value);
-		value = NULL;
-		if(iv)
-		{
-			free(iv);
-			iv = NULL;
-		}
-		printf("Entry successfully removed\n");
-		return true;
+		else printf("Unknown error removing entry\n");
+		return delete_ok;
 	}
 };
