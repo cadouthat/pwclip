@@ -1,7 +1,6 @@
 Core
 ====
-* Add a flag to generate random password
-* Add a flag to skip password
+* Handle backspace and special keys during silent input
 * Command to export raw passwords to a backup file
 
 Tray

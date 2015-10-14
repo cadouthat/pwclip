@@ -5,20 +5,25 @@ by: Connor Douthat
 */
 PasswordCipher *CryptoInit()
 {
-	//Silent password input
 	char pass[PASSWORD_MAX + 1] = {0};
-	printf("Encryption password: ");
-	for(int i = 0; i < PASSWORD_MAX; i++)
+	//Prompt user for password unless skipped
+	if(!flag_skip_pass)
 	{
-		char c = getch();
-		if(c == '\r' || c == '\n') break;
-		pass[i] = c;
-	}
-	printf("\n");
-	if(!pass[0])
-	{
-		printf("Password is required, aborting.\n");
-		return false;
+		//Silent password input
+		printf("Encryption password: ");
+		for(int i = 0; i < PASSWORD_MAX; i++)
+		{
+			char c = getch();
+			if(c == '\r' || c == '\n') break;
+			pass[i] = c;
+		}
+		printf("\n");
+		//Disallow empty password (use skip flag instead)
+		if(!pass[0])
+		{
+			printf("Password is required, aborting.\n");
+			return NULL;
+		}
 	}
 	//Create cipher
 	PasswordCipher *cipher = new PasswordCipher(pass);

@@ -31,3 +31,15 @@ bool FileExists(const char *path)
 	if(attribs & FILE_ATTRIBUTE_DIRECTORY) return false;
 	return true;
 }
+bool RandText(char *out, int len)
+{
+	const char *char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+	int char_set_size = strlen(char_set);
+	unsigned char *u_out = (unsigned char*)out;
+	if(!RAND_bytes(u_out, len)) return false;
+	for(int i = 0; i < len; i++)
+	{
+		out[i] = char_set[u_out[i] % char_set_size];
+	}
+	return true;
+}

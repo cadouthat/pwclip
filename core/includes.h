@@ -4,6 +4,8 @@ by: Connor Douthat
 10/2/2015
 */
 #include "def.h"
+#include "globals.h"
+
 #include "clipHelp.h"
 #include "envHelp.h"
 #include "crypto/cryptoHelp.h"
@@ -12,7 +14,6 @@ by: Connor Douthat
 #include "crypto/cryptoInit.h"
 #include "PWClipEntry.h"
 
-#include "globals.h"
 #include "arguments.h"
 #include "db.h"
 #include "action.h"

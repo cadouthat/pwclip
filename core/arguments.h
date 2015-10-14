@@ -36,6 +36,12 @@ bool ProcessArguments(int argc, char **argv)
 			case 'f':
 				flag_force = true;
 				break;
+			case 's':
+				flag_skip_pass = true;
+				break;
+			case 'g':
+				flag_generate = true;
+				break;
 			default:
 				printf("Invalid flag: '%s'\n", argv[opt]);
 				return false;

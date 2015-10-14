@@ -14,6 +14,23 @@ bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 	}
 	else if(!stricmp(action, "save"))
 	{
+		//If the generate flag was set, store a random password in the clipboard
+		if(flag_generate)
+		{
+			char pass[GEN_PASS_SIZE + 1] = {0};
+			if(!RandText(pass, GEN_PASS_SIZE))
+			{
+				printf("Failed to generate password\n");
+				return false;
+			}
+			if(!SetClipboardText(pass))
+			{
+				printf("Failed to set clipboard text\n");
+				return false;
+			}
+			memset(pass, 0, sizeof(pass));
+			printf("Clipboard loaded with random password\n");
+		}
 		//If the force flag was set, any existing entry is removed before saving
 		if(flag_force && entry.exists())
 		{
