@@ -3,7 +3,7 @@ Acquire user password and start crypto
 by: Connor Douthat
 10/4/2015
 */
-PasswordCipher *CryptoInit()
+PasswordCipher *CryptoInit(bool allow_blank_pass = false)
 {
 	char pass[PASSWORD_MAX + 1] = {0};
 	//Prompt user for password unless skipped
@@ -11,7 +11,13 @@ PasswordCipher *CryptoInit()
 	{
 		//Silent password input
 		printf("Encryption password: ");
-		if(ScanSilent(pass, sizeof(pass)) <= 0)
+		int r = ScanSilent(pass, sizeof(pass));
+		if(r < 0)
+		{
+			printf("Input cancelled, aborting.\n");
+			return NULL;
+		}
+		if(r == 0 && !allow_blank_pass)
 		{
 			printf("Password is required, aborting.\n");
 			return NULL;

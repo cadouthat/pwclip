@@ -65,6 +65,7 @@ int ScanSilent(char *buf, int buf_size)
 				case 3: //ETX
 				case 27: //ESC
 					buf[0] = 0;
+					printf("\n");
 					return -1;
 
 				//End of input

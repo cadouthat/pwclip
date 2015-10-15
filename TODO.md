@@ -1,6 +1,6 @@
-Core
+Dump
 ====
-* Command to export raw passwords to a backup file
+* Warn before overwriting file
 
 Tray
 ====
