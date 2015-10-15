@@ -43,3 +43,56 @@ bool RandText(char *out, int len)
 	}
 	return true;
 }
+int ScanSilent(char *buf, int buf_size)
+{
+	int len = 0;
+	int ch = 0;
+	do
+	{
+		if((ch = getch()) >= 0)
+		{
+			switch(ch)
+			{
+				//Multi-byte (ignored)
+				case 0:
+				case 224:
+					//Skip extra byte
+					getch();
+					ch = 1;
+					break;
+
+				//Cancel input
+				case 3: //ETX
+				case 27: //ESC
+					buf[0] = 0;
+					return -1;
+
+				//End of input
+				case '\r':
+				case '\n':
+				case EOF:
+					ch = 0;
+					break;
+
+				//Backspace removes last char
+				case 8: //BS
+					if(len > 0)
+					{
+						len--;
+						buf[len] = 0;
+					}
+					break;
+
+				//Append regular character
+				default:
+					buf[len] = ch;
+					len++;
+					break;
+			}
+		}
+	}while(ch > 0 && len < buf_size - 1);
+	printf("\n");
+	//Terminate string
+	buf[len] = 0;
+	return len;
+}
