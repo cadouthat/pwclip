@@ -1,6 +1,10 @@
-Dump
+Core
 ====
-* Warn before overwriting file
+* Detect SQLite close failure?
+* Create temp database at open
+** If temp exists at open, exit with failure
+** Delete temp on close
+** Existing sqlite transaction solutions?
 
 Tray
 ====
@@ -23,15 +27,3 @@ Tray
 *** Keep passwords in clipboard
 ** Export raw passwords
 ** Exit
-
-Make
-====
-* Create directories if missing?
-* Template for path.mk (best convention?)
-
-Docs
-====
-* Overview/command usage
-* Security info
-* Build instructions
-* OS support discussion

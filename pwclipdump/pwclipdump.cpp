@@ -18,6 +18,12 @@ int main(int argc, char **argv)
 
 	//Setup
 	if(!ProcessArguments(argc, argv)) return 1;
+	if(FileExists(argv[1]))
+	{
+		//Disable overwite to prevent accidentally erasing database
+		printf("File already exists (safety feature): '%s'\n", argv[1]);
+		return 1;
+	}
 	FILE *f_out = fopen(argv[1], "w");
 	if(!f_out)
 	{

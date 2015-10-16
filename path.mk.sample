@@ -1,0 +1,3 @@
+INC = -I"path\to\OpenSSL\include" -I"path\containing\sqlite3" 
+LIB = -L"path\to\OpenSSL\lib\MinGW" -leay32 
+OBJEX = "path\to\sqlite3\sqlite3.o" 
