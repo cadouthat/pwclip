@@ -11,9 +11,9 @@ int clip_wipe_delay = 10;
 //Arguments
 bool flag_keep = false;
 bool flag_force = false;
-bool flag_skip_pass = false;
 bool flag_generate = false;
 char db_path[256] = {0};
 
 //Runtime
 sqlite3 *db = NULL;
+KeyManager *crypto_keys = NULL;

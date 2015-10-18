@@ -15,6 +15,7 @@ by: Connor Douthat
 #include <cstdlib>
 #include <stdio.h>
 #include <ctype.h>
+#include <vector>
 
 //Third party
 #include <sqlite3/sqlite3.h>

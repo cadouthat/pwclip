@@ -12,6 +12,7 @@ by: Connor Douthat
 
 #include "../core/crypto/PasswordCipher.h"
 #include "../core/crypto/cryptoInit.h"
+#include "../core/crypto/KeyManager.h"
 #include "../core/PWClipEntry.h"
 
 #include "arguments.h"

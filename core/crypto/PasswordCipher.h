@@ -72,6 +72,10 @@ class PasswordCipher
 	}
 
 public:
+	PasswordCipher()
+	{
+		memset(key, 0, sizeof(key));
+	}
 	PasswordCipher(const char *pass)
 	{
 		memset(key, 0, sizeof(key));
@@ -82,6 +86,10 @@ public:
 	{
 		//Wipe key
 		memset(key, 0, sizeof(key));
+	}
+	void setKey(unsigned char *key_in)
+	{
+		memcpy(key, key_in, sizeof(key));
 	}
 	char *encrypt(const char *plain, unsigned char *iv_out)
 	{

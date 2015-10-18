@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	}
 
 	//Setup
+	crypto_keys = new KeyManager();
 	if(!ProcessArguments(argc, argv)) return 1;
 	if(!OpenDB()) return 1;
 
@@ -25,6 +26,7 @@ int main(int argc, char **argv)
 
 	//Cleanup
 	CloseDB();
+	delete crypto_keys;
 	if(wipe_clip && !flag_keep)
 	{
 		printf("The clipboard will be wiped shortly..\n");

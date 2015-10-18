@@ -6,7 +6,6 @@ by: Connor Douthat
 #define USAGE_TEXT "\nUsage: pwclipdump <output file> [database file]\n\n"
 
 //Arguments
-bool flag_skip_pass = false;
 char db_path[256] = {0};
 
 //Runtime

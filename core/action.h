@@ -5,7 +5,7 @@ by: Connor Douthat
 */
 bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 {
-	PWClipEntry entry(db, pw_name);
+	PWClipEntry entry(crypto_keys, db, pw_name);
 	if(!stricmp(action, "load"))
 	{
 		//Wipe clipboard after successful load

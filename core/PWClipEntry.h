@@ -5,21 +5,12 @@ by: Connor Douthat
 */
 class PWClipEntry
 {
-	PasswordCipher *crypto;
+	KeyManager *crypto;
 	sqlite3 *db;
 	const char *key;
 	char *value;
 	char *iv;
 
-	bool getCrypto()
-	{
-		if(!crypto && !(crypto = CryptoInit()))
-		{
-			printf("Crypto init failed\n");
-			return false;
-		}
-		return true;
-	}
 	void clearValue()
 	{
 		if(value)
@@ -35,9 +26,9 @@ class PWClipEntry
 	}
 
 public:
-	PWClipEntry(sqlite3 *db_in, const char *key_in)
+	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *key_in)
 	{
-		crypto = NULL;
+		crypto = crypto_in;
 		db = db_in;
 		key = key_in;
 		//Find existing value (if any)
@@ -61,7 +52,6 @@ public:
 	~PWClipEntry()
 	{
 		clearValue();
-		if(crypto) delete crypto;
 	}
 	bool exists()
 	{
@@ -78,7 +68,6 @@ public:
 		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
 		hex2bin(iv, iv_raw, sizeof(iv_raw));
 		//Decrypt value
-		if(!getCrypto()) return false;
 		char *value_plain = crypto->decrypt(value, iv_raw);
 		if(!value_plain)
 		{
@@ -111,7 +100,6 @@ public:
 			return false;
 		}
 		//Encrypt plaintext from clipboard
-		if(!getCrypto()) return false;
 		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
 		value = crypto->encrypt(value_plain, iv_raw);
 		//Wipe and free plaintext

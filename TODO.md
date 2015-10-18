@@ -1,8 +1,3 @@
-Core
-====
-* Attempt blank password without prompt
-* Confirm new passwords
-
 Tray
 ====
 * Cache encryption passwords used in current session

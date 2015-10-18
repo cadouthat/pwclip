@@ -37,7 +37,7 @@ bool ProcessArguments(int argc, char **argv)
 				flag_force = true;
 				break;
 			case 's':
-				flag_skip_pass = true;
+				crypto_keys->skip_encrypt_pass = true;
 				break;
 			case 'g':
 				flag_generate = true;
