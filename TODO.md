@@ -1,10 +1,7 @@
 Core
 ====
-* Detect SQLite close failure?
-* Create temp database at open
-** If temp exists at open, exit with failure
-** Delete temp on close
-** Existing sqlite transaction solutions?
+* Attempt blank password without prompt
+* Confirm new passwords
 
 Tray
 ====
