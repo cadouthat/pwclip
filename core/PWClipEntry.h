@@ -10,7 +10,20 @@ class PWClipEntry
 	const char *key;
 	char *value;
 	char *iv;
+	char *value_plain;
+	unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
 
+	void clearPlaintext()
+	{
+		if(value_plain)
+		{
+			//Wipe plaintext before freeing
+			memset(value_plain, 0, strlen(value_plain));
+			free(value_plain);
+			value_plain = NULL;
+		}
+		memset(iv_raw, 0, sizeof(iv_raw));
+	}
 	void clearValue()
 	{
 		if(value)
@@ -24,6 +37,52 @@ class PWClipEntry
 			iv = NULL;
 		}
 	}
+	void clear()
+	{
+		clearPlaintext();
+		clearValue();
+	}
+	bool decrypt(const char *prompt_text = NULL)
+	{
+		clearPlaintext();
+		//Must have existing value to decrypt
+		if(!exists())
+		{
+			printf("Entry not found\n");
+			return false;
+		}
+		//Decode IV to binary
+		hex2bin(iv, iv_raw, sizeof(iv_raw));
+		//Decrypt value
+		value_plain = crypto->decrypt(value, iv_raw, prompt_text);
+		if(!value_plain)
+		{
+			printf("Failed to decrypt value\n");
+			return false;
+		}
+		return true;
+	}
+	bool encrypt(const char *prompt_text = NULL)
+	{
+		clearValue();
+		//Encrypt plaintext from clipboard
+		value = crypto->encrypt(value_plain, iv_raw, prompt_text);
+		//Verify encryption success
+		if(!value)
+		{
+			printf("Failed to encrypt value\n");
+			return false;
+		}
+		//Convert IV to hex encoding
+		iv = bin2hex(iv_raw, sizeof(iv_raw));
+		if(!iv)
+		{
+			clearValue();
+			printf("Failed to encode IV\n");
+			return false;
+		}
+		return true;
+	}
 
 public:
 	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *key_in)
@@ -34,6 +93,7 @@ public:
 		//Find existing value (if any)
 		value = NULL;
 		iv = NULL;
+		value_plain = NULL;
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT `value`, `iv` FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
 		{
@@ -51,7 +111,7 @@ public:
 	}
 	~PWClipEntry()
 	{
-		clearValue();
+		clear();
 	}
 	bool exists()
 	{
@@ -59,60 +119,34 @@ public:
 	}
 	bool load()
 	{
-		if(!exists())
-		{
-			printf("Entry not found\n");
-			return false;
-		}
-		//Decode IV to binary
-		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
-		hex2bin(iv, iv_raw, sizeof(iv_raw));
-		//Decrypt value
-		char *value_plain = crypto->decrypt(value, iv_raw);
-		if(!value_plain)
-		{
-			printf("Failed to decrypt value\n");
-			return false;
-		}
-		//Move to clipboard
-		if(!SetClipboardText(value_plain))
-		{
-			printf("Failed to set clipboard text\n");
-			return false;
-		}
-		//Wipe and free plaintext
-		memset(value_plain, 0, strlen(value_plain));
-		free(value_plain);
-		printf("Entry successfully loaded to clipboard\n");
-		return true;
+		//Decrypt value to plaintext
+		if(!decrypt()) return false;
+		//Move plaintext to clipboard
+		bool result = SetClipboardText(value_plain);
+		clearPlaintext();
+		if(result) printf("Entry successfully loaded to clipboard\n");
+		else printf("Failed to set clipboard text\n");
+		return result;
 	}
 	bool save()
 	{
+		//No implicit overwrite
 		if(exists())
 		{
 			printf("Entry already exists\n");
 			return false;
 		}
-		char *value_plain = GetClipboardText();
+		//Make sure plaintext is clean
+		clearPlaintext();
+		//Store plaintext from clipboard
+		value_plain = GetClipboardText();
 		if(!value_plain)
 		{
 			printf("Failed to get clipboard text\n");
 			return false;
 		}
-		//Encrypt plaintext from clipboard
-		unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
-		value = crypto->encrypt(value_plain, iv_raw);
-		//Wipe and free plaintext
-		memset(value_plain, 0, strlen(value_plain));
-		free(value_plain);
-		//Verify encryption success
-		if(!value)
-		{
-			printf("Failed to encrypt value\n");
-			return false;
-		}
-		//Convert IV to hex encoding
-		iv = bin2hex(iv_raw, sizeof(iv_raw));
+		if(!encrypt()) return false;
+		clearPlaintext();
 		//Attempt insert
 		bool insert_ok = false;
 		sqlite3_stmt *stmt;
@@ -128,12 +162,58 @@ public:
 		}
 		if(!insert_ok)
 		{
+			//Value not saved, clear internal value
+			clear();
 			printf("Unknown error creating entry\n");
-			clearValue();
-			return false;
 		}
-		printf("Entry successfully saved\n");
-		return true;
+		else printf("Entry successfully saved\n");
+		return insert_ok;
+	}
+	bool reEncrypt()
+	{
+		//Decrypt with appropriate prompt
+		if(!decrypt("Old encryption password")) return false;
+		//Displace original encrypted value for now
+		char *value_old = value;
+		char *iv_old = iv;
+		value = NULL;
+		iv = NULL;
+		//Re-encrypt with appropriate prompt
+		bool result = encrypt("New encryption password");
+		clearPlaintext();
+		if(result)
+		{
+			result = false;
+			//Attempt update
+			sqlite3_stmt *stmt;
+			if(SQLITE_OK == sqlite3_prepare_v2(db, "UPDATE `entries` SET `value`=?, `iv`=? WHERE `key`=?", -1, &stmt, NULL))
+			{
+				if(SQLITE_OK == sqlite3_bind_text(stmt, 1, value, -1, SQLITE_STATIC) &&
+					SQLITE_OK == sqlite3_bind_text(stmt, 2, iv, -1, SQLITE_STATIC) &&
+					SQLITE_OK == sqlite3_bind_text(stmt, 3, key, -1, SQLITE_STATIC))
+				{
+					result = (sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db));
+				}
+				sqlite3_finalize(stmt);
+			}
+			if(!result) printf("Unknown error updating entry\n");
+			else printf("Entry successfully updated\n");
+		}
+		//Cleanup
+		if(result)
+		{
+			//Free original value
+			if(value_old) free(value_old);
+			if(iv_old) free(iv_old);
+		}
+		else
+		{
+			//Rollback value
+			clearValue();
+			value = value_old;
+			iv = iv_old;
+		}
+		return result;
 	}
 	bool remove()
 	{
@@ -149,13 +229,13 @@ public:
 		{
 			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC))
 			{
-				delete_ok = (sqlite3_step(stmt) == SQLITE_DONE);
+				delete_ok = (sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db));
 			}
 			sqlite3_finalize(stmt);
 		}
 		if(delete_ok)
 		{
-			clearValue();
+			clear();
 			printf("Entry successfully removed\n");
 		}
 		else printf("Unknown error removing entry\n");

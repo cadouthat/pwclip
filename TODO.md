@@ -13,6 +13,9 @@ Tray
   * Remove Password
     * Same sub-menu as Load Password
       * Confirmation dialog
+  * Change encryption
+    * Same sub-menu as Load Password
+      * Password/confirm prompt
   * Settings
     * Run on startup
     * Database file

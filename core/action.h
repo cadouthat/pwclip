@@ -40,9 +40,15 @@ bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 		*wipe_clip = entry.save();
 		return *wipe_clip;
 	}
+	else if(!stricmp(action, "enc"))
+	{
+		//Clipboard not used
+		*wipe_clip = false;
+		return entry.reEncrypt();
+	}
 	else if(!stricmp(action, "remove"))
 	{
-		//Clipboard stores nothing for remove
+		//Clipboard not used
 		*wipe_clip = false;
 		return entry.remove();
 	}

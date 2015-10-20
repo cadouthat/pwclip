@@ -23,16 +23,16 @@ public:
 			delete keys[i];
 		}
 	}
-	char *encrypt(const char *plain, unsigned char *iv_out)
+	char *encrypt(const char *plain, unsigned char *iv_out, const char *prompt_text = NULL)
 	{
 		//Always get explicit key for encryption
-		PasswordCipher *crypto = CryptoInit(true, skip_encrypt_pass);
+		PasswordCipher *crypto = CryptoInit(true, skip_encrypt_pass, prompt_text);
 		if(!crypto) return NULL;
 		char *result = crypto->encrypt(plain, iv_out);
 		delete crypto;
 		return result;
 	}
-	char *decrypt(const char *enc, unsigned char *iv)
+	char *decrypt(const char *enc, unsigned char *iv, const char *prompt_text = NULL)
 	{
 		char *result = NULL;
 		//Attempt stored keys first
@@ -46,7 +46,7 @@ public:
 		//Prompt for new password (if available)
 		while(!result)
 		{
-			PasswordCipher *crypto = CryptoInit(false);
+			PasswordCipher *crypto = CryptoInit(false, false, prompt_text);
 			if(!crypto) return NULL;
 			if(result = crypto->decrypt(enc, iv))
 			{

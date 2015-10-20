@@ -3,7 +3,7 @@ Global variables
 by: Connor Douthat
 10/1/2015
 */
-#define USAGE_TEXT "\nUsage: pwclip <action> <entry name> [flags] [database file]\n\n  Actions\n    load\n    save\n    remove\n\n  Flags\n    -k    Keep password in clipboard indefinitely\n    -f    Force overwrite if entry exists\n    -s    Skip encryption password (use at your own risk!)\n    -g    Generate a random password before saving\n"
+#define USAGE_TEXT "\nUsage: pwclip <action> <entry name> [flags] [database file]\n\n  Actions\n    load    Load to the clipboard\n    save    Save from the clipboard\n    enc     Change encryption password\n    remove  Completely destroy (use with caution!)\n\n  Flags\n    -k      Keep password in clipboard indefinitely\n    -f      Force overwrite if entry exists\n    -s      Skip encryption password (use at your own risk!)\n    -g      Generate a random password before saving\n"
 
 //Global configuration
 int clip_wipe_delay = 10;
