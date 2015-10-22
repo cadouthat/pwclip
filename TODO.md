@@ -22,3 +22,8 @@ Tray
     * Keep passwords in clipboard
   * Export raw passwords
   * Exit
+
+Portability
+===========
+* Mac support
+* Linux?
