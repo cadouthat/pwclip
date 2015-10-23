@@ -3,19 +3,23 @@ pwclip tray utility (windows)
 by: Connor Douthat
 10/20/2015
 */
+#define _WIN32_WINNT 0x0500
 #include "../core/sysIncludes.h"
-#include "sysIncludes.h"
 #include "includes.h"
 
 int main(int argc, char **argv)
 {
-	NOTIFYICONDATA nid;
-	ZeroMemory(&nid, sizeof(nid));
-	nid.cbSize = sizeof(nid);
-	nid.uFlags = NIF_ICON;
-	nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
-	Shell_NotifyIcon(NIM_ADD, &nid);
-	Sleep(10000);
-	Shell_NotifyIcon(NIM_DELETE, &nid);
+	//Create tray icon and listen for messages
+	MenuInit();
+	TrayInit();
+	MSG msg;
+	while(GetMessage(&msg, hwndMain, 0, 0) > 0)
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	//Cleanup
+	TrayCleanup();
+	MenuCleanup();
 	return 0;
 }

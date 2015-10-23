@@ -20,7 +20,7 @@ bin/pwcliptray.o: pwcliptray/pwcliptray.cpp
 	g++ -c pwcliptray/pwcliptray.cpp -o bin/pwcliptray.o $(INC) $(FLAGS)
 
 pwcliptray: bin/pwcliptray.o
-	g++ bin/pwcliptray.o -o bin/pwcliptray.exe $(FLAGS) $(OBJEX) $(LIB)
+	g++ -mwindows bin/pwcliptray.o -o bin/pwcliptray.exe $(FLAGS) $(OBJEX) $(LIB)
 
 pre:
 	cls
