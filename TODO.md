@@ -1,6 +1,7 @@
 Tray
 ====
 * Cache encryption passwords used in current session
+* Create menu hierarchy from square brackets in entry names
 * Right click tray icon
   * Save Password
     * Name

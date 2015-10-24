@@ -5,6 +5,11 @@ by: Connor Douthat
 */
 #include "guiConstants.h"
 #include "globals.h"
+
+#include "../core/envHelp.h"
+#include "../core/db.h"
+
+#include "guiHelp.h"
 #include "menuHelp.h"
 #include "trayMessage.h"
 #include "trayHelp.h"

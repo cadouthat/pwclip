@@ -6,3 +6,4 @@ by: Connor Douthat
 #define MSG_TRAYICON (WM_USER + 1)
 
 #define TRAY_EXIT 1
+#define TRAY_KEY 2

@@ -10,7 +10,25 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 	case WM_COMMAND:
 		if(HIWORD(wParam) == BN_CLICKED)
 		{
-			switch(LOWORD(wParam))
+			int id = LOWORD(wParam);
+			if(id >= TRAY_KEY && id - TRAY_KEY < menu_keys.size())
+			{
+				id -= TRAY_KEY;
+				char *key = menu_keys[id];
+				if(id < recall_menu_end)
+				{
+					MessageBox(NULL, key, "Recall", 0);
+				}
+				else if(id < encrypt_menu_end)
+				{
+					MessageBox(NULL, key, "Recrypt", 0);
+				}
+				else if(id < remove_menu_end)
+				{
+					MessageBox(NULL, key, "Remove", 0);
+				}
+			}
+			else switch(id)
 			{
 			case TRAY_EXIT:
 				DestroyWindow(hwnd);

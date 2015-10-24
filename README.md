@@ -9,6 +9,11 @@ The tray application (pwcliptray), while entirely optional, provides a convenien
 
 The export tool (pwclipdump) provides a plaintext backup of your passwords (to be stored in a secure location) in case of emergencies, such as data loss or forgotten master passwords.
 
+Usage Tips
+----------
+* The tray application parses square brackets as sub-menus. For example, an entry named "[finance][banks]mybank" will appear as "mybank" nested under "banks" nested under "finance".
+* Due to minimal design, pwclip does not have a separate mechanism for usernames. In cases where usernames are complex or hard to remember, it is recommended to create two separate entries, such as "email-user" and "email-pass".
+
 Password Storage
 ----------------
 The password database is stored as an sqlite file, in the current user's Local Application Data directory by default. Entry nicknames are stored as plaintext in the database. Stored passwords are encrypted using AES-128 with a 256 bit key derived from the encryption password using PBKDF2-SHA256. Each password is encrypted independently with a random IV.

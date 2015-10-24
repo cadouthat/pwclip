@@ -9,17 +9,26 @@ by: Connor Douthat
 
 int main(int argc, char **argv)
 {
-	//Create tray icon and listen for messages
+	//Settings and global init
+	if(!OpenDB())
+	{
+		ErrorBox("Failed to open/create database");
+		return 1;
+	}
+	//GUI init
 	MenuInit();
 	TrayInit();
+	//Main message loop
 	MSG msg;
 	while(GetMessage(&msg, hwndMain, 0, 0) > 0)
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	//Cleanup
+	//GUI cleanup
 	TrayCleanup();
 	MenuCleanup();
+	//GLobal cleanup
+	CloseDB();
 	return 0;
 }
