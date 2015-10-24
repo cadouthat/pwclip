@@ -6,10 +6,15 @@ by: Connor Douthat
 #include "guiConstants.h"
 #include "globals.h"
 
-#include "../core/envHelp.h"
-#include "../core/db.h"
-
 #include "guiHelp.h"
 #include "menuHelp.h"
+
+#include "dialog/load.h"
+#include "dialog/save.h"
+#include "dialog/encrypt.h"
+#include "dialog/remove.h"
+#include "dialog/export.h"
+#include "dialog/settings.h"
+
 #include "trayMessage.h"
 #include "trayHelp.h"

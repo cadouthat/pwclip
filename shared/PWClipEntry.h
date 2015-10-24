@@ -48,7 +48,7 @@ class PWClipEntry
 		//Must have existing value to decrypt
 		if(!exists())
 		{
-			printf("Entry not found\n");
+			fprintf(stderr, "Entry not found\n");
 			return false;
 		}
 		//Decode IV to binary
@@ -57,7 +57,7 @@ class PWClipEntry
 		value_plain = crypto->decrypt(value, iv_raw, prompt_text);
 		if(!value_plain)
 		{
-			printf("Failed to decrypt value\n");
+			fprintf(stderr, "Failed to decrypt value\n");
 			return false;
 		}
 		return true;
@@ -70,7 +70,7 @@ class PWClipEntry
 		//Verify encryption success
 		if(!value)
 		{
-			printf("Failed to encrypt value\n");
+			fprintf(stderr, "Failed to encrypt value\n");
 			return false;
 		}
 		//Convert IV to hex encoding
@@ -78,7 +78,7 @@ class PWClipEntry
 		if(!iv)
 		{
 			clearValue();
-			printf("Failed to encode IV\n");
+			fprintf(stderr, "Failed to encode IV\n");
 			return false;
 		}
 		return true;
@@ -125,7 +125,7 @@ public:
 		bool result = SetClipboardText(value_plain);
 		clearPlaintext();
 		if(result) printf("Entry successfully loaded to clipboard\n");
-		else printf("Failed to set clipboard text\n");
+		else fprintf(stderr, "Failed to set clipboard text\n");
 		return result;
 	}
 	bool save()
@@ -133,7 +133,7 @@ public:
 		//No implicit overwrite
 		if(exists())
 		{
-			printf("Entry already exists\n");
+			fprintf(stderr, "Entry already exists\n");
 			return false;
 		}
 		//Make sure plaintext is clean
@@ -142,7 +142,7 @@ public:
 		value_plain = GetClipboardText();
 		if(!value_plain)
 		{
-			printf("Failed to get clipboard text\n");
+			fprintf(stderr, "Failed to get clipboard text\n");
 			return false;
 		}
 		if(!encrypt()) return false;
@@ -164,7 +164,7 @@ public:
 		{
 			//Value not saved, clear internal value
 			clear();
-			printf("Unknown error creating entry\n");
+			fprintf(stderr, "Unknown error creating entry\n");
 		}
 		else printf("Entry successfully saved\n");
 		return insert_ok;
@@ -196,7 +196,7 @@ public:
 				}
 				sqlite3_finalize(stmt);
 			}
-			if(!result) printf("Unknown error updating entry\n");
+			if(!result) fprintf(stderr, "Unknown error updating entry\n");
 			else printf("Entry successfully updated\n");
 		}
 		//Cleanup
@@ -219,7 +219,7 @@ public:
 	{
 		if(!exists())
 		{
-			printf("Entry not found\n");
+			fprintf(stderr, "Entry not found\n");
 			return false;
 		}
 		//Attempt delete
@@ -238,7 +238,7 @@ public:
 			clear();
 			printf("Entry successfully removed\n");
 		}
-		else printf("Unknown error removing entry\n");
+		else fprintf(stderr, "Unknown error removing entry\n");
 		return delete_ok;
 	}
 };

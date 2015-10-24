@@ -17,19 +17,28 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				char *key = menu_keys[id];
 				if(id < recall_menu_end)
 				{
-					MessageBox(NULL, key, "Recall", 0);
+					LoadDialog(key);
 				}
 				else if(id < encrypt_menu_end)
 				{
-					MessageBox(NULL, key, "Recrypt", 0);
+					EncryptDialog(key);
 				}
 				else if(id < remove_menu_end)
 				{
-					MessageBox(NULL, key, "Remove", 0);
+					RemoveDialog(key);
 				}
 			}
 			else switch(id)
 			{
+			case TRAY_SAVE:
+				SaveDialog();
+				break;
+			case TRAY_SETTINGS:
+				SettingsDialog();
+				break;
+			case TRAY_EXPORT:
+				ExportDialog();
+				break;
 			case TRAY_EXIT:
 				DestroyWindow(hwnd);
 				break;

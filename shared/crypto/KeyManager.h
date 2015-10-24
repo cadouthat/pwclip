@@ -3,12 +3,16 @@ Manages a set of PasswordCiphers
 by: Connor Douthat
 10/18/2015
 */
+
+typedef PasswordCipher* (*PasswordSource)(bool, bool, const char*);
+
 class KeyManager
 {
 	std::vector<PasswordCipher*> keys;
 
 public:
 	bool skip_encrypt_pass;
+	PasswordSource get_pass;
 
 	KeyManager()
 	{
@@ -26,7 +30,8 @@ public:
 	char *encrypt(const char *plain, unsigned char *iv_out, const char *prompt_text = NULL)
 	{
 		//Always get explicit key for encryption
-		PasswordCipher *crypto = CryptoInit(true, skip_encrypt_pass, prompt_text);
+		if(!get_pass) return NULL;
+		PasswordCipher *crypto = get_pass(true, skip_encrypt_pass, prompt_text);
 		if(!crypto) return NULL;
 		char *result = crypto->encrypt(plain, iv_out);
 		delete crypto;
@@ -46,7 +51,8 @@ public:
 		//Prompt for new password (if available)
 		while(!result)
 		{
-			PasswordCipher *crypto = CryptoInit(false, false, prompt_text);
+			if(!get_pass) return NULL;
+			PasswordCipher *crypto = get_pass(false, false, prompt_text);
 			if(!crypto) return NULL;
 			if(result = crypto->decrypt(enc, iv))
 			{

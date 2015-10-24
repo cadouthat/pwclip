@@ -3,7 +3,7 @@ Acquire user password and start crypto
 by: Connor Douthat
 10/4/2015
 */
-PasswordCipher *CryptoInit(bool for_encrypt, bool skip_pass = false, const char *prompt_text = NULL)
+PasswordCipher *PasswordPrompt(bool for_encrypt, bool skip_pass = false, const char *prompt_text = NULL)
 {
 	char pass[PASSWORD_MAX + 1] = {0};
 	char confirm[PASSWORD_MAX + 1] = {0};

@@ -8,7 +8,7 @@ bool ProcessArguments(int argc, char **argv)
 	//Enforce max entry name length
 	if(strlen(argv[2]) > ENTRY_NAME_MAX)
 	{
-		printf("Entry name must not exceed %d characters\n", ENTRY_NAME_MAX);
+		fprintf(stderr, "Entry name must not exceed %d characters\n", ENTRY_NAME_MAX);
 		return false;
 	}
 	//Optional arguments
@@ -24,7 +24,7 @@ bool ProcessArguments(int argc, char **argv)
 			//All flags are a dash followed by a single character
 			if(strlen(argv[opt]) != 2 || *argv[opt] != '-')
 			{
-				printf("Invalid option: '%s'\n", argv[opt]);
+				fprintf(stderr, "Invalid option: '%s'\n", argv[opt]);
 				return false;
 			}
 			//Check for valid flags (ignore case)
@@ -43,7 +43,7 @@ bool ProcessArguments(int argc, char **argv)
 				flag_generate = true;
 				break;
 			default:
-				printf("Invalid flag: '%s'\n", argv[opt]);
+				fprintf(stderr, "Invalid flag: '%s'\n", argv[opt]);
 				return false;
 			}
 		}

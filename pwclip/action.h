@@ -20,12 +20,12 @@ bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 			char pass[GEN_PASS_SIZE + 1] = {0};
 			if(!RandText(pass, GEN_PASS_SIZE))
 			{
-				printf("Failed to generate password\n");
+				fprintf(stderr, "Failed to generate password\n");
 				return false;
 			}
 			if(!SetClipboardText(pass))
 			{
-				printf("Failed to set clipboard text\n");
+				fprintf(stderr, "Failed to set clipboard text\n");
 				return false;
 			}
 			memset(pass, 0, sizeof(pass));
@@ -54,7 +54,7 @@ bool EntryAction(char *action, char *pw_name, bool *wipe_clip)
 	}
 	else
 	{
-		printf("Invalid action: '%s'\n", action);
+		fprintf(stderr, "Invalid action: '%s'\n", action);
 		return false;
 	}
 }

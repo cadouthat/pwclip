@@ -42,10 +42,13 @@ bool MenuInit()
 	HMENU removeMenu = EntryListMenu();
 	remove_menu_end = NextMenuId();
 	//Append top level menus
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)recallMenu, "Recall");
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)encryptMenu, "Recrypt");
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)removeMenu, "Remove");
 	AppendMenu(popupMenu, MF_STRING, TRAY_EXIT, "Exit");
+	AppendMenu(popupMenu, MF_STRING, TRAY_SETTINGS, "Settings");
+	AppendMenu(popupMenu, MF_STRING, TRAY_EXPORT, "Raw Export");
+	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)removeMenu, "Delete");
+	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)encryptMenu, "Recrypt");
+	AppendMenu(popupMenu, MF_STRING, TRAY_SAVE, "Save from Clipboard");
+	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
 	return true;
 }
 bool MenuCleanup()
