@@ -10,11 +10,8 @@ by: Connor Douthat
 #endif
 
 //Standard
-#include <unistd.h>
-#include <conio.h>
 #include <cstdlib>
 #include <stdio.h>
-#include <ctype.h>
 #include <vector>
 
 //Third party

@@ -6,7 +6,6 @@ by: Connor Douthat
 #include "guiConstants.h"
 #include "globals.h"
 
-#include "guiHelp.h"
 #include "menuHelp.h"
 
 #include "dialog/load.h"

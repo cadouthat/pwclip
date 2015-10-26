@@ -15,6 +15,4 @@ by: Connor Douthat
 
 #include "PWClipEntry.h"
 
-#include "passwordPrompt.h"
-
 #include "db.h"

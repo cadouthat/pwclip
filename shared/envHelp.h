@@ -3,6 +3,15 @@ User environment utilities
 by: Connor Douthat
 10/1/2015
 */
+void ErrorBox(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	char message[1024] = {0};
+	vsprintf(message, format, args);
+	MessageBox(NULL, message, "Error - pwcliptray", 0);
+	va_end(args);
+}
 bool LocalUserAppData(const char *app_name, char *path_out)
 {
 	char path[256] = {0};
@@ -42,58 +51,4 @@ bool RandText(char *out, int len)
 		out[i] = char_set[u_out[i] % char_set_size];
 	}
 	return true;
-}
-int ScanSilent(char *buf, int buf_size)
-{
-	int len = 0;
-	int ch = 0;
-	do
-	{
-		if((ch = getch()) >= 0)
-		{
-			switch(ch)
-			{
-				//Multi-byte (ignored)
-				case 0:
-				case 224:
-					//Skip extra byte
-					getch();
-					ch = 1;
-					break;
-
-				//Cancel input
-				case 3: //ETX
-				case 27: //ESC
-					buf[0] = 0;
-					printf("\n");
-					return -1;
-
-				//End of input
-				case '\r':
-				case '\n':
-				case EOF:
-					ch = 0;
-					break;
-
-				//Backspace removes last char
-				case 8: //BS
-					if(len > 0)
-					{
-						len--;
-						buf[len] = 0;
-					}
-					break;
-
-				//Append regular character
-				default:
-					buf[len] = ch;
-					len++;
-					break;
-			}
-		}
-	}while(ch > 0 && len < buf_size - 1);
-	printf("\n");
-	//Terminate string
-	buf[len] = 0;
-	return len;
 }

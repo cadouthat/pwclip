@@ -61,7 +61,7 @@ public:
 			}
 			else
 			{
-				printf("Decryption failed, pease try again.\n");
+				ErrorBox("Decryption failed, pease try again.");
 				delete crypto;
 			}
 		}

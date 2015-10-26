@@ -48,7 +48,7 @@ class PWClipEntry
 		//Must have existing value to decrypt
 		if(!exists())
 		{
-			fprintf(stderr, "Entry not found\n");
+			ErrorBox("Entry not found");
 			return false;
 		}
 		//Decode IV to binary
@@ -57,7 +57,7 @@ class PWClipEntry
 		value_plain = crypto->decrypt(value, iv_raw, prompt_text);
 		if(!value_plain)
 		{
-			fprintf(stderr, "Failed to decrypt value\n");
+			ErrorBox("Failed to decrypt value");
 			return false;
 		}
 		return true;
@@ -70,7 +70,7 @@ class PWClipEntry
 		//Verify encryption success
 		if(!value)
 		{
-			fprintf(stderr, "Failed to encrypt value\n");
+			ErrorBox("Failed to encrypt value");
 			return false;
 		}
 		//Convert IV to hex encoding
@@ -78,7 +78,7 @@ class PWClipEntry
 		if(!iv)
 		{
 			clearValue();
-			fprintf(stderr, "Failed to encode IV\n");
+			ErrorBox("Failed to encode IV");
 			return false;
 		}
 		return true;
@@ -124,8 +124,7 @@ public:
 		//Move plaintext to clipboard
 		bool result = SetClipboardText(value_plain);
 		clearPlaintext();
-		if(result) printf("Entry successfully loaded to clipboard\n");
-		else fprintf(stderr, "Failed to set clipboard text\n");
+		if(!result) ErrorBox("Failed to set clipboard text");
 		return result;
 	}
 	bool save()
@@ -133,7 +132,7 @@ public:
 		//No implicit overwrite
 		if(exists())
 		{
-			fprintf(stderr, "Entry already exists\n");
+			ErrorBox("Entry already exists");
 			return false;
 		}
 		//Make sure plaintext is clean
@@ -142,7 +141,7 @@ public:
 		value_plain = GetClipboardText();
 		if(!value_plain)
 		{
-			fprintf(stderr, "Failed to get clipboard text\n");
+			ErrorBox("Failed to get clipboard text");
 			return false;
 		}
 		if(!encrypt()) return false;
@@ -164,9 +163,8 @@ public:
 		{
 			//Value not saved, clear internal value
 			clear();
-			fprintf(stderr, "Unknown error creating entry\n");
+			ErrorBox("Unknown error creating entry");
 		}
-		else printf("Entry successfully saved\n");
 		return insert_ok;
 	}
 	bool reEncrypt()
@@ -196,8 +194,7 @@ public:
 				}
 				sqlite3_finalize(stmt);
 			}
-			if(!result) fprintf(stderr, "Unknown error updating entry\n");
-			else printf("Entry successfully updated\n");
+			if(!result) ErrorBox("Unknown error updating entry");
 		}
 		//Cleanup
 		if(result)
@@ -219,7 +216,7 @@ public:
 	{
 		if(!exists())
 		{
-			fprintf(stderr, "Entry not found\n");
+			ErrorBox("Entry not found");
 			return false;
 		}
 		//Attempt delete
@@ -233,12 +230,8 @@ public:
 			}
 			sqlite3_finalize(stmt);
 		}
-		if(delete_ok)
-		{
-			clear();
-			printf("Entry successfully removed\n");
-		}
-		else fprintf(stderr, "Unknown error removing entry\n");
+		if(delete_ok) clear();
+		else ErrorBox("Unknown error removing entry");
 		return delete_ok;
 	}
 };
