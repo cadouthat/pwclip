@@ -3,16 +3,16 @@ Lightweight local password vault
 
 Overview
 --------
-At its core, pwclip is a password manager designed to be small, flexible, and minimally intrusive. Passwords are saved and recalled with user-defined nicknames. Each entry is encrypted independently, but users will find it most convenient to use the same master password for most or all entries.
+Passwords are transported to and from the vault via the clipboard. Each entry is referenced with a user-defined nickname, and encrypted with a "master" password. Users may choose to use the same master password for most or all entries.
 
-The tray application (pwcliptray), while entirely optional, provides a convenient graphical interface and remembers master password(s) until closed.
+While pwclip is running, an icon is added to the system tray for convenient access. Decryption keys are stored in memory until pwclip is closed, so users don't need to enter their master password(s) every time they load an entry.
 
-The export tool (pwclipdump) provides a plaintext backup of your passwords (to be stored in a secure location) in case of emergencies, such as data loss or forgotten master passwords.
+The export feature provides a plaintext backup of all entries (to be stored in a secure location) in case of emergencies, such as data loss or forgotten master passwords.
 
 Usage Tips
 ----------
-* The tray application parses square brackets as sub-menus. For example, an entry named "[finance][banks]mybank" will appear as "mybank" nested under "banks" nested under "finance".
-* Due to minimal design, pwclip does not have a separate mechanism for usernames. In cases where usernames are complex or hard to remember, it is recommended to create two separate entries, such as "email-user" and "email-pass".
+* Square brackets in entry names are treated as sub-menus. For example, an entry named "[finance][banks]mybank" will appear as "mybank" nested under "banks" nested under "finance".
+* pwclip does not have a separate mechanism for usernames. In cases where usernames are hard to remember, creating two entries is recommended, such as "account-user" and "account-pass".
 
 Password Storage
 ----------------
