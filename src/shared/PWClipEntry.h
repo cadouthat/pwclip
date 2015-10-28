@@ -7,7 +7,7 @@ class PWClipEntry
 {
 	KeyManager *crypto;
 	sqlite3 *db;
-	const char *key;
+	const char *pk;
 	char *value;
 	char *iv;
 	char *value_plain;
@@ -85,11 +85,11 @@ class PWClipEntry
 	}
 
 public:
-	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *key_in)
+	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *pk_in)
 	{
 		crypto = crypto_in;
 		db = db_in;
-		key = key_in;
+		pk = pk_in;
 		//Find existing value (if any)
 		value = NULL;
 		iv = NULL;
@@ -97,7 +97,7 @@ public:
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT `value`, `iv` FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
 		{
-			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC))
+			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, pk, -1, SQLITE_STATIC))
 			{
 				if(sqlite3_step(stmt) == SQLITE_ROW)
 				{
@@ -113,6 +113,7 @@ public:
 	{
 		clear();
 	}
+	const char *name() { return pk; }
 	bool exists()
 	{
 		return (value && iv);
@@ -151,7 +152,7 @@ public:
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(db, "INSERT INTO `entries` (`key`, `value`, `iv`) VALUES (?, ?, ?)", -1, &stmt, NULL))
 		{
-			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC) &&
+			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, pk, -1, SQLITE_STATIC) &&
 				SQLITE_OK == sqlite3_bind_text(stmt, 2, value, -1, SQLITE_STATIC) &&
 				SQLITE_OK == sqlite3_bind_text(stmt, 3, iv, -1, SQLITE_STATIC))
 			{
@@ -188,7 +189,7 @@ public:
 			{
 				if(SQLITE_OK == sqlite3_bind_text(stmt, 1, value, -1, SQLITE_STATIC) &&
 					SQLITE_OK == sqlite3_bind_text(stmt, 2, iv, -1, SQLITE_STATIC) &&
-					SQLITE_OK == sqlite3_bind_text(stmt, 3, key, -1, SQLITE_STATIC))
+					SQLITE_OK == sqlite3_bind_text(stmt, 3, pk, -1, SQLITE_STATIC))
 				{
 					result = (sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db));
 				}
@@ -224,7 +225,7 @@ public:
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(db, "DELETE FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
 		{
-			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC))
+			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, pk, -1, SQLITE_STATIC))
 			{
 				delete_ok = (sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db));
 			}

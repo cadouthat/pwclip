@@ -10,17 +10,18 @@ Tray
       * Confirmation if empty
     * Confirmation for overwriting entry
   * Load Password
-    * Sub-menu of stored names, most used first
   * Remove Password
-    * Same sub-menu as Load Password
-      * Confirmation dialog
+    * Confirmation dialog
   * Change encryption
-    * Same sub-menu as Load Password
-      * Password/confirm prompt
+    * Password/confirm prompt
+  * Quick database swap
+    * Current database with selection indicator
+    * List recently opened
+    * Other.. (open file selector)
+    * Clear list
   * Settings
-    * Run on startup
-    * Database file
-    * Keep passwords in clipboard
+    * Keep passwords in clipboard indefinitely (default false)
+    * Remember encryption passwords (default true)
   * Export raw passwords
   * Exit
 

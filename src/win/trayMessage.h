@@ -14,18 +14,19 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			if(id >= TRAY_KEY && id - TRAY_KEY < menu_keys.size())
 			{
 				id -= TRAY_KEY;
-				char *key = menu_keys[id];
+				char *name = menu_keys[id];
+				PWClipEntry entry(&crypto_keys, db, name);
 				if(id < recall_menu_end)
 				{
-					LoadDialog(key);
+					LoadDialog(&entry);
 				}
 				else if(id < encrypt_menu_end)
 				{
-					EncryptDialog(key);
+					EncryptDialog(&entry);
 				}
 				else if(id < remove_menu_end)
 				{
-					RemoveDialog(key);
+					RemoveDialog(&entry);
 				}
 			}
 			else switch(id)

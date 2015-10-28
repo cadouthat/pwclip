@@ -8,7 +8,7 @@ void ErrorBox(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 	char message[1024] = {0};
-	vsprintf(message, format, args);
+	vsnprintf(message, sizeof(message), format, args);
 	MessageBox(NULL, message, "Error - pwcliptray", 0);
 	va_end(args);
 }

@@ -5,6 +5,7 @@ by: Connor Douthat
 */
 char db_path[256] = {0};
 sqlite3 *db = NULL;
+KeyManager crypto_keys;
 
 HWND hwndMain = NULL;
 HMENU popupMenu = NULL;
