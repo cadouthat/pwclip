@@ -3,10 +3,12 @@ PWClipEntry class which acts on a password vault entry
 by: Connor Douthat
 10/1/2015
 */
+
 class PWClipEntry
 {
 	KeyManager *crypto;
 	sqlite3 *db;
+	bool fatal_flag;
 	const char *pk;
 	char *value;
 	char *iv;
@@ -42,43 +44,20 @@ class PWClipEntry
 		clearPlaintext();
 		clearValue();
 	}
-	bool decrypt(const char *prompt_text = NULL)
-	{
-		clearPlaintext();
-		//Must have existing value to decrypt
-		if(!exists())
-		{
-			ErrorBox("Entry not found");
-			return false;
-		}
-		//Decode IV to binary
-		hex2bin(iv, iv_raw, sizeof(iv_raw));
-		//Decrypt value
-		value_plain = crypto->decrypt(value, iv_raw, prompt_text);
-		if(!value_plain)
-		{
-			ErrorBox("Failed to decrypt value");
-			return false;
-		}
-		return true;
-	}
-	bool encrypt(const char *prompt_text = NULL)
+	bool encrypt()
 	{
 		clearValue();
 		//Encrypt plaintext from clipboard
-		value = crypto->encrypt(value_plain, iv_raw, prompt_text);
+		value = crypto->encrypt(value_plain, iv_raw);
 		//Verify encryption success
-		if(!value)
-		{
-			ErrorBox("Failed to encrypt value");
-			return false;
-		}
+		if(!value) return false;
 		//Convert IV to hex encoding
 		iv = bin2hex(iv_raw, sizeof(iv_raw));
 		if(!iv)
 		{
 			clearValue();
 			ErrorBox("Failed to encode IV");
+			fatal_flag = true;
 			return false;
 		}
 		return true;
@@ -87,13 +66,11 @@ class PWClipEntry
 public:
 	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *pk_in)
 	{
+		memset(this, 0, sizeof(*this));
 		crypto = crypto_in;
 		db = db_in;
 		pk = pk_in;
 		//Find existing value (if any)
-		value = NULL;
-		iv = NULL;
-		value_plain = NULL;
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT `value`, `iv` FROM `entries` WHERE `key`=?", -1, &stmt, NULL))
 		{
@@ -114,9 +91,29 @@ public:
 		clear();
 	}
 	const char *name() { return pk; }
-	bool exists()
+	bool exists() { return (value && iv); }
+	bool fatal()
 	{
-		return (value && iv);
+		bool prev = fatal_flag;
+		fatal_flag = false;
+		return prev;
+	}
+	bool decrypt()
+	{
+		//Existing plaintext can be reused
+		if(value_plain) return true;
+		//Must have existing value to decrypt
+		if(!exists())
+		{
+			ErrorBox("Entry not found");
+			fatal_flag = true;
+			return false;
+		}
+		//Decode IV to binary
+		hex2bin(iv, iv_raw, sizeof(iv_raw));
+		//Decrypt value
+		value_plain = crypto->decrypt(value, iv_raw);
+		return (value_plain != NULL);
 	}
 	bool load()
 	{
@@ -125,7 +122,11 @@ public:
 		//Move plaintext to clipboard
 		bool result = SetClipboardText(value_plain);
 		clearPlaintext();
-		if(!result) ErrorBox("Failed to set clipboard text");
+		if(!result)
+		{
+			ErrorBox("Failed to set clipboard text");
+			fatal_flag = true;
+		}
 		return result;
 	}
 	bool save()
@@ -134,6 +135,7 @@ public:
 		if(exists())
 		{
 			ErrorBox("Entry already exists");
+			fatal_flag = true;
 			return false;
 		}
 		//Make sure plaintext is clean
@@ -143,6 +145,7 @@ public:
 		if(!value_plain)
 		{
 			ErrorBox("Failed to get clipboard text");
+			fatal_flag = true;
 			return false;
 		}
 		if(!encrypt()) return false;
@@ -165,20 +168,21 @@ public:
 			//Value not saved, clear internal value
 			clear();
 			ErrorBox("Unknown error creating entry");
+			fatal_flag = true;
 		}
 		return insert_ok;
 	}
 	bool reEncrypt()
 	{
-		//Decrypt with appropriate prompt
-		if(!decrypt("Old encryption password")) return false;
+		//Decrypt
+		if(!decrypt()) return false;
 		//Displace original encrypted value for now
 		char *value_old = value;
 		char *iv_old = iv;
 		value = NULL;
 		iv = NULL;
 		//Re-encrypt with appropriate prompt
-		bool result = encrypt("New encryption password");
+		bool result = encrypt();
 		clearPlaintext();
 		if(result)
 		{
@@ -195,7 +199,11 @@ public:
 				}
 				sqlite3_finalize(stmt);
 			}
-			if(!result) ErrorBox("Unknown error updating entry");
+			if(!result)
+			{
+				ErrorBox("Unknown error updating entry");
+				fatal_flag = true;
+			}
 		}
 		//Cleanup
 		if(result)
@@ -218,6 +226,7 @@ public:
 		if(!exists())
 		{
 			ErrorBox("Entry not found");
+			fatal_flag = true;
 			return false;
 		}
 		//Attempt delete
@@ -231,8 +240,12 @@ public:
 			}
 			sqlite3_finalize(stmt);
 		}
-		if(delete_ok) clear();
-		else ErrorBox("Unknown error removing entry");
+		if(!delete_ok)
+		{
+			ErrorBox("Unknown error removing entry");
+			fatal_flag = true;
+		}
+		else clear();
 		return delete_ok;
 	}
 };

@@ -8,6 +8,9 @@ by: Connor Douthat
 
 #include "menuHelp.h"
 
+#include "trayHelp.h"
+
+#include "dialog/UserInput.h"
 #include "dialog/load.h"
 #include "dialog/save.h"
 #include "dialog/encrypt.h"
@@ -16,4 +19,3 @@ by: Connor Douthat
 #include "dialog/settings.h"
 
 #include "trayMessage.h"
-#include "trayHelp.h"

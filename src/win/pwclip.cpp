@@ -22,6 +22,19 @@ int main(int argc, char **argv)
 	MSG msg;
 	while(GetMessage(&msg, hwndMain, 0, 0) > 0)
 	{
+		//Process timers
+		if(wipe_clip_timer && wipe_clip_timer < GetTickCount())
+		{
+			//Wipe clipboard if configured
+			if(!config_keep_clip)
+			{
+				if(!WipeClipboardText()) ErrorBox("Failed to wipe clipboard");
+			}
+			//Return tray to normal state
+			TrayNormalState();
+			wipe_clip_timer = 0;
+		}
+		//Process message
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
