@@ -90,8 +90,9 @@ public:
 	{
 		clear();
 	}
-	const char *name() { return pk; }
 	bool exists() { return (value && iv); }
+	const char *name() { return pk; }
+	const char *valuePlain() { return value_plain; }
 	bool fatal()
 	{
 		bool prev = fatal_flag;

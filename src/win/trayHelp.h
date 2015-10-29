@@ -16,7 +16,7 @@ bool TrayInit()
 	notifyClass.lpszClassName = "TrayNotifyWindow";
 	if(!RegisterClass(&notifyClass)) return false;
 	//Create hidden window for notifications
-	hwndMain = CreateWindow(notifyClass.lpszClassName,
+	hwnd_main = CreateWindow(notifyClass.lpszClassName,
 		"",
 		0,
 		0,
@@ -27,12 +27,12 @@ bool TrayInit()
 		NULL,
 		hModule,
 		NULL);
-	if(!hwndMain) return false;
+	if(!hwnd_main) return false;
 	//Create tray icon
 	NOTIFYICONDATA nid;
 	ZeroMemory(&nid, sizeof(nid));
 	nid.cbSize = sizeof(nid);
-	nid.hWnd = hwndMain;
+	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_MESSAGE | NIF_ICON;
 	nid.uCallbackMessage = MSG_TRAYICON;
 	nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
@@ -45,7 +45,7 @@ bool TrayNormalState()
 	NOTIFYICONDATA nid;
 	ZeroMemory(&nid, sizeof(nid));
 	nid.cbSize = sizeof(nid);
-	nid.hWnd = hwndMain;
+	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_ICON;
 	nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
 	strcpy(nid.szTip, TRAY_TOOLTIP);
@@ -59,7 +59,7 @@ bool TraySuccessState()
 	NOTIFYICONDATA nid;
 	ZeroMemory(&nid, sizeof(nid));
 	nid.cbSize = sizeof(nid);
-	nid.hWnd = hwndMain;
+	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_ICON;
 	nid.hIcon = LoadIcon(NULL, IDI_ASTERISK);
 	if(config_keep_clip)
@@ -77,6 +77,6 @@ bool TrayCleanup()
 	NOTIFYICONDATA nid;
 	ZeroMemory(&nid, sizeof(nid));
 	nid.cbSize = sizeof(nid);
-	nid.hWnd = hwndMain;
+	nid.hWnd = hwnd_main;
 	return Shell_NotifyIcon(NIM_DELETE, &nid);
 }

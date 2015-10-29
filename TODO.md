@@ -2,6 +2,8 @@ Tray
 ====
 * Cache encryption passwords used in current session
 * Create menu hierarchy from square brackets in entry names
+* Ini config file
+  * Option to not cache passwords
 * Right click tray icon
   * Save Password
     * Name
@@ -19,9 +21,6 @@ Tray
     * List recently opened
     * Other.. (open file selector)
     * Clear list
-  * Settings
-    * Keep passwords in clipboard indefinitely (default false)
-    * Remember encryption passwords (default true)
   * Export raw passwords
   * Exit
 

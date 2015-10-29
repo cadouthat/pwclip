@@ -34,9 +34,6 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			case TRAY_SAVE:
 				SaveDialog();
 				break;
-			case TRAY_SETTINGS:
-				SettingsDialog();
-				break;
 			case TRAY_EXPORT:
 				ExportDialog();
 				break;
@@ -54,7 +51,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow(hwnd);
-			TrackPopupMenu(popupMenu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
+			TrackPopupMenu(popup_menu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
 			break;
 		}
 		break;

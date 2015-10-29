@@ -34,7 +34,7 @@ void SaveDialog()
 		{
 			char message[512] = {0};
 			snprintf(message, sizeof(message), "Are you sure you want to replace '%s'?", entry.name());
-			if(IDYES == MessageBox(hwndMain, message, "Overwrite Warning", MB_YESNO))
+			if(IDYES == MessageBox(hwnd_main, message, "Overwrite Warning", MB_YESNO))
 			{
 				if(!entry.remove()) return;
 			}

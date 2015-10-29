@@ -6,8 +6,8 @@ by: Connor Douthat
 #include "guiConstants.h"
 #include "globals.h"
 
+#include "guiHelp.h"
 #include "menuHelp.h"
-
 #include "trayHelp.h"
 
 #include "dialog/UserInput.h"
@@ -16,6 +16,5 @@ by: Connor Douthat
 #include "dialog/encrypt.h"
 #include "dialog/remove.h"
 #include "dialog/export.h"
-#include "dialog/settings.h"
 
 #include "trayMessage.h"

@@ -32,8 +32,8 @@ HMENU EntryListMenu()
 bool MenuInit()
 {
 	//Create main menu container
-	popupMenu = CreatePopupMenu();
-	if(!popupMenu) return false;
+	popup_menu = CreatePopupMenu();
+	if(!popup_menu) return false;
 	//Create entry-based menus
 	HMENU recallMenu = EntryListMenu();
 	recall_menu_end = NextMenuId();
@@ -42,13 +42,12 @@ bool MenuInit()
 	HMENU removeMenu = EntryListMenu();
 	remove_menu_end = NextMenuId();
 	//Append top level menus
-	AppendMenu(popupMenu, MF_STRING, TRAY_EXIT, "Exit");
-	AppendMenu(popupMenu, MF_STRING, TRAY_SETTINGS, "Settings");
-	AppendMenu(popupMenu, MF_STRING, TRAY_EXPORT, "Raw Export");
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)removeMenu, "Delete");
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)encryptMenu, "Recrypt");
-	AppendMenu(popupMenu, MF_STRING, TRAY_SAVE, "Save from Clipboard");
-	AppendMenu(popupMenu, MF_STRING | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
+	AppendMenu(popup_menu, MF_STRING, TRAY_EXIT, "Exit");
+	AppendMenu(popup_menu, MF_STRING, TRAY_EXPORT, "Raw Export");
+	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)removeMenu, "Delete");
+	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)encryptMenu, "Recrypt");
+	AppendMenu(popup_menu, MF_STRING, TRAY_SAVE, "Save from Clipboard");
+	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
 	return true;
 }
 bool MenuCleanup()
@@ -59,5 +58,5 @@ bool MenuCleanup()
 		free(menu_keys[i]);
 	}
 	//Destroy main menu
-	return DestroyMenu(popupMenu);
+	return DestroyMenu(popup_menu);
 }

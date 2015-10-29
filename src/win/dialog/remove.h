@@ -8,7 +8,7 @@ void RemoveDialog(PWClipEntry *entry)
 	//Ask user for confirmation
 	char message[512] = {0};
 	snprintf(message, sizeof(message), "Are you sure you want to delete '%s'?", entry->name());
-	if(IDYES == MessageBox(hwndMain, message, "Confirm Delete", MB_YESNO))
+	if(IDYES == MessageBox(hwnd_main, message, "Confirm Delete", MB_YESNO))
 	{
 		if(entry->remove())
 		{

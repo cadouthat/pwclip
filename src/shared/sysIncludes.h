@@ -6,6 +6,7 @@ by: Connor Douthat
 //Windows
 #ifdef __WIN32__
 #include <windows.h>
+#include <commctrl.h>
 #include <shlobj.h>
 #endif
 

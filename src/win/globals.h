@@ -14,8 +14,8 @@ KeyManager crypto_keys;
 long wipe_clip_timer = 0;
 
 //GUI
-HWND hwndMain = NULL;
-HMENU popupMenu = NULL;
+HWND hwnd_main = NULL;
+HMENU popup_menu = NULL;
 
 std::vector<char*> menu_keys;
 unsigned int recall_menu_end = 0;

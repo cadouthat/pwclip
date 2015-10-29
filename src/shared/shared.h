@@ -6,6 +6,8 @@ by: Connor Douthat
 #include "sysIncludes.h"
 #include "def.h"
 
+void ErrorBox(const char *format, ...);
+
 #include "clipHelp.h"
 #include "envHelp.h"
 
