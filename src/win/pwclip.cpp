@@ -12,7 +12,7 @@ by: Connor Douthat
 int main(int argc, char **argv)
 {
 	//Settings and global init
-	if(!(db = OpenDB(db_path)))
+	if(!db.load())
 	{
 		ErrorBox("Failed to open/create database");
 		return 1;
@@ -29,21 +29,10 @@ int main(int argc, char **argv)
 	MenuInit();
 	TrayInit();
 	//Main message loop
+	SetTimer(hwnd_main, TIMER_UPDATE_TRAY, 500, NULL);
 	MSG msg;
 	while(GetMessage(&msg, hwnd_main, 0, 0) > 0)
 	{
-		//Process timers
-		if(wipe_clip_timer && wipe_clip_timer < GetTickCount())
-		{
-			//Wipe clipboard if configured
-			if(!config_keep_clip)
-			{
-				if(!WipeClipboardText()) ErrorBox("Failed to wipe clipboard");
-			}
-			//Return tray to normal state
-			TrayNormalState();
-			wipe_clip_timer = 0;
-		}
 		//Process message
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
@@ -52,6 +41,7 @@ int main(int argc, char **argv)
 	TrayCleanup();
 	MenuCleanup();
 	//GLobal cleanup
-	if(db) sqlite3_close(db);
+	db.writeHistory();
+	db.close();
 	return 0;
 }

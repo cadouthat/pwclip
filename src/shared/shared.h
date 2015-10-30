@@ -17,4 +17,4 @@ void ErrorBox(const char *format, ...);
 
 #include "PWClipEntry.h"
 
-#include "db.h"
+#include "DBManager.h"

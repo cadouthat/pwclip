@@ -24,6 +24,10 @@ void EncryptDialog(PWClipEntry *entry)
 			//Feedback for next attempt
 			prompt.setError("Decryption failed, please try again.");
 		}
-		else break;
+		else
+		{
+			TrayBalloon("Entry successfully updated.");
+			break;
+		}
 	}
 }

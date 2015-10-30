@@ -93,6 +93,16 @@ public:
 	bool exists() { return (value && iv); }
 	const char *name() { return pk; }
 	const char *valuePlain() { return value_plain; }
+	const char *valuePlain(char *set)
+	{
+		if(value_plain)
+		{
+			memset(value_plain, 0, strlen(value_plain));
+			free(value_plain);
+		}
+		value_plain = set;
+		return value_plain;
+	}
 	bool fatal()
 	{
 		bool prev = fatal_flag;
@@ -139,16 +149,7 @@ public:
 			fatal_flag = true;
 			return false;
 		}
-		//Make sure plaintext is clean
-		clearPlaintext();
-		//Store plaintext from clipboard
-		value_plain = GetClipboardText();
-		if(!value_plain)
-		{
-			ErrorBox("Failed to get clipboard text");
-			fatal_flag = true;
-			return false;
-		}
+		if(!value_plain) return false;
 		if(!encrypt()) return false;
 		clearPlaintext();
 		//Attempt insert

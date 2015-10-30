@@ -6,16 +6,17 @@ by: Connor Douthat
 //Config
 int clip_wipe_delay = 10;
 bool config_keep_clip = false;
-char db_path[256] = {0};
+std::vector<char[256]> db_hist;
 
 //Runtime
-sqlite3 *db = NULL;
+DBManager db;
 KeyManager crypto_keys;
-long wipe_clip_timer = 0;
+DWORD clip_sequence;
 
 //GUI
 HWND hwnd_main = NULL;
 HMENU popup_menu = NULL;
+int tray_state = 0;
 
 std::vector<char*> menu_keys;
 unsigned int recall_menu_end = 0;

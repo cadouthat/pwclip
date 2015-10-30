@@ -18,15 +18,16 @@ void ExportDialog()
 	}
 
 	//Perform dump
+	bool result = true;
 	sqlite3_stmt *stmt;
-	if(SQLITE_OK == sqlite3_prepare_v2(db, "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
+	if(SQLITE_OK == sqlite3_prepare_v2(db.loaded, "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
 	{
 		char prompt_text[512] = {0};
 		UserInput prompt(UIF_OLDPASS, "Raw Export");
 		while(sqlite3_step(stmt) == SQLITE_ROW)
 		{
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
-			PWClipEntry entry(&crypto_keys, db, key);
+			PWClipEntry entry(&crypto_keys, db.loaded, key);
 			bool first_prompt = true;
 			//Decrypt until success or fatal error
 			while(!entry.decrypt() && !entry.fatal())
@@ -52,11 +53,31 @@ void ExportDialog()
 			{
 				fprintf(f_out, "%s = '%s'\n", key, entry.valuePlain());
 			}
-			else break;
+			else
+			{
+				result = false;
+				break;
+			}
 		}
 		sqlite3_finalize(stmt);
 	}
 
 	//Cleanup
-	fclose(f_out);
+	if(result)
+	{
+		fclose(f_out);
+		TrayBalloon("Export complete.");
+	}
+	else
+	{
+		//Attempt to wipe file (not guaranteed)
+		long fs = ftell(f_out);
+		fseek(f_out, 0, SEEK_SET);
+		char buf[2048] = {0};
+		long written = 0;
+		while(written < fs) written += fwrite(buf, 1, sizeof(buf), f_out);
+		//Close and delete
+		fclose(f_out);
+		remove(out_path);
+	}
 }

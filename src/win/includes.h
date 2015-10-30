@@ -7,6 +7,7 @@ by: Connor Douthat
 #include "globals.h"
 
 #include "guiHelp.h"
+#include "MenuTree.h"
 #include "menuHelp.h"
 #include "trayHelp.h"
 

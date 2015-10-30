@@ -13,8 +13,8 @@ void RemoveDialog(PWClipEntry *entry)
 		if(entry->remove())
 		{
 			//Refresh menu
-			MenuCleanup();
-			MenuInit();
+			MenuReload();
+			TrayBalloon("Entry deleted.");
 		}
 	}
 }

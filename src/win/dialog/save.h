@@ -5,45 +5,53 @@ by: Connor Douthat
 */
 void SaveDialog()
 {
+	//Store plaintext from clipboard
+	char *clip_text = GetClipboardText();
+	if(!clip_text)
+	{
+		ErrorBox("Clipboard has no text");
+		return;
+	}
+	clip_sequence = GetClipboardSequenceNumber();
 	//Initial prompt is always needed
 	char prompt_title[512] = {0};
 	snprintf(prompt_title, sizeof(prompt_title), "Save New Entry");
-	UserInput prompt(UIF_GENERATE | UIF_NAME | UIF_NEWPASS, prompt_title);
+	UserInput prompt(UIF_NAME | UIF_NEWPASS, prompt_title);
 	if(prompt.get())
 	{
-		//Init new entry
-		PWClipEntry entry(&crypto_keys, db, prompt.name());
-		//Generate password if requested
-		if(prompt.generate())
-		{
-			char pass[GEN_PASS_SIZE + 1] = {0};
-			if(!RandText(pass, GEN_PASS_SIZE))
-			{
-				ErrorBox("Failed to generate password");
-				return;
-			}
-			if(!SetClipboardText(pass))
-			{
-				ErrorBox("Failed to set clipboard text");
-				return;
-			}
-			memset(pass, 0, sizeof(pass));
-		}
+		crypto_keys.nextEncrypt(new PasswordCipher(prompt.newpass()));
+		//Init new entry and assign ownership of plaintext
+		PWClipEntry entry(&crypto_keys, db.loaded, prompt.name());
 		//Confirm overwrite if value exists
+		bool result = true;
 		if(entry.exists())
 		{
 			char message[512] = {0};
 			snprintf(message, sizeof(message), "Are you sure you want to replace '%s'?", entry.name());
 			if(IDYES == MessageBox(hwnd_main, message, "Overwrite Warning", MB_YESNO))
 			{
-				if(!entry.remove()) return;
+				if(!entry.remove()) result = false;
 			}
-			else return;
+			else result = false;
 		}
-		//Update tray on success
-		if(entry.save())
+		if(result)
 		{
-			TraySuccessState();
+			entry.valuePlain(clip_text);
+			clip_text = NULL;
+			if(entry.save())
+			{
+				//Refresh menu
+				MenuReload();
+				//Update tray on success
+				TraySuccessState();
+				TrayBalloon("Entry successfully saved.");
+			}
 		}
+	}
+	if(clip_text)
+	{
+		//Wipe and free plaintext
+		memset(clip_text, 0, strlen(clip_text));
+		free(clip_text);
 	}
 }

@@ -11,7 +11,7 @@ The export feature provides a plaintext backup of all entries (to be stored in a
 
 Usage Tips
 ----------
-* Square brackets in entry names are treated as sub-menus. For example, an entry named "[finance][banks]mybank" will appear as "mybank" nested under "banks" nested under "finance".
+* Colons in entry names are treated as sub-menus. For example, an entry named "finance:banks:mybank" will appear as "mybank" nested under "banks" nested under "finance".
 * pwclip does not have a separate mechanism for usernames. In cases where usernames are hard to remember, creating two entries is recommended, such as "account-user" and "account-pass".
 
 Password Storage
@@ -24,4 +24,4 @@ If they do not exist, create 'bin' and 'local' directories in the pwclip directo
 
 Operating Systems
 -----------------
-The application will be limited to Windows (XP through 10) for the forseeable future. However, OSX and Linux support are long term goals.
+The application is under active development on Windows (XP through 10). OSX development is planned to begin soon.

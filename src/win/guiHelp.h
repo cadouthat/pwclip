@@ -19,6 +19,20 @@ bool BrowseForOutput(char *out, int out_max = 256)
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd_main;
 	ofn.lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
+	ofn.lpstrDefExt = "txt";
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+	ofn.lpstrFile = out;
+	ofn.nMaxFile = out_max;
+	return GetSaveFileName(&ofn);
+}
+bool BrowseForInput(char *out, int out_max = 256)
+{
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd_main;
+	ofn.lpstrFilter = "Database Files\0*.db\0All Files\0*.*\0\0";
+	ofn.lpstrDefExt = "db";
 	ofn.lpstrFile = out;
 	ofn.nMaxFile = out_max;
 	return GetOpenFileName(&ofn);

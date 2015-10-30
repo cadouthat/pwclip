@@ -30,6 +30,8 @@ void LoadDialog(PWClipEntry *entry)
 	//Update tray on success
 	if(result)
 	{
+		clip_sequence = GetClipboardSequenceNumber();
 		TraySuccessState();
+		TrayBalloon("Entry loaded to clipboard.");
 	}
 }

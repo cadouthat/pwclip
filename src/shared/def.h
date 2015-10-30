@@ -10,4 +10,6 @@ by: Connor Douthat
 #define PASSWORD_MAX 255
 #define ENTRY_NAME_MAX 50
 
+#define MAX_DB_HIST 10
+
 #define GEN_PASS_SIZE 16

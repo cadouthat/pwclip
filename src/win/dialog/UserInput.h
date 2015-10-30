@@ -9,15 +9,13 @@ by: Connor Douthat
 #define UIF_NEWPASS 8
 
 #define UIN_WIDTH 400
-#define UIN_HEIGHT 200
+#define UIN_DEF_HEIGHT 200
 #define UIN_PAD_X 30
-#define UIN_PAD_Y 20
-#define UIN_WIDTH_IN (UIN_WIDTH - UIN_PAD_X * 2)
-#define UIN_LINE_HEIGHT 24
+#define UIN_PAD_Y 12
 #define UIN_BUTTON_WIDTH 80
 #define UIN_BUTTON_HEIGHT 26
 
-enum { UIN_ID_NAME = 1, UIN_ID_OLDPASS, UIN_ID_NEWPASS, UIN_ID_CONFIRM, UIN_ID_OKAY, UIN_ID_CANCEL };
+enum { UIN_ID_INFO = 1, UIN_ID_ERROR, UIN_ID_GENERATE, UIN_ID_NAME, UIN_ID_OLDPASS, UIN_ID_NEWPASS, UIN_ID_CONFIRM, UIN_ID_OKAY, UIN_ID_CANCEL };
 
 class UserInput
 {
@@ -32,22 +30,10 @@ class UserInput
 	const char *error_text;
 
 	//Window state
-	const char *label_name;
-	const char *label_oldpass;
-	const char *label_newpass;
-	const char *label_confirm;
 	bool okay_flag;
-	HFONT font;
-	HWND hwnd_top,
-		hwnd_info,
-		hwnd_error,
-		hwnd_generate,
-		hwnd_name,
-		hwnd_oldpass,
-		hwnd_newpass,
-		hwnd_confirm,
-		hwnd_okay,
-		hwnd_cancel;
+	HFONT font, font_ital;
+	HWND hwnd_top;
+	int title_height;
 
 	//Output
 	bool val_generate;
@@ -59,53 +45,88 @@ class UserInput
 	{
 		RECT cr;
 		GetClientRect(hwnd_top, &cr);
-		int x = cr.left + (cr.right - cr.left - UIN_WIDTH_IN) / 2;
-		int y = UIN_PAD_Y - 10;
-		int spacing = UIN_LINE_HEIGHT * 3 / 2;
-		if(hwnd_info && info_text && *info_text)
+		if(!title_height) title_height = UIN_DEF_HEIGHT - (cr.bottom - cr.top);
+		int w = (UIN_WIDTH - UIN_PAD_X * 2);
+		int h = 24;
+		int x = cr.left + (cr.right - cr.left - w) / 2;
+		int y = UIN_PAD_Y;
+		int spacing_static = 26;
+		int spacing_edit = 36;
+		if(info_text && *info_text)
 		{
-			SetWindowPos(hwnd_info, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_INFO), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_static;
 		}
-		if(hwnd_error && error_text && *error_text)
+		if(error_text && *error_text)
 		{
-			SetWindowPos(hwnd_error, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_ERROR), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_static;
 		}
-		if(hwnd_generate)
+		if(flags & UIF_GENERATE)
 		{
-			SetWindowPos(hwnd_generate, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_GENERATE), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_edit;
 		}
-		if(hwnd_name)
+		if(flags & UIF_NAME)
 		{
-			SetWindowPos(hwnd_name, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_NAME), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_edit;
 		}
-		if(hwnd_oldpass)
+		if(flags & UIF_OLDPASS)
 		{
-			SetWindowPos(hwnd_oldpass, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_OLDPASS), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_edit;
 		}
-		if(hwnd_newpass)
+		if(flags & UIF_NEWPASS)
 		{
-			SetWindowPos(hwnd_newpass, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_NEWPASS), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_edit;
+			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_CONFIRM), NULL, x, y, w, h, SWP_NOZORDER);
+			y += spacing_edit;
 		}
-		if(hwnd_confirm)
-		{
-			SetWindowPos(hwnd_confirm, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-			y += spacing;
-		}
-		int btm_width = UIN_BUTTON_WIDTH * 2 + UIN_PAD_X;
-		x = (UIN_WIDTH - btm_width) / 2;
-		SetWindowPos(hwnd_okay, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		x = UIN_WIDTH - x - UIN_BUTTON_WIDTH;
-		SetWindowPos(hwnd_cancel, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		w = UIN_BUTTON_WIDTH;
+		h = UIN_BUTTON_HEIGHT;
+		x = cr.right - UIN_PAD_X - UIN_BUTTON_WIDTH * 2 - 10;
+		SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_OKAY), NULL, x, y, w, h, SWP_NOZORDER);
+		x += UIN_BUTTON_WIDTH + 10;
+		SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_CANCEL), NULL, x, y, w, h, SWP_NOZORDER);
 		y += UIN_BUTTON_HEIGHT + UIN_PAD_Y;
-		int ex_height = UIN_HEIGHT - (cr.bottom - cr.top);
-		SetWindowPos(hwnd_top, NULL, 0, 0, UIN_WIDTH, y + ex_height, SWP_NOMOVE | SWP_NOZORDER);
+		SetWindowPos(hwnd_top, NULL, 0, 0, UIN_WIDTH, y + title_height, SWP_NOMOVE | SWP_NOZORDER);
 		InvalidateRect(hwnd_top, NULL, true);
+	}
+	HWND child(int id, const char *text, const char *cn, DWORD st = 0, DWORD ex = 0)
+	{
+		HWND hwnd_sub = CreateWindowEx(ex, cn,
+				text ? text : "",
+				WS_CHILD | WS_VISIBLE | st,
+				0, 0, 0, 0,
+				hwnd_top, (HMENU)id, NULL, NULL);
+		PostMessage(hwnd_sub, WM_SETFONT, (WPARAM)font, true);
+		SetWindowLongPtr(hwnd_sub, GWL_USERDATA, (long)text);
+		return hwnd_sub;
+	}
+	HWND childStatic(int id, const char *text)
+	{
+		return child(id, text, "STATIC");
+	}
+	HWND childEdit(int id, const char *text, int max_len = PASSWORD_MAX)
+	{
+		HWND hwnd_sub = child(id, text, "EDIT", WS_TABSTOP, WS_EX_CLIENTEDGE);
+		PostMessage(hwnd_sub, EM_SETLIMITTEXT, max_len, 0);
+		PostMessage(hwnd_sub, WM_SETFONT, (WPARAM)font_ital, true);
+		return hwnd_sub;
+	}
+	HWND childCheckbox(int id, const char *text)
+	{
+		return child(id, text, "BUTTON", WS_TABSTOP | BS_AUTOCHECKBOX);
+	}
+	HWND childButton(int id, const char *text)
+	{
+		return child(id, text, "BUTTON", WS_TABSTOP | BS_PUSHBUTTON);
+	}
+	HWND childDefButton(int id, const char *text)
+	{
+		return child(id, text, "BUTTON", WS_TABSTOP | BS_DEFPUSHBUTTON);
 	}
 	bool open()
 	{
@@ -125,7 +146,7 @@ class UserInput
 			class_init = true;
 		}
 		//Load font
-		font = CreateFont(15, 0,
+		font = CreateFont(16, 0,
 			0, 0,
 			FW_NORMAL,
 			false,
@@ -134,7 +155,19 @@ class UserInput
 			ANSI_CHARSET,
 			OUT_DEFAULT_PRECIS,
 			CLIP_DEFAULT_PRECIS,
-			DEFAULT_QUALITY,
+			PROOF_QUALITY,
+			FF_DONTCARE,
+			"Arial");
+		font_ital = CreateFont(16, 0,
+			0, 0,
+			FW_NORMAL,
+			true,
+			false,
+			false,
+			ANSI_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			PROOF_QUALITY,
 			FF_DONTCARE,
 			"Arial");
 		//Create main window
@@ -142,91 +175,26 @@ class UserInput
 			title,
 			WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE,
 			CW_USEDEFAULT, CW_USEDEFAULT,
-			UIN_WIDTH, UIN_HEIGHT,
-			HWND_DESKTOP, NULL, hModule, NULL);
+			UIN_WIDTH, UIN_DEF_HEIGHT,
+			hwnd_main, NULL, hModule, NULL);
 		if(!hwnd_top) return false;
-		SendMessage(hwnd_top, WM_SETFONT, (WPARAM)font, true);
+		title_height = 0;
+		PostMessage(hwnd_top, WM_SETFONT, (WPARAM)font, true);
 		SetWindowLongPtr(hwnd_top, GWL_USERDATA, (long)this);
 		//Create controls
-		hwnd_info = CreateWindowEx(0, "STATIC",
-			info_text,
-			WS_CHILD | WS_VISIBLE,
-			0, 0,
-			UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-			hwnd_top, NULL, NULL, NULL);
-		SendMessage(hwnd_info, WM_SETFONT, (WPARAM)font, true);
-		hwnd_error = CreateWindowEx(0, "STATIC",
-			error_text,
-			WS_CHILD | WS_VISIBLE,
-			0, 0,
-			UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-			hwnd_top, NULL, NULL, NULL);
-		SendMessage(hwnd_error, WM_SETFONT, (WPARAM)font, true);
-		if(flags & UIF_GENERATE)
-		{
-			hwnd_generate = CreateWindowEx(0, "BUTTON",
-				"Generate random value (ignores current clipboard)",
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_AUTOCHECKBOX,
-				0, 0,
-				UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-				hwnd_top, NULL, NULL, NULL);
-			SendMessage(hwnd_generate, WM_SETFONT, (WPARAM)font, true);
-		}
-		if(flags & UIF_NAME)
-		{
-			label_name = "Entry Name";
-			hwnd_name = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT",
-				label_name,
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE,
-				0, 0,
-				UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-				hwnd_top, (HMENU)UIN_ID_NAME, NULL, NULL);
-			SendMessage(hwnd_name, WM_SETFONT, (WPARAM)font, true);
-		}
-		if(flags & UIF_OLDPASS)
-		{
-			label_oldpass = (flags & UIF_NEWPASS) ? "Current Password" : "Encryption Password";
-			hwnd_oldpass = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT",
-				label_oldpass,
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE,
-				0, 0,
-				UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-				hwnd_top, (HMENU)UIN_ID_OLDPASS, NULL, NULL);
-			SendMessage(hwnd_oldpass, WM_SETFONT, (WPARAM)font, true);
-		}
+		childStatic(UIN_ID_INFO, info_text);
+		childStatic(UIN_ID_ERROR, error_text);
+		if(flags & UIF_GENERATE) childCheckbox(UIN_ID_GENERATE, "Generate random value (ignores current clipboard)");
+		if(flags & UIF_NAME) childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
+		if(flags & UIF_OLDPASS) childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Encryption Password" : "Encryption Password");
 		if(flags & UIF_NEWPASS)
 		{
-			label_newpass = (flags & UIF_OLDPASS) ? "New Password" : "Encryption Password";
-			hwnd_newpass = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT",
-				label_newpass,
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE,
-				0, 0,
-				UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-				hwnd_top, (HMENU)UIN_ID_NEWPASS, NULL, NULL);
-			SendMessage(hwnd_newpass, WM_SETFONT, (WPARAM)font, true);
-			label_confirm = "Confirm Password";
-			hwnd_confirm = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT",
-				label_confirm,
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE,
-				0, 0,
-				UIN_WIDTH_IN, UIN_LINE_HEIGHT,
-				hwnd_top, (HMENU)UIN_ID_CONFIRM, NULL, NULL);
-			SendMessage(hwnd_confirm, WM_SETFONT, (WPARAM)font, true);
+			childEdit(UIN_ID_NEWPASS, "New Encryption Password");
+			childEdit(UIN_ID_CONFIRM, "Confirm Encryption Password");
 		}
-		hwnd_okay = CreateWindowEx(0, "BUTTON",
-			"Okay",
-			WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_DEFPUSHBUTTON,
-			0, 0,
-			UIN_BUTTON_WIDTH, UIN_BUTTON_HEIGHT,
-			hwnd_top, (HMENU)UIN_ID_OKAY, NULL, NULL);
-			SendMessage(hwnd_okay, WM_SETFONT, (WPARAM)font, true);
-		hwnd_cancel = CreateWindowEx(0, "BUTTON",
-			"Cancel",
-			WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON,
-			0, 0,
-			UIN_BUTTON_WIDTH, UIN_BUTTON_HEIGHT,
-			hwnd_top, (HMENU)UIN_ID_CANCEL, NULL, NULL);
-			SendMessage(hwnd_cancel, WM_SETFONT, (WPARAM)font, true);
+		childDefButton(UIN_ID_OKAY, "Okay");
+		childButton(UIN_ID_CANCEL, "Cancel");
+		//Finalize
 		UpdateLayout();
 		return true;
 	}
@@ -242,38 +210,48 @@ class UserInput
 			DeleteObject(font);
 			font = NULL;
 		}
-	}
-	const char *defaultLabel(int id)
-	{
-		switch(id)
+		if(font_ital)
 		{
-		case UIN_ID_NAME:
-			return label_name;
-		case UIN_ID_OLDPASS:
-			return label_oldpass;
-		case UIN_ID_NEWPASS:
-			return label_newpass;
-		case UIN_ID_CONFIRM:
-			return label_confirm;
-		default:
-			return "";
+			DeleteObject(font_ital);
+			font_ital = NULL;
 		}
 	}
 	void focus(int id, HWND hwnd)
 	{
-		char text[PASSWORD_MAX + ENTRY_NAME_MAX];
+		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
+		char text[PASSWORD_MAX + ENTRY_NAME_MAX + 1];
 		GetWindowText(hwnd, text, sizeof(text));
-		if(!strcmp(text, defaultLabel(id))) SetWindowText(hwnd, "");
-		if(id != UIN_ID_NAME) SendMessage(hwnd, EM_SETPASSWORDCHAR, '#', 0);
+		if(!strcmp(text, def_text))
+		{
+			SetWindowText(hwnd, "");
+			PostMessage(hwnd, WM_SETFONT, (WPARAM)font, true);
+		}
+		if(id != UIN_ID_NAME)
+		{
+			PostMessage(hwnd, EM_SETPASSWORDCHAR, 0x95, 0);
+		}
 	}
 	void unfocus(int id, HWND hwnd)
 	{
-		char text[PASSWORD_MAX + ENTRY_NAME_MAX];
+		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
+		char text[PASSWORD_MAX + ENTRY_NAME_MAX + 1];
 		GetWindowText(hwnd, text, sizeof(text));
 		if(!text[0])
 		{
-			SendMessage(hwnd, EM_SETPASSWORDCHAR, 0, 0);
-			SetWindowText(hwnd, defaultLabel(id));
+			PostMessage(hwnd, EM_SETPASSWORDCHAR, 0, 0);
+			SetWindowText(hwnd, def_text);
+			PostMessage(hwnd, WM_SETFONT, (WPARAM)font_ital, true);
+		}
+	}
+	void getValue(int id, char *out, int max)
+	{
+		HWND hwnd = GetDlgItem(hwnd_top, id);
+		if(!hwnd) return;
+		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
+		GetWindowText(hwnd, out, max);
+		if(def_text && !strcmp(out, def_text))
+		{
+			*out = 0;
 		}
 	}
 	LRESULT MessageProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -289,12 +267,80 @@ class UserInput
 			case EN_KILLFOCUS:
 				unfocus(LOWORD(wParam), (HWND)lParam);
 				break;
+			case BN_CLICKED:
+				switch(LOWORD(wParam))
+				{
+				case UIN_ID_OKAY:
+					okay_flag = true;
+					if(okay_flag && (flags & UIF_GENERATE))
+					{
+						val_generate = (BST_CHECKED == SendMessage(GetDlgItem(hwnd_top, UIN_ID_GENERATE), BM_GETCHECK, 0, 0));
+					}
+					if(okay_flag && (flags & UIF_NAME))
+					{
+						getValue(UIN_ID_NAME, val_name, sizeof(val_name));
+						if(!val_name[0])
+						{
+							setError("Entry name required");
+							okay_flag = false;
+						}
+					}
+					if(okay_flag && (flags & UIF_OLDPASS))
+					{
+						getValue(UIN_ID_OLDPASS, val_oldpass, sizeof(val_oldpass));
+					}
+					if(okay_flag && (flags & UIF_NEWPASS))
+					{
+						getValue(UIN_ID_NEWPASS, val_newpass, sizeof(val_newpass));
+						char tmp[PASSWORD_MAX + 1] = {0};
+						getValue(UIN_ID_CONFIRM, tmp, sizeof(tmp));
+						if(strcmp(tmp, val_newpass))
+						{
+							memset(val_newpass, 0, sizeof(val_newpass));
+							setError("Passwords do not match");
+							okay_flag = false;
+						}
+						else if(!val_newpass[0])
+						{
+							okay_flag = (IDYES == MessageBox(hwnd_top, "Encryption password is blank. Are you sure you want to store this entry without encryption?", "Confirm Empty Password", MB_YESNO));
+						}
+					}
+					break;
+				case UIN_ID_CANCEL:
+				case IDCANCEL:
+					DestroyWindow(hwnd_top);
+					break;
+				}
+				break;
 			}
 			break;
+		case WM_CTLCOLORSTATIC:
+		{
+			HWND hwnd_sub = (HWND)lParam;
+			HDC hdc = (HDC)wParam;
+			HBRUSH hbr = GetSysColorBrush(COLOR_BTNFACE);
+			LOGBRUSH lb;
+			GetObject(hbr, sizeof(lb), &lb);
+			if(hwnd_sub == GetDlgItem(hwnd_top, UIN_ID_ERROR))
+			{
+				SetTextColor(hdc, RGB(240, 50, 50));
+			}
+			SetBkColor(hdc, lb.lbColor);
+			return (LRESULT)hbr;
+			break;
+		}
+		case DM_GETDEFID:
+			return MAKELPARAM(UIN_ID_OKAY, DC_HASDEFID);
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
 		return 0;
+	}
+	static LRESULT CALLBACK StaticMessageProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		UserInput *obj = (UserInput*)GetWindowLong(hwnd, GWL_USERDATA);
+		if(obj) return obj->MessageProc(hwnd, msg, wParam, lParam);
+		else return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 
 public:
@@ -316,18 +362,18 @@ public:
 	void setInfo(const char *text)
 	{
 		info_text = text;
-		if(hwnd_info)
+		if(hwnd_top)
 		{
-			SetWindowText(hwnd_info, text);
+			SetWindowText(GetDlgItem(hwnd_top, UIN_ID_INFO), text);
 			UpdateLayout();
 		}
 	}
 	void setError(const char *text)
 	{
 		error_text = text;
-		if(hwnd_error)
+		if(hwnd_top)
 		{
-			SetWindowText(hwnd_error, text);
+			SetWindowText(GetDlgItem(hwnd_top, UIN_ID_ERROR), text);
 			UpdateLayout();
 		}
 	}
@@ -345,7 +391,7 @@ public:
 		else
 		{
 			//Re-focus password input
-			if(hwnd_oldpass) SetFocus(hwnd_oldpass);
+			if(flags & UIF_OLDPASS) SetFocus(GetDlgItem(hwnd_top, UIN_ID_OLDPASS));
 		}
 
 		//Message loop
@@ -354,17 +400,14 @@ public:
 		while(!okay_flag && GetMessage(&msg, hwnd_top, 0, 0) > 0)
 		{
 			//Process message
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if(!IsDialogMessage(hwnd_top, &msg))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 
 		return okay_flag;
-	}
-	static LRESULT CALLBACK StaticMessageProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-	{
-		UserInput *obj = (UserInput*)GetWindowLong(hwnd, GWL_USERDATA);
-		if(obj) return obj->MessageProc(hwnd, msg, wParam, lParam);
-		else return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 };
 
