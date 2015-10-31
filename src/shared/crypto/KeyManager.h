@@ -50,7 +50,8 @@ public:
 		//Always get explicit key for encryption
 		if(!next_encrypt_key) return NULL;
 		char *result = next_encrypt_key->encrypt(plain, iv_out);
-		delete next_encrypt_key;
+		if(result) keys.push_back(next_encrypt_key);
+		else delete next_encrypt_key;
 		next_encrypt_key = NULL;
 		return result;
 	}
