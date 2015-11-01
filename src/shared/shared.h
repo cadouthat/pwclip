@@ -8,6 +8,7 @@ by: Connor Douthat
 
 void ErrorBox(const char *format, ...);
 
+#include "stringHelp.h"
 #include "clipHelp.h"
 #include "envHelp.h"
 

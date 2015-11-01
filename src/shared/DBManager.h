@@ -7,7 +7,7 @@ class DBManager
 {
 	bool defaultPath(char *out)
 	{
-		if(!LocalUserAppData("pwclip", out))
+		if(!LocalUserAppData(APPDATA_NAME, out))
 		{
 			ErrorBox("No suitable location for application data");
 			return false;
@@ -17,7 +17,7 @@ class DBManager
 	}
 	bool historyPath(char *out)
 	{
-		if(!LocalUserAppData("pwclip", out))
+		if(!LocalUserAppData(APPDATA_NAME, out))
 		{
 			ErrorBox("No suitable location for application data");
 			return false;
@@ -33,7 +33,7 @@ class DBManager
 			history.pop_back();
 		}
 	}
-	void addHistory(const char *path)
+	void insertHistory(const char *path)
 	{
 		//Push new value into history
 		history.insert(history.begin(), strdup(path));
@@ -113,7 +113,7 @@ public:
 				if(line[len - 1] == '\r') line[--len] = 0;
 				if(len <= 0) continue;
 				//Skip missing files
-				if(FileExists(line)) addHistory(line);
+				if(FileExists(line)) history.push_back(strdup(line));
 			}
 			fclose(f_hist);
 		}
@@ -129,7 +129,7 @@ public:
 			char def_path[256] = {0};
 			if(defaultPath(def_path) && open(def_path))
 			{
-				addHistory(def_path);
+				insertHistory(def_path);
 			}
 		}
 		return loaded != NULL;
@@ -138,7 +138,7 @@ public:
 	{
 		if(open(path))
 		{
-			addHistory(path);
+			insertHistory(path);
 			return true;
 		}
 		else return false;

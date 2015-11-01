@@ -66,8 +66,9 @@ bool TrayNormalState()
 	strcpy(nid.szTip, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
-bool TraySuccessState()
+bool TrayWipeState()
 {
+	if(!clip_wipe_delay) return false;
 	//Set timer to wipe clipboard
 	KillTimer(hwnd_main, TIMER_WIPE);
 	SetTimer(hwnd_main, TIMER_WIPE, clip_wipe_delay * 1000, NULL);
@@ -80,10 +81,7 @@ bool TraySuccessState()
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_ICON;
 	nid.hIcon = LoadIcon(NULL, IDI_WARNING);
-	if(!config_keep_clip)
-	{
-		strcpy(nid.szTip, "The clipboard will be wiped shortly..");
-	}
+	strcpy(nid.szTip, "The clipboard will be wiped shortly..");
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 bool TrayCleanup()

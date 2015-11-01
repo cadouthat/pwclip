@@ -11,8 +11,11 @@ class KeyManager
 	std::vector<PasswordCipher*> keys;
 
 public:
+	bool keep_keys;
+
 	KeyManager()
 	{
+		keep_keys = true;
 		next_encrypt_key = NULL;
 		next_decrypt_key = NULL;
 		//Attempt a blank password by default
@@ -50,8 +53,16 @@ public:
 		//Always get explicit key for encryption
 		if(!next_encrypt_key) return NULL;
 		char *result = next_encrypt_key->encrypt(plain, iv_out);
-		if(result) keys.push_back(next_encrypt_key);
-		else delete next_encrypt_key;
+		if(keep_keys && result)
+		{
+			//Save key for later
+			keys.push_back(next_encrypt_key);
+		}
+		else
+		{
+			//Discard key
+			delete next_encrypt_key;
+		}
 		next_encrypt_key = NULL;
 		return result;
 	}
@@ -61,14 +72,15 @@ public:
 		//Attempt queued key (if present)
 		if(next_decrypt_key)
 		{
-			if(result = next_decrypt_key->decrypt(enc, iv))
+			result = next_decrypt_key->decrypt(enc, iv);
+			if(keep_keys && result)
 			{
-				//Save successful key for later
+				//Save key for later
 				keys.push_back(next_decrypt_key);
 			}
 			else
 			{
-				//Destroy failed key
+				//Discard key
 				delete next_decrypt_key;
 			}
 			next_decrypt_key = NULL;

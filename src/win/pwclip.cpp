@@ -12,6 +12,12 @@ by: Connor Douthat
 int main(int argc, char **argv)
 {
 	//Settings and global init
+	char config_path[256] = {0};
+	if(LocalUserAppData(APPDATA_NAME, config_path))
+	{
+		strcat(config_path, "pwclip.ini");
+		LoadConfig(config_path);
+	}
 	if(!db.load())
 	{
 		ErrorBox("Failed to open/create database");

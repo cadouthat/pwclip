@@ -5,7 +5,6 @@ by: Connor Douthat
 */
 //Config
 int clip_wipe_delay = 10;
-bool config_keep_clip = false;
 std::vector<char[256]> db_hist;
 
 //Runtime

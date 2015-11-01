@@ -43,7 +43,7 @@ void SaveDialog()
 				//Refresh menu
 				MenuReload();
 				//Update tray on success
-				TraySuccessState();
+				TrayWipeState();
 				TrayBalloon("Entry successfully saved.");
 			}
 		}

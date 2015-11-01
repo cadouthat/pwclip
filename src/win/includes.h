@@ -6,6 +6,8 @@ by: Connor Douthat
 #include "guiConstants.h"
 #include "globals.h"
 
+#include "config.h"
+
 #include "guiHelp.h"
 #include "MenuTree.h"
 #include "menuHelp.h"

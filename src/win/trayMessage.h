@@ -84,8 +84,8 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		switch(wParam)
 		{
 		case TIMER_WIPE:
-			//Wipe clipboard if configured
-			if(!config_keep_clip && GetClipboardSequenceNumber() == clip_sequence)
+			//Wipe clipboard if it hasn't changed
+			if(GetClipboardSequenceNumber() == clip_sequence)
 			{
 				if(!WipeClipboardText()) ErrorBox("Failed to wipe clipboard");
 			}
