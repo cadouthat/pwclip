@@ -3,9 +3,9 @@ Lightweight local password vault
 
 Overview
 --------
-Passwords are transported to and from the vault via the clipboard. Each entry is referenced with a user-defined nickname, and encrypted with a "master" password. Users may choose to use the same master password for most or all entries.
+A pwclip vault contains password entries referenced by user-defined nicknames. Each vault has a master password for encryption, which is needed to open the vault and view entries. After opening a vault, the decryption key is stored in memory until pwclip is closed, so the master password is only needed once.
 
-While pwclip is running, an icon is added to the system tray for convenient access. Decryption keys are stored in memory until pwclip is closed, so users don't need to enter their master password(s) every time they load an entry.
+The clipboard is used to move passwords in and out of vaults. While pwclip is running, an icon is added to the system tray for quick access to load and save passwords, switch vaults, generate a random password, and more.
 
 The export feature provides a plaintext backup of all entries (to be stored in a secure location) in case of emergencies, such as data loss or forgotten master passwords.
 
@@ -13,10 +13,11 @@ Usage Tips
 ----------
 * Colons in entry names are treated as sub-menus. For example, an entry named "finance:banks:mybank" will appear as "mybank" nested under "banks" nested under "finance".
 * pwclip does not have a separate mechanism for usernames. In cases where usernames are hard to remember, creating two entries is recommended, such as "account-user" and "account-pass".
+* For configuration, see pwclip.ini
 
 Password Storage
 ----------------
-The password database is stored as an sqlite file, in the current user's Local Application Data directory by default. Entry nicknames are stored as plaintext in the database. Stored passwords are encrypted using AES-128 with a 256 bit key derived from the encryption password using PBKDF2-SHA256. Each password is encrypted independently with a random IV.
+The password database is stored as an sqlite file. Entry names and passwords are encrypted using AES-128 with a 256 bit key derived from the master password using PBKDF2-SHA256. Each entry is encrypted independently with a random IV.
 
 Building
 --------

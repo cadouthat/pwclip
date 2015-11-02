@@ -6,7 +6,7 @@ by: Connor Douthat
 
 class PWClipEntry
 {
-	KeyManager *crypto;
+	PasswordCipher *key;
 	sqlite3 *db;
 	bool fatal_flag;
 	const char *pk;
@@ -44,11 +44,11 @@ class PWClipEntry
 		clearPlaintext();
 		clearValue();
 	}
-	bool encrypt()
+	bool encrypt(PasswordCipher *key)
 	{
 		clearValue();
 		//Encrypt plaintext from clipboard
-		value = crypto->encrypt(value_plain, iv_raw);
+		value = key->encrypt(value_plain, iv_raw);
 		//Verify encryption success
 		if(!value) return false;
 		//Convert IV to hex encoding
@@ -64,10 +64,9 @@ class PWClipEntry
 	}
 
 public:
-	PWClipEntry(KeyManager *crypto_in, sqlite3 *db_in, const char *pk_in)
+	PWClipEntry(sqlite3 *db_in, const char *pk_in)
 	{
 		memset(this, 0, sizeof(*this));
-		crypto = crypto_in;
 		db = db_in;
 		pk = pk_in;
 		//Find existing value (if any)
@@ -109,7 +108,7 @@ public:
 		fatal_flag = false;
 		return prev;
 	}
-	bool decrypt()
+	bool decrypt(PasswordCipher *key)
 	{
 		//Existing plaintext can be reused
 		if(value_plain) return true;
@@ -123,24 +122,10 @@ public:
 		//Decode IV to binary
 		hex2bin(iv, iv_raw, sizeof(iv_raw));
 		//Decrypt value
-		value_plain = crypto->decrypt(value, iv_raw);
+		value_plain = key->decrypt(value, iv_raw);
 		return (value_plain != NULL);
 	}
-	bool load()
-	{
-		//Decrypt value to plaintext
-		if(!decrypt()) return false;
-		//Move plaintext to clipboard
-		bool result = SetClipboardText(value_plain);
-		clearPlaintext();
-		if(!result)
-		{
-			ErrorBox("Failed to set clipboard text");
-			fatal_flag = true;
-		}
-		return result;
-	}
-	bool save()
+	bool save(PasswordCipher *key)
 	{
 		//No implicit overwrite
 		if(exists())
@@ -150,7 +135,7 @@ public:
 			return false;
 		}
 		if(!value_plain) return false;
-		if(!encrypt()) return false;
+		if(!encrypt(key)) return false;
 		clearPlaintext();
 		//Attempt insert
 		bool insert_ok = false;
@@ -174,17 +159,17 @@ public:
 		}
 		return insert_ok;
 	}
-	bool reEncrypt()
+	bool reEncrypt(PasswordCipher *decrypt_key, PasswordCipher *encrypt_key)
 	{
 		//Decrypt
-		if(!decrypt()) return false;
+		if(!decrypt(decrypt_key)) return false;
 		//Displace original encrypted value for now
 		char *value_old = value;
 		char *iv_old = iv;
 		value = NULL;
 		iv = NULL;
 		//Re-encrypt with appropriate prompt
-		bool result = encrypt();
+		bool result = encrypt(encrypt_key);
 		clearPlaintext();
 		if(result)
 		{

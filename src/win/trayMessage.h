@@ -15,16 +15,16 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			int id = LOWORD(wParam);
 			if(id >= TRAY_KEY && id - TRAY_KEY < menu_keys.size())
 			{
+				//Shouldn't be here without vault open
+				if(!db.topDB()) break;
+				//Initialize selected entry
 				id -= TRAY_KEY;
 				char *name = menu_keys[id];
-				PWClipEntry entry(&crypto_keys, db.loaded, name);
+				PWClipEntry entry(db.topDB(), name);
+				//Determine appropriate action
 				if(id < recall_menu_end)
 				{
 					LoadDialog(&entry);
-				}
-				else if(id < encrypt_menu_end)
-				{
-					EncryptDialog(&entry);
 				}
 				else if(id < remove_menu_end)
 				{
@@ -34,14 +34,10 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			else if(id >= TRAY_SWITCH_DB && id - TRAY_SWITCH_DB < MAX_DB_HIST)
 			{
 				//Open db from history
-				if(db.push(id - TRAY_SWITCH_DB)) MenuReload();
+				OpenVaultDialog(id - TRAY_SWITCH_DB);
 			}
 			else switch(id)
 			{
-			case TRAY_CLEAR_DB:
-				db.resetHistory();
-				MenuReload();
-				break;
 			case TRAY_BROWSE_DB:
 				//Browse for db to open
 				char db_path[256];
@@ -49,8 +45,15 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				if(BrowseForInput(db_path))
 				{
 					//Open selected db
-					if(db.push(db_path)) MenuReload();
+					OpenVaultDialog(0, db_path);
 				}
+				break;
+			case TRAY_CLOSE_DB:
+				db.close();
+				MenuReload();
+				break;
+			case TRAY_SET_MASTER:
+				MasterPassDialog();
 				break;
 			case TRAY_GENERATE:
 				GeneratePassword();

@@ -1,12 +1,12 @@
 /*
-Interaction to re-encrypt an entry
+Interaction to change master password
 by: Connor Douthat
 10/24/2015
 */
-void EncryptDialog(PWClipEntry *entry)
+void MasterPassDialog()
 {
 	//Attempt pre-decryption with known keys
-	bool need_pass = !entry->decrypt();
+	/*bool need_pass = !entry->decrypt();
 	if(entry->fatal()) return;
 	//Prompt for new password, and old password if needed
 	char prompt_title[512] = {0};
@@ -29,5 +29,5 @@ void EncryptDialog(PWClipEntry *entry)
 			TrayBalloon("Entry successfully updated.");
 			break;
 		}
-	}
+	}*/
 }

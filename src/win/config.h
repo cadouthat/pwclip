@@ -25,7 +25,7 @@ bool LoadConfig(const char *path)
 		}
 		else if(!stricmp(line, "keep_keys"))
 		{
-			crypto_keys.keep_keys = (0 == stricmp(value, "true"));
+			keep_keys = (0 == stricmp(value, "true"));
 		}
 	}
 	fclose(f);

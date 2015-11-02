@@ -5,6 +5,10 @@ by: Connor Douthat
 */
 void ExportDialog()
 {
+	//Make sure vault is open
+	OpenVaultDialog(0);
+	if(!db.topDB() || !db.topKey()) return;
+
 	//Prompt for output path
 	char out_path[256] = {0};
 	if(!BrowseForOutput(out_path)) return;
@@ -20,41 +24,22 @@ void ExportDialog()
 	//Perform dump
 	bool result = true;
 	sqlite3_stmt *stmt;
-	if(SQLITE_OK == sqlite3_prepare_v2(db.loaded, "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
+	if(SQLITE_OK == sqlite3_prepare_v2(db.topDB(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
 	{
-		char prompt_text[512] = {0};
-		UserInput prompt(UIF_OLDPASS, "Raw Export");
 		while(sqlite3_step(stmt) == SQLITE_ROW)
 		{
+			//Load entry
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
-			PWClipEntry entry(&crypto_keys, db.loaded, key);
-			bool first_prompt = true;
-			//Decrypt until success or fatal error
-			while(!entry.decrypt() && !entry.fatal())
+			PWClipEntry entry(db.topDB(), key);
+			//Verify decryption
+			if(entry.decrypt(db.topKey()) && entry.valuePlain())
 			{
-				//User needs to know entry being decrypted
-				snprintf(prompt_text, sizeof(prompt_text), "Current entry: '%s'", key);
-				prompt.setInfo(prompt_text);
-				//Failure feedback
-				if(!first_prompt)
-				{
-					prompt.setError("Decryption failed, please try again.");
-				}
-				else first_prompt = false;
-				//Prompt for new password
-				if(prompt.get())
-				{
-					crypto_keys.nextDecrypt(new PasswordCipher(prompt.oldpass()));
-				}
-				else break;
-			}
-			//Write to output
-			if(entry.valuePlain())
-			{
+				//Write to output
 				fprintf(f_out, "%s = '%s'\n", key, entry.valuePlain());
 			}
 			else
 			{
+				ErrorBox("Failed to decrypt '%s'", key);
 				result = false;
 				break;
 			}

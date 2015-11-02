@@ -14,9 +14,10 @@ by: Connor Douthat
 #include "trayHelp.h"
 
 #include "dialog/UserInput.h"
-#include "dialog/load.h"
+#include "dialog/openVault.h"
+#include "dialog/masterPass.h"
 #include "dialog/save.h"
-#include "dialog/encrypt.h"
+#include "dialog/load.h"
 #include "dialog/remove.h"
 #include "dialog/export.h"
 

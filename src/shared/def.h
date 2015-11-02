@@ -15,3 +15,5 @@ by: Connor Douthat
 #define MAX_DB_HIST 10
 
 #define GEN_PASS_SIZE 16
+
+#define SCHEMA_SQL "CREATE TABLE `entries` (`key` VARCHAR(50) PRIMARY KEY, `value` TEXT NOT NULL, `iv` TEXT NOT NULL)"

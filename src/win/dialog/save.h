@@ -5,6 +5,10 @@ by: Connor Douthat
 */
 void SaveDialog()
 {
+	//Make sure vault is open
+	OpenVaultDialog(0);
+	if(!db.topDB() || !db.topKey()) return;
+
 	//Store plaintext from clipboard
 	char *clip_text = GetClipboardText();
 	if(!clip_text)
@@ -13,15 +17,12 @@ void SaveDialog()
 		return;
 	}
 	clip_sequence = GetClipboardSequenceNumber();
-	//Initial prompt is always needed
-	char prompt_title[512] = {0};
-	snprintf(prompt_title, sizeof(prompt_title), "Save New Entry");
-	UserInput prompt(UIF_NAME | UIF_NEWPASS, prompt_title);
+
+	//Prompt for name
+	UserInput prompt(UIF_NAME, "Save New Entry");
 	if(prompt.get())
 	{
-		crypto_keys.nextEncrypt(new PasswordCipher(prompt.newpass()));
-		//Init new entry and assign ownership of plaintext
-		PWClipEntry entry(&crypto_keys, db.loaded, prompt.name());
+		PWClipEntry entry(db.topDB(), prompt.name());
 		//Confirm overwrite if value exists
 		bool result = true;
 		if(entry.exists())
@@ -36,9 +37,10 @@ void SaveDialog()
 		}
 		if(result)
 		{
+			//Assign ownership of plaintext
 			entry.valuePlain(clip_text);
 			clip_text = NULL;
-			if(entry.save())
+			if(entry.save(db.topKey()))
 			{
 				//Refresh menu
 				MenuReload();
@@ -48,6 +50,7 @@ void SaveDialog()
 			}
 		}
 	}
+
 	if(clip_text)
 	{
 		//Wipe and free plaintext

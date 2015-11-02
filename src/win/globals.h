@@ -5,11 +5,11 @@ by: Connor Douthat
 */
 //Config
 int clip_wipe_delay = 10;
+bool keep_keys = true;
 std::vector<char[256]> db_hist;
 
 //Runtime
-DBManager db;
-KeyManager crypto_keys;
+VaultManager db;
 DWORD clip_sequence;
 
 //GUI
@@ -19,5 +19,4 @@ int tray_state = 0;
 
 std::vector<char*> menu_keys;
 unsigned int recall_menu_end = 0;
-unsigned int encrypt_menu_end = 0;
 unsigned int remove_menu_end = 0;

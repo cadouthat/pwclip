@@ -18,11 +18,7 @@ int main(int argc, char **argv)
 		strcat(config_path, "pwclip.ini");
 		LoadConfig(config_path);
 	}
-	if(!db.load())
-	{
-		ErrorBox("Failed to open/create database");
-		return 1;
-	}
+	db.readHistory();
 
 	//GUI init
 	INITCOMMONCONTROLSEX icex = {0};

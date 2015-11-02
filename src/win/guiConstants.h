@@ -10,11 +10,12 @@ by: Connor Douthat
 
 #define TRAY_EXIT 1
 #define TRAY_EXPORT 2
-#define TRAY_GENERATE 3
-#define TRAY_SAVE 4
-#define TRAY_CLEAR_DB 5
-#define TRAY_BROWSE_DB 6
-#define TRAY_SWITCH_DB 7
+#define TRAY_SET_MASTER 3
+#define TRAY_GENERATE 4
+#define TRAY_SAVE 5
+#define TRAY_CLOSE_DB 6
+#define TRAY_BROWSE_DB 7
+#define TRAY_SWITCH_DB 8
 #define TRAY_KEY (TRAY_SWITCH_DB + MAX_DB_HIST + 1)
 
 #define TIMER_WIPE 1
