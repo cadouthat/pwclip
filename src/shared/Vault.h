@@ -59,8 +59,8 @@ public:
 	{
 		//Already open
 		if(db_handle) return true;
-		//No key provided
-		if(!db_key) return false;
+		//Default to blank password
+		if(!db_key) db_key = new PasswordCipher("");
 		//Check for existing file
 		bool needs_init = !FileExists(db_path);
 		//Open database
