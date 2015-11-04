@@ -48,6 +48,12 @@ public:
 		if(!history.size()) return NULL;
 		return history.front()->key();
 	}
+	bool topKey(PasswordCipher *key_in)
+	{
+		if(!history.size()) return false;
+		history.front()->key(key_in);
+		return true;
+	}
 	void close()
 	{
 		for(int i = 0; i < history.size(); i++)

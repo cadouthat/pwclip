@@ -186,11 +186,11 @@ class UserInput
 		childStatic(UIN_ID_ERROR, error_text);
 		if(flags & UIF_GENERATE) childCheckbox(UIN_ID_GENERATE, "Generate random value (ignores current clipboard)");
 		if(flags & UIF_NAME) childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
-		if(flags & UIF_OLDPASS) childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Encryption Password" : "Encryption Password");
+		if(flags & UIF_OLDPASS) childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Master Password" : "Master Password");
 		if(flags & UIF_NEWPASS)
 		{
-			childEdit(UIN_ID_NEWPASS, "New Encryption Password");
-			childEdit(UIN_ID_CONFIRM, "Confirm Encryption Password");
+			childEdit(UIN_ID_NEWPASS, "New Master Password");
+			childEdit(UIN_ID_CONFIRM, "Confirm Master Password");
 		}
 		childDefButton(UIN_ID_OKAY, "Okay");
 		childButton(UIN_ID_CANCEL, "Cancel");
@@ -302,7 +302,7 @@ class UserInput
 						}
 						else if(!val_newpass[0])
 						{
-							okay_flag = (IDYES == MessageBox(hwnd_top, "Encryption password is blank. Are you sure you want to store this entry without encryption?", "Confirm Empty Password", MB_YESNO));
+							okay_flag = (IDYES == MessageBox(hwnd_top, "Master password is blank, encryption will not be secure. Are you sure you want to proceed?", "Confirm Empty Password", MB_YESNO));
 						}
 					}
 					break;

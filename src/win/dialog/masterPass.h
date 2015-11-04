@@ -3,31 +3,57 @@ Interaction to change master password
 by: Connor Douthat
 10/24/2015
 */
+bool ReEncryptAll(PasswordCipher *old_key, PasswordCipher *new_key, bool verbose = true);
+
 void MasterPassDialog()
 {
-	//Attempt pre-decryption with known keys
-	/*bool need_pass = !entry->decrypt();
-	if(entry->fatal()) return;
-	//Prompt for new password, and old password if needed
-	char prompt_title[512] = {0};
-	snprintf(prompt_title, sizeof(prompt_title), "Recrypt '%s'", entry->name());
-	UserInput prompt(UIF_NEWPASS | (need_pass ? UIF_OLDPASS : 0), prompt_title);
-	while(prompt.get())
+	//Make sure vault is open
+	OpenVaultDialog(0);
+	if(!db.topDB() || !db.topKey()) return;
+
+	//Prompt for new password
+	UserInput prompt(UIF_NEWPASS, "Change Master Password");
+	if(prompt.get())
 	{
-		//Process prompt input
-		if(need_pass) crypto_keys.nextDecrypt(new PasswordCipher(prompt.oldpass()));
-		crypto_keys.nextEncrypt(new PasswordCipher(prompt.newpass()));
-		//Attempt recrypt (until fatal or successful)
-		if(!entry->reEncrypt())
+		//Update all entries with new key
+		PasswordCipher *new_key = new PasswordCipher(prompt.newpass());
+		if(ReEncryptAll(db.topKey(), new_key))
 		{
-			if(entry->fatal()) break;
-			//Feedback for next attempt
-			prompt.setError("Decryption failed, please try again.");
+			//Transfer key to vault
+			db.topKey(new_key);
+			TrayBalloon("Master password successfully changed.");
 		}
 		else
 		{
-			TrayBalloon("Entry successfully updated.");
-			break;
+			//Roll back changes
+			ReEncryptAll(new_key, db.topKey(), false);
+			delete new_key;
 		}
-	}*/
+	}
+}
+
+bool ReEncryptAll(PasswordCipher *old_key, PasswordCipher *new_key, bool verbose)
+{
+	//Query all entries
+	bool result = true;
+	sqlite3_stmt *stmt;
+	if(SQLITE_OK == sqlite3_prepare_v2(db.topDB(), "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
+	{
+		while(sqlite3_step(stmt) == SQLITE_ROW)
+		{
+			//Load entry
+			const char *key = (const char*)sqlite3_column_text(stmt, 0);
+			PWClipEntry entry(db.topDB(), key);
+			//Update entry
+			if(!entry.reEncrypt(old_key, new_key))
+			{
+				//Abort
+				if(verbose) ErrorBox("Failed to update '%s'", key);
+				result = false;
+				break;
+			}
+		}
+		sqlite3_finalize(stmt);
+	}
+	return result;
 }
