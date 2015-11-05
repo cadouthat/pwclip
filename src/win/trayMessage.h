@@ -16,11 +16,11 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			if(id >= TRAY_KEY && id - TRAY_KEY < menu_keys.size())
 			{
 				//Shouldn't be here without vault open
-				if(!db.topDB()) break;
+				if(!vaults.topOpen()) break;
 				//Initialize selected entry
 				id -= TRAY_KEY;
 				char *name = menu_keys[id];
-				PWClipEntry entry(db.topDB(), name);
+				PWClipEntry entry(vaults.top()->db(), name);
 				//Determine appropriate action
 				if(id < recall_menu_end)
 				{
@@ -49,7 +49,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				}
 				break;
 			case TRAY_CLOSE_DB:
-				db.close();
+				vaults.close();
 				MenuReload();
 				break;
 			case TRAY_SET_MASTER:

@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 		strcat(config_path, "pwclip.ini");
 		LoadConfig(config_path);
 	}
-	db.readHistory();
+	vaults.readHistory();
 
 	//GUI init
 	INITCOMMONCONTROLSEX icex = {0};
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	TrayCleanup();
 	MenuCleanup();
 	//GLobal cleanup
-	db.writeHistory();
-	db.close();
+	vaults.writeHistory();
+	vaults.close();
 	return 0;
 }

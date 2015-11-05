@@ -7,7 +7,7 @@ void SaveDialog()
 {
 	//Make sure vault is open
 	OpenVaultDialog(0);
-	if(!db.topDB() || !db.topKey()) return;
+	if(!vaults.topOpen()) return;
 
 	//Store plaintext from clipboard
 	char *clip_text = GetClipboardText();
@@ -22,7 +22,7 @@ void SaveDialog()
 	UserInput prompt(UIF_NAME, "Save New Entry");
 	if(prompt.get())
 	{
-		PWClipEntry entry(db.topDB(), prompt.name());
+		PWClipEntry entry(vaults.top()->db(), prompt.name());
 		//Confirm overwrite if value exists
 		bool result = true;
 		if(entry.exists())
@@ -40,7 +40,7 @@ void SaveDialog()
 			//Assign ownership of plaintext
 			entry.valuePlain(clip_text);
 			clip_text = NULL;
-			if(entry.save(db.topKey()))
+			if(entry.save(vaults.top()->key()))
 			{
 				//Refresh menu
 				MenuReload();

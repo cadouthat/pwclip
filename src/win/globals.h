@@ -5,11 +5,10 @@ by: Connor Douthat
 */
 //Config
 int clip_wipe_delay = 10;
-bool keep_keys = true;
 std::vector<char[256]> db_hist;
 
 //Runtime
-VaultManager db;
+VaultManager vaults;
 DWORD clip_sequence;
 
 //GUI

@@ -38,21 +38,15 @@ public:
 			history.pop_back();
 		}
 	}
-	sqlite3 *topDB()
+	Vault *top()
 	{
 		if(!history.size()) return NULL;
-		return history.front()->db();
+		return history.front();
 	}
-	PasswordCipher *topKey()
+	bool topOpen()
 	{
-		if(!history.size()) return NULL;
-		return history.front()->key();
-	}
-	bool topKey(PasswordCipher *key_in)
-	{
-		if(!history.size()) return false;
-		history.front()->key(key_in);
-		return true;
+		if(!top()) return false;
+		return top()->isOpen();
 	}
 	void close()
 	{
@@ -61,49 +55,26 @@ public:
 			history[i]->close();
 		}
 	}
-	bool open(const char *path, PasswordCipher *key, bool *fatal)
+	void push(Vault *vault)
 	{
-		//Populate new vault object
-		Vault *tmp = new Vault(path);
-		tmp->key(key);
-		//Attempt opening
-		if(!tmp->open())
+		//Remove duplicates
+		for(int i = 0; i < history.size();)
 		{
-			//Abort and discard
-			*fatal = tmp->fatal();
-			delete tmp;
-			return false;
+			if(!stricmp(history[i]->path(), vault->path()))
+			{
+				delete history[i];
+				history.erase(history.begin() + i);
+			}
+			else i++;
 		}
 		//Push new value into history
-		history.insert(history.begin(), tmp);
+		history.insert(history.begin(), vault);
 		//Trim back to limit
 		while(history.size() > MAX_DB_HIST)
 		{
 			delete history.back();
 			history.pop_back();
 		}
-		return true;
-	}
-	bool open(int i, PasswordCipher *key, bool *fatal)
-	{
-		//Get vault from history
-		Vault *tmp = history[i];
-		//If not already open
-		if(!tmp->db())
-		{
-			//Attempt opening
-			tmp->key(key);
-			if(!tmp->open())
-			{
-				//Abort
-				*fatal = tmp->fatal();
-				return false;
-			}
-		}
-		//Move to front
-		history.erase(history.begin() + i);
-		history.insert(history.begin(), tmp);
-		return true;
 	}
 	bool readHistory()
 	{

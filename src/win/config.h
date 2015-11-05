@@ -23,10 +23,6 @@ bool LoadConfig(const char *path)
 		{
 			clip_wipe_delay = atoi(value);
 		}
-		else if(!stricmp(line, "keep_keys"))
-		{
-			keep_keys = (0 == stricmp(value, "true"));
-		}
 	}
 	fclose(f);
 	return true;

@@ -7,7 +7,7 @@ void ExportDialog()
 {
 	//Make sure vault is open
 	OpenVaultDialog(0);
-	if(!db.topDB() || !db.topKey()) return;
+	if(!vaults.topOpen()) return;
 
 	//Prompt for output path
 	char out_path[256] = {0};
@@ -24,15 +24,15 @@ void ExportDialog()
 	//Perform dump
 	bool result = true;
 	sqlite3_stmt *stmt;
-	if(SQLITE_OK == sqlite3_prepare_v2(db.topDB(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
+	if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
 	{
 		while(sqlite3_step(stmt) == SQLITE_ROW)
 		{
 			//Load entry
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
-			PWClipEntry entry(db.topDB(), key);
+			PWClipEntry entry(vaults.top()->db(), key);
 			//Verify decryption
-			if(entry.decrypt(db.topKey()) && entry.valuePlain())
+			if(entry.decrypt(vaults.top()->key()) && entry.valuePlain())
 			{
 				//Write to output
 				fprintf(f_out, "%s = '%s'\n", key, entry.valuePlain());

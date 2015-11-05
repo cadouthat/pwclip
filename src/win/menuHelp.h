@@ -15,11 +15,11 @@ unsigned int AddMenuKey(char *key)
 }
 HMENU EntryListMenu()
 {
-	if(db.topDB())
+	if(vaults.topOpen())
 	{
 		MenuTree tree;
 		sqlite3_stmt *stmt;
-		if(SQLITE_OK == sqlite3_prepare_v2(db.topDB(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
+		if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
 		{
 			while(sqlite3_step(stmt) == SQLITE_ROW)
 			{
@@ -31,23 +31,18 @@ HMENU EntryListMenu()
 		}
 		return tree.create();
 	}
-	else
-	{
-		HMENU hm = CreatePopupMenu();
-		AppendMenu(hm, MF_STRING, TRAY_SWITCH_DB, "No Vault Open");
-		return hm;
-	}
+	else return CreatePopupMenu();
 }
 HMENU DBHistoryMenu()
 {
 	HMENU hm = CreatePopupMenu();
-	for(int i = 0; i < db.history.size(); i++)
+	for(int i = 0; i < vaults.history.size(); i++)
 	{
-		AppendMenu(hm, MF_STRING, TRAY_SWITCH_DB + i, db.history[i]->path());
+		AppendMenu(hm, MF_STRING, TRAY_SWITCH_DB + i, vaults.history[i]->path());
 	}
 	AppendMenu(hm, MF_STRING, TRAY_BROWSE_DB, "Other...");
 	//Indicate current vault if open
-	if(db.topDB()) CheckMenuRadioItem(hm, 0, 0, 0, MF_BYPOSITION);
+	if(vaults.topOpen()) CheckMenuRadioItem(hm, 0, 0, 0, MF_BYPOSITION);
 	return hm;
 }
 bool MenuInit()
@@ -63,14 +58,15 @@ bool MenuInit()
 	HMENU removeMenu = EntryListMenu();
 	remove_menu_end = NextMenuId();
 	//Append top level menus
+	UINT need_vault = vaults.topOpen() ? 0 : MF_GRAYED;
 	AppendMenu(popup_menu, MF_STRING, TRAY_EXIT, "Exit");
-	AppendMenu(popup_menu, MF_STRING | MF_POPUP, TRAY_CLOSE_DB, "Close All Vaults");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, TRAY_CLOSE_DB, "Close All Vaults");
 	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)dbMenu, "Open Vault");
-	AppendMenu(popup_menu, MF_STRING, TRAY_EXPORT, "Raw Export");
-	AppendMenu(popup_menu, MF_STRING | MF_POPUP, TRAY_SET_MASTER, "Change Master Password");
-	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)removeMenu, "Delete Entry");
-	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
-	AppendMenu(popup_menu, MF_STRING, TRAY_SAVE, "Save from Clipboard");
+	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_EXPORT, "Raw Export");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, TRAY_SET_MASTER, "Change Master Password");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)removeMenu, "Delete Entry");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
+	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_SAVE, "Save from Clipboard");
 	AppendMenu(popup_menu, MF_STRING, TRAY_GENERATE, "Randomize Clipboard");
 	return true;
 }

@@ -5,7 +5,7 @@ by: Connor Douthat
 */
 void LoadDialog(PWClipEntry *entry)
 {
-	if(db.topKey() && entry->decrypt(db.topKey()) && entry->valuePlain())
+	if(vaults.topOpen() && entry->decrypt(vaults.top()->key()) && entry->valuePlain())
 	{
 		//Move plaintext to clipboard
 		if(SetClipboardText(entry->valuePlain()))

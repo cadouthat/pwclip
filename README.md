@@ -17,7 +17,7 @@ Usage Tips
 
 Password Storage
 ----------------
-The password database is stored as an sqlite file. Entry names and passwords are encrypted using AES-128 with a 256 bit key derived from the master password using PBKDF2-SHA256. Each entry is encrypted independently with a random IV.
+The password database is stored as an sqlite file. Passwords are encrypted using AES-128 with a 256 bit key derived from the master password using PBKDF2-SHA256. Each entry is encrypted independently with a random IV. Entry names are not encrypted.
 
 Building
 --------

@@ -26,6 +26,8 @@ public:
 		}
 	}
 	const char *path() { return db_path ? db_path : ""; }
+	bool exists() { return FileExists(db_path); }
+	bool isOpen() { return (db_handle && db_key); }
 	sqlite3 *db() { return db_handle; }
 	PasswordCipher *key() { return db_key; }
 	void key(PasswordCipher *key_in)
@@ -59,10 +61,10 @@ public:
 	{
 		//Already open
 		if(db_handle) return true;
-		//Default to blank password
-		if(!db_key) db_key = new PasswordCipher("");
 		//Check for existing file
-		bool needs_init = !FileExists(db_path);
+		bool needs_init = !exists();
+		//Key will be needed
+		if(!db_key) return false;
 		//Open database
 		if(sqlite3_open(db_path, &db_handle) != SQLITE_OK)
 		{
