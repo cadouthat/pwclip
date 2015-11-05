@@ -15,7 +15,7 @@ void ErrorBox(const char *format, ...);
 #include "crypto/cryptoHelp.h"
 #include "crypto/PasswordCipher.h"
 
-#include "PWClipEntry.h"
-
+#include "VaultEntry.h"
 #include "Vault.h"
 #include "VaultManager.h"
+#include "VaultEntry.cpp"

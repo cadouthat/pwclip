@@ -3,9 +3,9 @@ Interaction to load an entry
 by: Connor Douthat
 10/24/2015
 */
-void LoadDialog(PWClipEntry *entry)
+void LoadDialog(VaultEntry *entry)
 {
-	if(vaults.topOpen() && entry->decrypt(vaults.top()->key()) && entry->valuePlain())
+	if(entry->decrypt() && entry->valuePlain())
 	{
 		//Move plaintext to clipboard
 		if(SetClipboardText(entry->valuePlain()))

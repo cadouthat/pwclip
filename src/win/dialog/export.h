@@ -30,9 +30,9 @@ void ExportDialog()
 		{
 			//Load entry
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
-			PWClipEntry entry(vaults.top()->db(), key);
+			VaultEntry entry(vaults.top(), key);
 			//Verify decryption
-			if(entry.decrypt(vaults.top()->key()) && entry.valuePlain())
+			if(entry.decrypt() && entry.valuePlain())
 			{
 				//Write to output
 				fprintf(f_out, "%s = '%s'\n", key, entry.valuePlain());

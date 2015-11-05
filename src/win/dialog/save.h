@@ -22,7 +22,7 @@ void SaveDialog()
 	UserInput prompt(UIF_NAME, "Save New Entry");
 	if(prompt.get())
 	{
-		PWClipEntry entry(vaults.top()->db(), prompt.name());
+		VaultEntry entry(vaults.top(), prompt.name());
 		//Confirm overwrite if value exists
 		bool result = true;
 		if(entry.exists())
@@ -40,7 +40,7 @@ void SaveDialog()
 			//Assign ownership of plaintext
 			entry.valuePlain(clip_text);
 			clip_text = NULL;
-			if(entry.save(vaults.top()->key()))
+			if(entry.save())
 			{
 				//Refresh menu
 				MenuReload();

@@ -20,7 +20,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				//Initialize selected entry
 				id -= TRAY_KEY;
 				char *name = menu_keys[id];
-				PWClipEntry entry(vaults.top()->db(), name);
+				VaultEntry entry(vaults.top(), name);
 				//Determine appropriate action
 				if(id < recall_menu_end)
 				{

@@ -72,14 +72,14 @@ public:
 			ErrorBox("Failed to open '%s'", db_path);
 			return false;
 		}
-		PWClipEntry meta(db_handle, "__meta__");
+		VaultEntry meta(this, "__meta__");
 		if(needs_init)
 		{
 			meta.valuePlain(strdup(meta.name()));
 			//First time setup for new files
 			char *err;
 			int schema_result = sqlite3_exec(db_handle, SCHEMA_SQL, NULL, NULL, &err);
-			if(schema_result != SQLITE_OK || !meta.save(db_key))
+			if(schema_result != SQLITE_OK || !meta.save())
 			{
 				//Abort and cleanup traces
 				close();
@@ -92,7 +92,7 @@ public:
 		else
 		{
 			//Key verification
-			if(!meta.decrypt(db_key))
+			if(!meta.decrypt())
 			{
 				close();
 				return false;

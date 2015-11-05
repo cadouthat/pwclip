@@ -3,7 +3,7 @@ Interaction to change master password
 by: Connor Douthat
 10/24/2015
 */
-bool ReEncryptAll(sqlite3 *db_handle, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose = true);
+bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose = true);
 
 void MasterPassDialog()
 {
@@ -17,7 +17,7 @@ void MasterPassDialog()
 	{
 		//Update all entries with new key
 		PasswordCipher *new_key = new PasswordCipher(prompt.newpass());
-		if(ReEncryptAll(vaults.top()->db(), vaults.top()->key(), new_key))
+		if(ReEncryptAll(vaults.top(), vaults.top()->key(), new_key))
 		{
 			//Transfer key to vault
 			vaults.top()->key(new_key);
@@ -26,24 +26,24 @@ void MasterPassDialog()
 		else
 		{
 			//Roll back changes
-			ReEncryptAll(vaults.top()->db(), new_key, vaults.top()->key(), false);
+			ReEncryptAll(vaults.top(), new_key, vaults.top()->key(), false);
 			delete new_key;
 		}
 	}
 }
 
-bool ReEncryptAll(sqlite3 *db_handle, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose)
+bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose)
 {
 	//Query all entries
 	bool result = true;
 	sqlite3_stmt *stmt;
-	if(SQLITE_OK == sqlite3_prepare_v2(db_handle, "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
+	if(SQLITE_OK == sqlite3_prepare_v2(vault->db(), "SELECT `key` FROM `entries` ORDER BY `key`", -1, &stmt, NULL))
 	{
 		while(sqlite3_step(stmt) == SQLITE_ROW)
 		{
 			//Load entry
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
-			PWClipEntry entry(db_handle, key);
+			VaultEntry entry(vault, key);
 			//Update entry
 			if(!entry.reEncrypt(old_key, new_key))
 			{
