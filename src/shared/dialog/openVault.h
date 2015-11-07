@@ -31,21 +31,22 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 	Vault *vault = new Vault(path);
 	bool needs_init = !vault->exists();
 	//Prepare password prompt (first attempt at opening skips prompt)
-	UserInput prompt(needs_init ? UIF_NEWPASS : UIF_OLDPASS, needs_init ? "Create Vault" : "Open Vault");
+	void *prompt = UserInput_new(needs_init ? UIF_NEWPASS : UIF_OLDPASS, needs_init ? "Create Vault" : "Open Vault");
 	bool first_pass = true;
 	bool result;
-	while((first_pass && !needs_init) || prompt.get())
+	while((first_pass && !needs_init) || UserInput_get(prompt))
 	{
 		//Set vault key from password
-		vault->key(new PasswordCipher(needs_init ? prompt.newpass() : prompt.oldpass()));
+		vault->key(new PasswordCipher(UserInput_pass(prompt)));
 		//Attempt opening
 		result = vault->open();
 		//Abort if successful or fatal
 		if(result || vault->fatal() || needs_init) break;
 		//Feedback for successive passes
-		if(!first_pass) prompt.setError("Incorrect password, please try again.");
+		if(!first_pass) UserInput_setError(prompt, "Incorrect password, please try again.");
 		first_pass = false;
 	}
+	UserInput_delete(prompt);
 	//Finish up
 	if(result)
 	{

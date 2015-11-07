@@ -1,5 +1,5 @@
 /*
-Load/initialize vaults and manage history
+Class to manage open vaults and history
 by: Connor Douthat
 10/2/2015
 */

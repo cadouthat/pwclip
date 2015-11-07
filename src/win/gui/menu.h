@@ -1,5 +1,5 @@
 /*
-Manages popup menus
+Manages popup menus on windows
 by: Connor Douthat
 10/22/2015
 */

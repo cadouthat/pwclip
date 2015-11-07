@@ -1,5 +1,5 @@
 /*
-VaultEntry class definitions
+Implementations for VaultEntry class
 by: Connor Douthat
 10/1/2015
 */

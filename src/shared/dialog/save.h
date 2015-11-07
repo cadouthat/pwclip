@@ -16,20 +16,18 @@ void SaveDialog()
 		ErrorBox("Clipboard has no text");
 		return;
 	}
-	clip_sequence = GetClipboardSequenceNumber();
+	ClipboardWatchStart();
 
 	//Prompt for name
-	UserInput prompt(UIF_NAME, "Save New Entry");
-	if(prompt.get())
+	void *prompt = UserInput_new(UIF_NAME, "Save New Entry");
+	if(UserInput_get(prompt))
 	{
-		VaultEntry entry(vaults.top(), prompt.name());
+		VaultEntry entry(vaults.top(), UserInput_name(prompt));
 		//Confirm overwrite if value exists
 		bool result = true;
 		if(entry.exists())
 		{
-			char message[512] = {0};
-			snprintf(message, sizeof(message), "Are you sure you want to replace '%s'?", entry.name());
-			if(IDYES == MessageBox(hwnd_main, message, "Overwrite Warning", MB_YESNO))
+			if(ConfirmBox("Overwrite Warning", "Are you sure you want to replace '%s'?", entry.name()))
 			{
 				if(!entry.remove()) result = false;
 			}
@@ -50,6 +48,7 @@ void SaveDialog()
 			}
 		}
 	}
+	UserInput_delete(prompt);
 
 	if(clip_text)
 	{

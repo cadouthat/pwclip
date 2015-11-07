@@ -12,11 +12,11 @@ void MasterPassDialog()
 	if(!vaults.topOpen()) return;
 
 	//Prompt for new password
-	UserInput prompt(UIF_NEWPASS, "Change Master Password");
-	if(prompt.get())
+	void *prompt = UserInput_new(UIF_NEWPASS, "Change Master Password");
+	if(UserInput_get(prompt))
 	{
 		//Update all entries with new key
-		PasswordCipher *new_key = new PasswordCipher(prompt.newpass());
+		PasswordCipher *new_key = new PasswordCipher(UserInput_pass(prompt));
 		if(ReEncryptAll(vaults.top(), vaults.top()->key(), new_key))
 		{
 			//Transfer key to vault
@@ -30,6 +30,7 @@ void MasterPassDialog()
 			delete new_key;
 		}
 	}
+	UserInput_delete(prompt);
 }
 
 bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose)

@@ -1,12 +1,8 @@
 /*
-pwclip tray utility (windows)
+Windows entry point
 by: Connor Douthat
 10/20/2015
 */
-#define _WIN32_IE 0x0600
-#define _WIN32_WINNT 0x0500
-#define WINVER 0x0500
-#include "../shared/shared.h"
 #include "includes.h"
 
 int main(int argc, char **argv)
@@ -30,6 +26,7 @@ int main(int argc, char **argv)
 	}
 	MenuInit();
 	TrayInit();
+
 	//Main message loop
 	SetTimer(hwnd_main, TIMER_UPDATE_TRAY, 500, NULL);
 	MSG msg;
@@ -39,9 +36,11 @@ int main(int argc, char **argv)
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
 	//GUI cleanup
 	TrayCleanup();
 	MenuCleanup();
+
 	//GLobal cleanup
 	vaults.writeHistory();
 	vaults.close();

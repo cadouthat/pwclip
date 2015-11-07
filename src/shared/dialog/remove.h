@@ -6,9 +6,7 @@ by: Connor Douthat
 void RemoveDialog(VaultEntry *entry)
 {
 	//Ask user for confirmation
-	char message[512] = {0};
-	snprintf(message, sizeof(message), "Are you sure you want to delete '%s'?", entry->name());
-	if(IDYES == MessageBox(hwnd_main, message, "Confirm Delete", MB_YESNO))
+	if(ConfirmBox("Confirm Delete", "Are you sure you want to delete '%s'?", entry->name()))
 	{
 		if(entry->remove())
 		{

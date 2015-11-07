@@ -1,5 +1,5 @@
 /*
-User environment utilities
+User environment utilities (windows implementations)
 by: Connor Douthat
 10/1/2015
 */
@@ -29,33 +29,5 @@ bool FileExists(const char *path)
 	DWORD attribs = GetFileAttributes(path);
 	if(attribs == INVALID_FILE_ATTRIBUTES) return false;
 	if(attribs & FILE_ATTRIBUTE_DIRECTORY) return false;
-	return true;
-}
-bool RandText(char *out, int len)
-{
-	const char *char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-	int char_set_size = strlen(char_set);
-	unsigned char *u_out = (unsigned char*)out;
-	if(!RAND_bytes(u_out, len)) return false;
-	for(int i = 0; i < len; i++)
-	{
-		out[i] = char_set[u_out[i] % char_set_size];
-	}
-	return true;
-}
-bool GeneratePassword()
-{
-	char pass[GEN_PASS_SIZE + 1] = {0};
-	if(!RandText(pass, GEN_PASS_SIZE))
-	{
-		ErrorBox("Failed to generate password");
-		return false;
-	}
-	if(!SetClipboardText(pass))
-	{
-		ErrorBox("Failed to set clipboard text");
-		return false;
-	}
-	memset(pass, 0, sizeof(pass));
 	return true;
 }

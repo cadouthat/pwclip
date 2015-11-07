@@ -11,7 +11,7 @@ void LoadDialog(VaultEntry *entry)
 		if(SetClipboardText(entry->valuePlain()))
 		{
 			//Update tray on success
-			clip_sequence = GetClipboardSequenceNumber();
+			ClipboardWatchStart();
 			TrayWipeState();
 			TrayBalloon("Entry loaded to clipboard.");
 		}

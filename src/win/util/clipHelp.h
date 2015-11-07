@@ -1,8 +1,12 @@
 /*
-Clipboard utilities
+Clipboard utilities (windows implementations)
 by: Connor Douthat
 10/1/2015
 */
+void ClipboardWatchStart()
+{
+	clip_sequence = GetClipboardSequenceNumber();
+}
 bool WipeClipboardText()
 {
 	if(!OpenClipboard(NULL)) return false;

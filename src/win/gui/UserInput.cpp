@@ -1,13 +1,8 @@
 /*
-Helper class for mixed user input
+User input prompt (windows implementations)
 by: Connor Douthat
 10/28/2015
 */
-#define UIF_GENERATE 1
-#define UIF_NAME 2
-#define UIF_OLDPASS 4
-#define UIF_NEWPASS 8
-
 #define UIN_WIDTH 400
 #define UIN_DEF_HEIGHT 200
 #define UIN_PAD_X 30
@@ -15,7 +10,7 @@ by: Connor Douthat
 #define UIN_BUTTON_WIDTH 80
 #define UIN_BUTTON_HEIGHT 26
 
-enum { UIN_ID_INFO = 1, UIN_ID_ERROR, UIN_ID_GENERATE, UIN_ID_NAME, UIN_ID_OLDPASS, UIN_ID_NEWPASS, UIN_ID_CONFIRM, UIN_ID_OKAY, UIN_ID_CANCEL };
+enum { UIN_ID_INFO = 1, UIN_ID_ERROR, UIN_ID_NAME, UIN_ID_OLDPASS, UIN_ID_NEWPASS, UIN_ID_CONFIRM, UIN_ID_OKAY, UIN_ID_CANCEL };
 
 class UserInput
 {
@@ -36,10 +31,8 @@ class UserInput
 	int title_height;
 
 	//Output
-	bool val_generate;
 	char val_name[ENTRY_NAME_MAX + 1];
-	char val_oldpass[PASSWORD_MAX + 1];
-	char val_newpass[PASSWORD_MAX + 1];
+	char val_pass[PASSWORD_MAX + 1];
 
 	void UpdateLayout()
 	{
@@ -61,11 +54,6 @@ class UserInput
 		{
 			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_ERROR), NULL, x, y, w, h, SWP_NOZORDER);
 			y += spacing_static;
-		}
-		if(flags & UIF_GENERATE)
-		{
-			SetWindowPos(GetDlgItem(hwnd_top, UIN_ID_GENERATE), NULL, x, y, w, h, SWP_NOZORDER);
-			y += spacing_edit;
 		}
 		if(flags & UIF_NAME)
 		{
@@ -184,7 +172,6 @@ class UserInput
 		//Create controls
 		childStatic(UIN_ID_INFO, info_text);
 		childStatic(UIN_ID_ERROR, error_text);
-		if(flags & UIF_GENERATE) childCheckbox(UIN_ID_GENERATE, "Generate random value (ignores current clipboard)");
 		if(flags & UIF_NAME) childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
 		if(flags & UIF_OLDPASS) childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Master Password" : "Master Password");
 		if(flags & UIF_NEWPASS)
@@ -272,10 +259,6 @@ class UserInput
 				{
 				case UIN_ID_OKAY:
 					okay_flag = true;
-					if(okay_flag && (flags & UIF_GENERATE))
-					{
-						val_generate = (BST_CHECKED == SendMessage(GetDlgItem(hwnd_top, UIN_ID_GENERATE), BM_GETCHECK, 0, 0));
-					}
 					if(okay_flag && (flags & UIF_NAME))
 					{
 						getValue(UIN_ID_NAME, val_name, sizeof(val_name));
@@ -287,20 +270,20 @@ class UserInput
 					}
 					if(okay_flag && (flags & UIF_OLDPASS))
 					{
-						getValue(UIN_ID_OLDPASS, val_oldpass, sizeof(val_oldpass));
+						getValue(UIN_ID_OLDPASS, val_pass, sizeof(val_pass));
 					}
 					if(okay_flag && (flags & UIF_NEWPASS))
 					{
-						getValue(UIN_ID_NEWPASS, val_newpass, sizeof(val_newpass));
+						getValue(UIN_ID_NEWPASS, val_pass, sizeof(val_pass));
 						char tmp[PASSWORD_MAX + 1] = {0};
 						getValue(UIN_ID_CONFIRM, tmp, sizeof(tmp));
-						if(strcmp(tmp, val_newpass))
+						if(strcmp(tmp, val_pass))
 						{
-							memset(val_newpass, 0, sizeof(val_newpass));
+							memset(val_pass, 0, sizeof(val_pass));
 							setError("Passwords do not match");
 							okay_flag = false;
 						}
-						else if(!val_newpass[0])
+						else if(!val_pass[0])
 						{
 							okay_flag = (IDYES == MessageBox(hwnd_top, "Master password is blank, encryption will not be secure. Are you sure you want to proceed?", "Confirm Empty Password", MB_YESNO));
 						}
@@ -355,10 +338,8 @@ public:
 		if(hwnd_top) close();
 		memset(this, 0, sizeof(*this));
 	}
-	bool generate() { return val_generate; }
 	const char *name() { return val_name; }
-	const char *oldpass() { return val_oldpass; }
-	const char *newpass() { return val_newpass; }
+	const char *pass() { return val_pass; }
 	void setInfo(const char *text)
 	{
 		info_text = text;
@@ -413,3 +394,32 @@ public:
 
 const char *UserInput::class_name = "UserInputMain";
 bool UserInput::class_init = false;
+
+void *UserInput_new(int flags_in, const char *title_in)
+{
+	return new UserInput(flags_in, title_in);
+}
+void UserInput_delete(void *ui)
+{
+	delete (UserInput*)ui;
+}
+const char *UserInput_name(void *ui)
+{
+	return ((UserInput*)ui)->name();
+}
+const char *UserInput_pass(void *ui)
+{
+	return ((UserInput*)ui)->pass();
+}
+void UserInput_setInfo(void *ui, const char *text)
+{
+	((UserInput*)ui)->setInfo(text);
+}
+void UserInput_setError(void *ui, const char *text)
+{
+	((UserInput*)ui)->setError(text);
+}
+bool UserInput_get(void *ui)
+{
+	return ((UserInput*)ui)->get();
+}

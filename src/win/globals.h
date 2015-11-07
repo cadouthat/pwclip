@@ -1,14 +1,9 @@
 /*
-Global variables for tray application
+Global variables for windows
 by: Connor Douthat
 10/22/2015
 */
-//Config
-int clip_wipe_delay = 10;
-std::vector<char[256]> db_hist;
-
 //Runtime
-VaultManager vaults;
 DWORD clip_sequence;
 
 //GUI
