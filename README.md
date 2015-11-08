@@ -1,5 +1,5 @@
 # pwclip
-Lightweight local password vault
+Lightweight local password vault for Windows and OSX
 
 Overview
 --------
@@ -22,7 +22,3 @@ The password database is stored as an sqlite file. Passwords are encrypted using
 Building
 --------
 If they do not exist, create 'bin' and 'local' directories in the pwclip directory. The default makefile target will build all binaries (output to the bin directory). Before building, you will need OpenSSL and SQLite3. Compile SQLite3 if it is not already compiled. Copy path.mk.sample to local/path.mk, and populate  the appropriate directories for your system. Finally, run make from the pwclip directory.
-
-Operating Systems
------------------
-The application is under active development on Windows (XP through 10). OSX development is planned to begin soon.
