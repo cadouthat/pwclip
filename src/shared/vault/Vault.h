@@ -83,7 +83,7 @@ public:
 			{
 				//Abort and cleanup traces
 				close();
-				DeleteFile(db_path);
+				remove(db_path);
 				fatal_flag = true;
 				ErrorBox("Failed to initialize '%s'", db_path);
 				return false;

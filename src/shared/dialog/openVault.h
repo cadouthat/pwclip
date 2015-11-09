@@ -33,7 +33,7 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 	//Prepare password prompt (first attempt at opening skips prompt)
 	void *prompt = UserInput_new(needs_init ? UIF_NEWPASS : UIF_OLDPASS, needs_init ? "Create Vault" : "Open Vault");
 	bool first_pass = true;
-	bool result;
+	bool result = false;
 	while((first_pass && !needs_init) || UserInput_get(prompt))
 	{
 		//Set vault key from password
