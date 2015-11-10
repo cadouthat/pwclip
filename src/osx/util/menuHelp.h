@@ -6,12 +6,15 @@ by: Connor Douthat
 bool MenuInit()
 {
 	//
+    return false;
 }
 bool MenuCleanup()
 {
 	//
+    return false;
 }
 bool MenuReload()
 {
 	//
+    return false;
 }

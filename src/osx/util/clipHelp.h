@@ -10,12 +10,15 @@ void ClipboardWatchStart()
 bool WipeClipboardText()
 {
 	//
+    return false;
 }
 bool SetClipboardText(const char *text)
 {
 	//
+    return false;
 }
 char *GetClipboardText()
 {
 	//
+    return NULL;
 }

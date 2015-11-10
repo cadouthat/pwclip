@@ -21,4 +21,5 @@ bool LocalUserAppData(const char *app_name, char *path_out)
 bool FileExists(const char *path)
 {
 	//
+    return false;
 }

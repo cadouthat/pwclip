@@ -16,3 +16,5 @@ by: Connor Douthat
 #include "util/envHelp.h"
 #include "util/clipHelp.h"
 #include "util/guiHelp.h"
+
+#include "gui/UserInputBridge.h"
