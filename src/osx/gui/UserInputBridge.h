@@ -3,7 +3,7 @@ C++ bridge for UserInput
 by: Connor Douthat
 11/10/2015
 */
-#import "UserInput.h"
+#import "UserInputObjC.h"
 
 void *UserInput_new(int flags_in, const char *title_in)
 {
