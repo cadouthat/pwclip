@@ -67,7 +67,7 @@ bool MenuInit()
 	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)removeMenu, "Delete Entry");
 	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
 	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_SAVE, "Save from Clipboard");
-	AppendMenu(popup_menu, MF_STRING, TRAY_GENERATE, "Randomize Clipboard");
+	AppendMenu(popup_menu, MF_STRING, TRAY_GENERATE, "Generate Password");
 	return true;
 }
 bool MenuCleanup()
