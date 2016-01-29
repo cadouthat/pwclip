@@ -7,29 +7,27 @@ class VaultManager
 {
 	bool defaultPath(char *out)
 	{
-		if(!LocalUserAppData(APPDATA_NAME, out))
-		{
-			ErrorBox("No suitable location for application data");
-			return false;
-		}
+		if(!appDataPath[0]) return false;
+		strcpy(out, appDataPath);
 		strcat(out, "vault.db");
 		return true;
 	}
 	bool historyPath(char *out)
 	{
-		if(!LocalUserAppData(APPDATA_NAME, out))
-		{
-			ErrorBox("No suitable location for application data");
-			return false;
-		}
+		if(!appDataPath[0]) return false;
+		strcpy(out, appDataPath);
 		strcat(out, "db_list.pref");
 		return true;
 	}
 
 public:
+	char appDataPath[256];
 	std::vector<Vault*> history;
 
-	VaultManager() {}
+	VaultManager()
+	{
+		appDataPath[0] = 0;
+	}
 	~VaultManager()
 	{
 		while(history.size())

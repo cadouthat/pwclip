@@ -17,6 +17,9 @@ by: Connor Douthat
 //Shared
 #include "../shared/shared.h"
 
+#include "gui/MenuTree.h"
+#include "gui/UserInput.h"
+
 //Windows implementations
 #include "globals.h"
 
@@ -27,7 +30,14 @@ by: Connor Douthat
 #include "gui/tray.h"
 #include "gui/menu.h"
 
-#include "util/envHelp.h"
 #include "util/clipHelp.h"
+#include "util/envHelp.h"
+
+#include "dialog/openVault.h"
+#include "dialog/masterPass.h"
+#include "dialog/save.h"
+#include "dialog/load.h"
+#include "dialog/remove.h"
+#include "dialog/export.h"
 
 #include "trayMessage.h"

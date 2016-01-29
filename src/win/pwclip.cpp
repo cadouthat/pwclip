@@ -11,6 +11,9 @@ int main(int argc, char **argv)
 	char config_path[256] = {0};
 	if(LocalUserAppData(APPDATA_NAME, config_path))
 	{
+		//Set app data path for vaults
+		strcpy(vaults.appDataPath, config_path);
+		//Get config file path and load it
 		strcat(config_path, "pwclip.ini");
 		LoadConfig(config_path);
 	}

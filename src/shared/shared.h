@@ -6,11 +6,8 @@ by: Connor Douthat
 #include "libs.h"
 #include "def.h"
 
-#include "util/proto.h"
 #include "util/stringHelp.h"
-
-#include "gui/MenuTree.h"
-#include "gui/UserInput.h"
+#include "util/prototypes.h"
 
 #include "crypto/cryptoHelp.h"
 #include "crypto/PasswordCipher.h"
@@ -22,10 +19,3 @@ by: Connor Douthat
 
 #include "globals.h"
 #include "util/config.h"
-
-#include "dialog/openVault.h"
-#include "dialog/masterPass.h"
-#include "dialog/save.h"
-#include "dialog/load.h"
-#include "dialog/remove.h"
-#include "dialog/export.h"

@@ -12,24 +12,3 @@ void ErrorBox(const char *format, ...)
 	//
 	va_end(args);
 }
-bool ConfirmBox(const char *title, const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	char message[1024] = {0};
-	vsnprintf(message, sizeof(message), format, args);
-	//
-    bool result = false;
-	va_end(args);
-	return result;
-}
-bool BrowseForOutput(char *out, int out_max)
-{
-	//
-    return false;
-}
-bool BrowseForInput(char *out, int out_max)
-{
-	//
-    return false;
-}

@@ -49,19 +49,3 @@ bool RandText(char *out, int len)
 	}
 	return true;
 }
-bool GeneratePassword()
-{
-	char pass[GEN_PASS_SIZE + 1] = {0};
-	if(!RandText(pass, GEN_PASS_SIZE))
-	{
-		ErrorBox("Failed to generate password");
-		return false;
-	}
-	if(!SetClipboardText(pass))
-	{
-		ErrorBox("Failed to set clipboard text");
-		return false;
-	}
-	memset(pass, 0, sizeof(pass));
-	return true;
-}
