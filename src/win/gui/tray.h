@@ -35,7 +35,7 @@ bool TrayInit()
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_MESSAGE | NIF_ICON;
 	nid.uCallbackMessage = MSG_TRAYICON;
-	nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
+	nid.hIcon = LoadIcon(GetModuleHandle(NULL), "MAINICON");
 	strcpy(nid.szTip, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_ADD, &nid);
 }
@@ -62,7 +62,7 @@ bool TrayNormalState()
 	nid.cbSize = sizeof(nid);
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_ICON;
-	nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
+	nid.hIcon = LoadIcon(GetModuleHandle(NULL), "MAINICON");
 	strcpy(nid.szTip, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
@@ -80,7 +80,7 @@ bool TrayWipeState()
 	nid.cbSize = sizeof(nid);
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_TIP | NIF_ICON;
-	nid.hIcon = LoadIcon(NULL, IDI_WARNING);
+	nid.hIcon = LoadIcon(GetModuleHandle(NULL), "READYICON");
 	strcpy(nid.szTip, "The clipboard will be wiped shortly..");
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);
 }

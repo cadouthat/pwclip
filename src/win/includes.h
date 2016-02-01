@@ -10,6 +10,7 @@ by: Connor Douthat
 #include <windows.h>
 #include <commctrl.h>
 #include <shlobj.h>
+#include <unistd.h>
 
 //System macros
 #define SleepSeconds(x) Sleep(x * 1000)
