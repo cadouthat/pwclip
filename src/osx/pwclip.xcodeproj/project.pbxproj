@@ -7,31 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B30CFEB51C5EF42300F895ED /* guiHelp.mm */; };
 		B35653971BF405470038B3D3 /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = B35653961BF405470038B3D3 /* Base.lproj */; };
 		B356539A1BF405640038B3D3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B35653981BF405640038B3D3 /* MainMenu.xib */; };
-		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.m */; };
-		B37D20881BF3FD6F00BB9EC5 /* CppBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20841BF3FD6F00BB9EC5 /* CppBridge.mm */; };
+		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */; };
 		B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B37D20861BF3FD6F00BB9EC5 /* main.m */; };
 		B37D208D1BF3FD8800BB9EC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */; };
 		B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */; };
 		B37D20921BF3FDF000BB9EC5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B37D20911BF3FDF000BB9EC5 /* libcrypto.a */; };
-		B37D209D1BF4018600BB9EC5 /* UserInputObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = B37D209C1BF4018600BB9EC5 /* UserInputObjC.m */; };
 		B37D209E1BF4029100BB9EC5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B37D20851BF3FD6F00BB9EC5 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B30841061BEF3FED0079C46A /* pwclip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pwclip.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B30CFEB31C5EEF1B00F895ED /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = SOURCE_ROOT; };
+		B30CFEB41C5EEF1B00F895ED /* includes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = includes.h; sourceTree = SOURCE_ROOT; };
+		B30CFEB51C5EF42300F895ED /* guiHelp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = guiHelp.mm; path = util/guiHelp.mm; sourceTree = SOURCE_ROOT; };
 		B35653961BF405470038B3D3 /* Base.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Base.lproj; sourceTree = SOURCE_ROOT; };
 		B35653991BF405640038B3D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = SOURCE_ROOT; };
-		B37D20831BF3FD6F00BB9EC5 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = SOURCE_ROOT; };
-		B37D20841BF3FD6F00BB9EC5 /* CppBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CppBridge.mm; sourceTree = SOURCE_ROOT; };
+		B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = SOURCE_ROOT; };
 		B37D20851BF3FD6F00BB9EC5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		B37D20861BF3FD6F00BB9EC5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
 		B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../../../../Users/connor/sqlite3/sqlite3.c; sourceTree = "<group>"; };
-		B37D20911BF3FDF000BB9EC5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../Users/connor/openssl/libcrypto.a; sourceTree = "<group>"; };
-		B37D209C1BF4018600BB9EC5 /* UserInputObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserInputObjC.m; path = gui/UserInputObjC.m; sourceTree = SOURCE_ROOT; };
+		B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../../../sqlite3/sqlite3.c; sourceTree = "<group>"; };
+		B37D20911BF3FDF000BB9EC5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../openssl/libcrypto.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,12 +68,13 @@
 		B30841081BEF3FED0079C46A /* pwclip */ = {
 			isa = PBXGroup;
 			children = (
+				B30CFEB51C5EF42300F895ED /* guiHelp.mm */,
+				B30CFEB31C5EEF1B00F895ED /* globals.h */,
+				B30CFEB41C5EEF1B00F895ED /* includes.h */,
 				B35653961BF405470038B3D3 /* Base.lproj */,
-				B37D209C1BF4018600BB9EC5 /* UserInputObjC.m */,
 				B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */,
 				B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */,
-				B37D20831BF3FD6F00BB9EC5 /* AppDelegate.m */,
-				B37D20841BF3FD6F00BB9EC5 /* CppBridge.mm */,
+				B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */,
 				B37D20851BF3FD6F00BB9EC5 /* Info.plist */,
 				B37D20861BF3FD6F00BB9EC5 /* main.m */,
 			);
@@ -151,10 +152,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B37D20881BF3FD6F00BB9EC5 /* CppBridge.mm in Sources */,
+				B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */,
 				B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */,
-				B37D209D1BF4018600BB9EC5 /* UserInputObjC.m in Sources */,
-				B37D20871BF3FD6F00BB9EC5 /* AppDelegate.m in Sources */,
+				B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */,
 				B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

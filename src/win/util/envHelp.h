@@ -24,13 +24,6 @@ bool LocalUserAppData(const char *app_name, char *path_out)
 	strcpy(path_out, path);
 	return true;
 }
-bool FileExists(const char *path)
-{
-	DWORD attribs = GetFileAttributes(path);
-	if(attribs == INVALID_FILE_ATTRIBUTES) return false;
-	if(attribs & FILE_ATTRIBUTE_DIRECTORY) return false;
-	return true;
-}
 bool GeneratePassword()
 {
 	char pass[GEN_PASS_SIZE + 1] = {0};

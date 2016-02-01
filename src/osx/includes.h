@@ -12,10 +12,7 @@ by: Connor Douthat
 //OSX implementations
 #include "globals.h"
 
-#include "util/menuHelp.h"
-#include "util/envHelp.h"
-#include "util/clipHelp.h"
-#include "util/guiHelp.h"
-#include "util/trayHelp.h"
-
-#include "gui/UserInputBridge.h"
+void TestHybrid()
+{
+    ErrorBox("Hello");
+}

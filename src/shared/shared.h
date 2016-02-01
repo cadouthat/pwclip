@@ -8,6 +8,7 @@ by: Connor Douthat
 
 #include "util/stringHelp.h"
 #include "util/prototypes.h"
+#include "util/envHelp.h"
 
 #include "crypto/cryptoHelp.h"
 #include "crypto/PasswordCipher.h"
