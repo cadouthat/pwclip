@@ -1,5 +1,5 @@
 //
-//  AppDelegate.m
+//  AppDelegate.mm
 //  pwclip
 //
 //  Created by Connor Douthat on 11/8/15.
@@ -7,11 +7,14 @@
 //
 
 #import "AppDelegate.h"
+#import "includes.h"
+#import "UserInput.h"
 
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
 @property NSStatusItem *statusItem;
+@property NSMenu *mainMenu;
 @property NSMenuItem *menuGenerate;
 @property NSMenuItem *menuSaveEntry;
 @property NSMenuItem *menuLoadEntry;
@@ -24,6 +27,13 @@
 @end
 
 @implementation AppDelegate
+
+- (IBAction)displayError:(id)sender {
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setMessageText:sender];
+    [alert setIcon:[NSImage imageNamed:@"ErrorIcon"]];
+    [alert runModal];
+}
 
 - (IBAction)generate:(id)sender {
 }
@@ -43,33 +53,66 @@
 - (IBAction)exportAll:(id)sender {
 }
 
+- (IBAction)openUserInput:(id)sender {
+    _activeDialog = (UserInput*)sender;
+    [_activeDialog showWindow:mainApp];
+}
+
+- (IBAction)closeUserInput:(id) sender {
+    [_activeDialog close];
+    _activeDialog = NULL;
+}
+
 - (IBAction)openVault:(id)sender {
+    [self performSelectorInBackground:@selector(openVault_block:) withObject:sender];
+}
+
+- (IBAction)openVault_block:(id)sender {
+    NSMenuItem *item = (NSMenuItem*)sender;
+    NSNumber *indObj = [item representedObject];
+    int ind = [indObj intValue];
+    if(ind >= 0) {
+        OpenVaultDialog(ind);
+    }
+    else ErrorBox("Need browse dialog..");
 }
 
 - (IBAction)closeVaults:(id)sender {
 }
 
 - (void)updateVaultList {
+    NSMenu *subMenu = [[NSMenu alloc] init];
+    
+    for(int i = 0; i < vaults.history.size(); i++)
+    {
+        [[subMenu addItemWithTitle:[NSString stringWithUTF8String:vaults.history[i]->path()] action:@selector(openVault:) keyEquivalent:@""] setRepresentedObject:[NSNumber numberWithInt:i]];
+    }
+    [[subMenu addItemWithTitle:@"Other..." action:@selector(openVault:) keyEquivalent:@""] setRepresentedObject:[NSNumber numberWithInt:-1]];
+    
+    [_mainMenu setSubmenu:subMenu forItem:_menuOpenVault];
+    [_menuOpenVault setEnabled:true];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    mainApp = self;
+
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     [_statusItem setHighlightMode: YES];
     [_statusItem setEnabled: YES];
     [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
     
-    NSMenu *menu = [[NSMenu alloc] init];
-    [menu setAutoenablesItems:false];
-    _menuGenerate = [menu addItemWithTitle:@"Generate Password" action:@selector(generate:) keyEquivalent:@""];
-    _menuSaveEntry = [menu addItemWithTitle:@"Save from Clipboard" action:@selector(saveEntry:) keyEquivalent:@""];
-    _menuLoadEntry = [menu addItemWithTitle:@"Load to Clipboard" action:@selector(loadEntry:) keyEquivalent:@""];
-    _menuDeleteEntry = [menu addItemWithTitle:@"Delete Entry" action:@selector(deleteEntry:) keyEquivalent:@""];
-    _menuSetMaster = [menu addItemWithTitle:@"Change Master Password" action:@selector(setMaster:) keyEquivalent:@""];
-    _menuExportAll = [menu addItemWithTitle:@"Raw Export" action:@selector(exportAll:) keyEquivalent:@""];
-    _menuOpenVault = [menu addItemWithTitle:@"Open Vault" action:@selector(openVault:) keyEquivalent:@""];
-    _menuCloseVaults = [menu addItemWithTitle:@"Close All Vaults" action:@selector(closeVaults:) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@"q"];
-    _statusItem.menu = menu;
+    _mainMenu = [[NSMenu alloc] init];
+    [_mainMenu setAutoenablesItems:false];
+    _menuGenerate = [_mainMenu addItemWithTitle:@"Generate Password" action:@selector(generate:) keyEquivalent:@""];
+    _menuSaveEntry = [_mainMenu addItemWithTitle:@"Save from Clipboard" action:@selector(saveEntry:) keyEquivalent:@""];
+    _menuLoadEntry = [_mainMenu addItemWithTitle:@"Load to Clipboard" action:NULL keyEquivalent:@""];
+    _menuDeleteEntry = [_mainMenu addItemWithTitle:@"Delete Entry" action:@selector(deleteEntry:) keyEquivalent:@""];
+    _menuSetMaster = [_mainMenu addItemWithTitle:@"Change Master Password" action:@selector(setMaster:) keyEquivalent:@""];
+    _menuExportAll = [_mainMenu addItemWithTitle:@"Raw Export" action:@selector(exportAll:) keyEquivalent:@""];
+    _menuOpenVault = [_mainMenu addItemWithTitle:@"Open Vault" action:@selector(openVault:) keyEquivalent:@""];
+    _menuCloseVaults = [_mainMenu addItemWithTitle:@"Close All Vaults" action:@selector(closeVaults:) keyEquivalent:@""];
+    [_mainMenu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@"q"];
+    _statusItem.menu = _mainMenu;
     
     [_menuSaveEntry setEnabled:false];
     [_menuLoadEntry setEnabled:false];
@@ -100,6 +143,8 @@
     }
     vaults.writeHistory();
     vaults.close();
+    
+    mainApp = NULL;
 }
 
 @end

@@ -19,4 +19,14 @@ by: Connor Douthat
 #include "vault/VaultEntry.cpp"
 
 #include "globals.h"
+
 #include "util/config.h"
+
+#include "UserInput.h"
+
+//#include "dialog/export.h"
+//#include "dialog/load.h"
+//#include "dialog/masterPass.h"
+#include "dialog/openVault.h"
+//#include "dialog/remove.h"
+//#include "dialog/save.h"
