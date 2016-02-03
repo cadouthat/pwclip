@@ -24,9 +24,9 @@ by: Connor Douthat
 
 #include "UserInput.h"
 
-//#include "dialog/export.h"
-//#include "dialog/load.h"
-//#include "dialog/masterPass.h"
 #include "dialog/openVault.h"
-//#include "dialog/remove.h"
-//#include "dialog/save.h"
+#include "dialog/export.h"
+#include "dialog/load.h"
+#include "dialog/masterPass.h"
+#include "dialog/remove.h"
+#include "dialog/save.h"

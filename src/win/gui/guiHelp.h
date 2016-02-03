@@ -22,7 +22,7 @@ bool ConfirmBox(const char *title, const char *format, ...)
 	va_end(args);
 	return result;
 }
-bool BrowseForOutput(char *out, int out_max = 256)
+bool BrowseForOutput(char *out, int out_max)
 {
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
