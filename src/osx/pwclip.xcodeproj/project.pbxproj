@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B30CFEB51C5EF42300F895ED /* guiHelp.mm */; };
+		B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = B344635F1C6C20E0009B2FB7 /* MenuTree.mm */; };
 		B35653971BF405470038B3D3 /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = B35653961BF405470038B3D3 /* Base.lproj */; };
 		B356539A1BF405640038B3D3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B35653981BF405640038B3D3 /* MainMenu.xib */; };
 		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */; };
@@ -18,7 +19,7 @@
 		B37D209E1BF4029100BB9EC5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B37D20851BF3FD6F00BB9EC5 /* Info.plist */; };
 		B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3071C604D02004355E0 /* UserInputBridge.mm */; };
 		B39FD3111C60568A004355E0 /* globals.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3101C60568A004355E0 /* globals.mm */; };
-		B39FD3151C6057BE004355E0 /* UserInput.m in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3131C6057BE004355E0 /* UserInput.m */; };
+		B39FD3151C6057BE004355E0 /* UserInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3131C6057BE004355E0 /* UserInput.mm */; };
 		B39FD3161C6057BE004355E0 /* UserInput.xib in Resources */ = {isa = PBXBuildFile; fileRef = B39FD3141C6057BE004355E0 /* UserInput.xib */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		B30CFEB31C5EEF1B00F895ED /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = SOURCE_ROOT; };
 		B30CFEB41C5EEF1B00F895ED /* includes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = includes.h; sourceTree = SOURCE_ROOT; };
 		B30CFEB51C5EF42300F895ED /* guiHelp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = guiHelp.mm; path = util/guiHelp.mm; sourceTree = SOURCE_ROOT; };
+		B344635F1C6C20E0009B2FB7 /* MenuTree.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuTree.mm; sourceTree = SOURCE_ROOT; };
 		B35653961BF405470038B3D3 /* Base.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Base.lproj; sourceTree = SOURCE_ROOT; };
 		B35653991BF405640038B3D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -39,7 +41,7 @@
 		B39FD3071C604D02004355E0 /* UserInputBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UserInputBridge.mm; sourceTree = SOURCE_ROOT; };
 		B39FD3101C60568A004355E0 /* globals.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = globals.mm; sourceTree = SOURCE_ROOT; };
 		B39FD3121C6057BE004355E0 /* UserInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInput.h; sourceTree = SOURCE_ROOT; };
-		B39FD3131C6057BE004355E0 /* UserInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInput.m; sourceTree = SOURCE_ROOT; };
+		B39FD3131C6057BE004355E0 /* UserInput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UserInput.mm; sourceTree = SOURCE_ROOT; };
 		B39FD3141C6057BE004355E0 /* UserInput.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserInput.xib; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -89,8 +91,9 @@
 				B39FD3071C604D02004355E0 /* UserInputBridge.mm */,
 				B39FD3101C60568A004355E0 /* globals.mm */,
 				B39FD3121C6057BE004355E0 /* UserInput.h */,
-				B39FD3131C6057BE004355E0 /* UserInput.m */,
+				B39FD3131C6057BE004355E0 /* UserInput.mm */,
 				B39FD3141C6057BE004355E0 /* UserInput.xib */,
+				B344635F1C6C20E0009B2FB7 /* MenuTree.mm */,
 			);
 			path = pwclip;
 			sourceTree = "<group>";
@@ -169,11 +172,12 @@
 			files = (
 				B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */,
 				B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */,
+				B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */,
 				B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */,
 				B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */,
 				B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */,
 				B39FD3111C60568A004355E0 /* globals.mm in Sources */,
-				B39FD3151C6057BE004355E0 /* UserInput.m in Sources */,
+				B39FD3151C6057BE004355E0 /* UserInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

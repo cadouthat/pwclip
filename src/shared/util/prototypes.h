@@ -16,3 +16,7 @@ bool SetClipboardText(const char *text);
 char *GetClipboardText();
 
 bool MenuReload();
+
+void ClipboardWatchStart();
+char *GetClipboardText();
+bool SetClipboardText(const char *text);

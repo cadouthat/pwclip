@@ -13,10 +13,13 @@
 
 @property UserInput *activeDialog;
 
-- (void)updateVaultList;
+@property bool confirmResult;
+
+- (void)updateMenu;
 
 - (IBAction)openUserInput:(id)sender;
 - (IBAction)closeUserInput:(id)sender;
 - (IBAction)displayError:(id)sender;
+- (IBAction)displayConfirm:(id)sender;
 
 @end

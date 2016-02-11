@@ -23,10 +23,10 @@ by: Connor Douthat
 #include "util/config.h"
 
 #include "UserInput.h"
+#include "MenuTree.h"
 
 #include "dialog/openVault.h"
 #include "dialog/export.h"
 #include "dialog/load.h"
 #include "dialog/masterPass.h"
 #include "dialog/remove.h"
-#include "dialog/save.h"

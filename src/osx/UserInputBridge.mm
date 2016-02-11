@@ -29,10 +29,10 @@ const char *UserInput_pass(void *ui) {
     return [[[[mainApp activeDialog] editPassword] stringValue] UTF8String];
 }
 void UserInput_setInfo(void *ui, const char *text) {
-    [[[mainApp activeDialog] lblInfo] setStringValue:[NSString stringWithUTF8String:text]];
+    [[mainApp activeDialog] setInfo:[NSString stringWithUTF8String:text]];
 }
 void UserInput_setError(void *ui, const char *text) {
-    [[[mainApp activeDialog] lblError] setStringValue:[NSString stringWithUTF8String:text]];
+    [[mainApp activeDialog] setError:[NSString stringWithUTF8String:text]];
 }
 bool UserInput_get(void *ui) {
     while(![[mainApp activeDialog] shouldClose]) {
