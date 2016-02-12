@@ -4,6 +4,7 @@ by: Connor Douthat
 11/5/2015
 */
 #import <Cocoa/Cocoa.h>
+#import "MAAttachedWindow.h"
 
 #import "globals.h"
 
@@ -29,7 +30,7 @@ bool ConfirmBox(const char *title, const char *format, ...)
 }
 
 bool TrayBalloon(const char *message) {
-    ErrorBox("%s", message);
+    [mainApp performSelectorOnMainThread:@selector(displayBalloon:) withObject:[NSString stringWithUTF8String:message] waitUntilDone:false];
     return true;
 }
 
@@ -38,14 +39,29 @@ bool MenuReload() {
     return true;
 }
 
+bool BrowseForOutput(char *out, int out_max)
+{
+    [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", @"txt", nil] waitUntilDone:true];
+    while(![mainApp saveAsCompleted]) {
+        [NSThread sleepForTimeInterval:0.2f];
+    }
+    if([mainApp saveAsResult]) {
+        strncpy(out, [[mainApp saveAsResult] UTF8String], out_max);
+        return true;
+    }
+    else return false;
+}
+
 bool TrayWipeState()
 {
-    return false;
+    [mainApp scheduleClipWipe:mainApp];
+    return [mainApp clipWipeTimer] != nil;
 }
 
 void ClipboardWatchStart()
 {
-    //
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    clipReference = [pasteboard changeCount];
 }
 
 char *GetClipboardText()

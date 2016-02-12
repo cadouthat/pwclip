@@ -6,3 +6,4 @@
 #import "AppDelegate.h"
 
 AppDelegate *mainApp = NULL;
+NSInteger clipReference = 0;

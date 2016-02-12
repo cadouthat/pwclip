@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B30CFEB51C5EF42300F895ED /* guiHelp.mm */; };
 		B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = B344635F1C6C20E0009B2FB7 /* MenuTree.mm */; };
+		B34E14A41C6D6E3600A9FB78 /* MAAttachedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */; };
+		B34E14B81C6D902800A9FB78 /* MenuBalloonController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */; };
 		B35653971BF405470038B3D3 /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = B35653961BF405470038B3D3 /* Base.lproj */; };
 		B356539A1BF405640038B3D3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B35653981BF405640038B3D3 /* MainMenu.xib */; };
 		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */; };
@@ -29,6 +31,10 @@
 		B30CFEB41C5EEF1B00F895ED /* includes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = includes.h; sourceTree = SOURCE_ROOT; };
 		B30CFEB51C5EF42300F895ED /* guiHelp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = guiHelp.mm; path = util/guiHelp.mm; sourceTree = SOURCE_ROOT; };
 		B344635F1C6C20E0009B2FB7 /* MenuTree.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuTree.mm; sourceTree = SOURCE_ROOT; };
+		B34E14A21C6D6E3600A9FB78 /* MAAttachedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAAttachedWindow.h; sourceTree = SOURCE_ROOT; };
+		B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAAttachedWindow.m; sourceTree = SOURCE_ROOT; };
+		B34E14B51C6D902800A9FB78 /* MenuBalloonController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuBalloonController.h; sourceTree = "<group>"; };
+		B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuBalloonController.m; sourceTree = "<group>"; };
 		B35653961BF405470038B3D3 /* Base.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Base.lproj; sourceTree = SOURCE_ROOT; };
 		B35653991BF405640038B3D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -60,6 +66,8 @@
 		B30840FD1BEF3FED0079C46A = {
 			isa = PBXGroup;
 			children = (
+				B34E14B51C6D902800A9FB78 /* MenuBalloonController.h */,
+				B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */,
 				B35653981BF405640038B3D3 /* MainMenu.xib */,
 				B37D20911BF3FDF000BB9EC5 /* libcrypto.a */,
 				B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */,
@@ -79,6 +87,8 @@
 		B30841081BEF3FED0079C46A /* pwclip */ = {
 			isa = PBXGroup;
 			children = (
+				B34E14A21C6D6E3600A9FB78 /* MAAttachedWindow.h */,
+				B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */,
 				B30CFEB51C5EF42300F895ED /* guiHelp.mm */,
 				B30CFEB31C5EEF1B00F895ED /* globals.h */,
 				B30CFEB41C5EEF1B00F895ED /* includes.h */,
@@ -174,8 +184,10 @@
 				B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */,
 				B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */,
 				B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */,
+				B34E14B81C6D902800A9FB78 /* MenuBalloonController.m in Sources */,
 				B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */,
 				B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */,
+				B34E14A41C6D6E3600A9FB78 /* MAAttachedWindow.m in Sources */,
 				B39FD3111C60568A004355E0 /* globals.mm in Sources */,
 				B39FD3151C6057BE004355E0 /* UserInput.mm in Sources */,
 			);

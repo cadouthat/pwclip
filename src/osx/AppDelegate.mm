@@ -12,6 +12,8 @@
 
 @interface AppDelegate ()
 
+@property NSTimer *balloonTimer;
+
 @property (weak) IBOutlet NSWindow *window;
 @property NSStatusItem *statusItem;
 @property NSMenu *mainMenu;
@@ -27,6 +29,35 @@
 @end
 
 @implementation AppDelegate
+
+- (void)setNormalTray {
+    [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
+}
+
+- (IBAction)scheduleClipWipe:(id)sender {
+    if(_clipWipeTimer) {
+        [_clipWipeTimer invalidate];
+    }
+    if(!clip_wipe_delay) {
+        return;
+    }
+    _clipWipeTimer = [NSTimer scheduledTimerWithTimeInterval:clip_wipe_delay target:self selector:@selector(wipeClipboard:) userInfo:self repeats:false];
+    [_statusItem setImage: [NSImage imageNamed:@"ErrorIcon"]];
+}
+
+- (IBAction)wipeClipboard:(id)sender {
+    SetClipboardText("");
+    _clipWipeTimer = nil;
+    [self setNormalTray];
+}
+
+- (IBAction)cancelClipWipe:(id)sender {
+    if(_clipWipeTimer) {
+        [_clipWipeTimer invalidate];
+        _clipWipeTimer = nil;
+    }
+    [self setNormalTray];
+}
 
 - (IBAction)displayError:(id)sender {
     [NSApp activateIgnoringOtherApps:YES];
@@ -50,6 +81,60 @@
     [alert setInformativeText:[params objectAtIndex:1]];
     [alert setIcon:[NSImage new]];
     _confirmResult = ([alert runModal] == NSAlertFirstButtonReturn);
+}
+
+- (IBAction)displaySaveAs:(id)sender {
+    NSArray *params = sender;
+    
+    NSSavePanel* savePanel = [NSSavePanel savePanel];
+    
+    savePanel.title = [params objectAtIndex:0];
+    savePanel.showsResizeIndicator = YES;
+    savePanel.showsHiddenFiles = NO;
+    savePanel.canCreateDirectories = YES;
+    savePanel.allowedFileTypes = @[[params objectAtIndex:1]];
+    
+    _saveAsCompleted = false;
+    _saveAsResult = nil;
+    
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    [savePanel beginSheetModalForWindow:_window
+                      completionHandler:^(NSInteger result) {
+                          if (result==NSModalResponseOK) {
+                              NSURL *selection = savePanel.URL;
+                              _saveAsResult = [selection.path stringByResolvingSymlinksInPath];
+                          }
+                          _saveAsCompleted = true;
+                      }];
+}
+
+- (IBAction)displayBalloon:(id)sender {
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    NSRect statusRect = [[_statusItem valueForKey:@"window"] frame];
+    [mainApp setTrayWindow:[[MAAttachedWindow alloc] initWithView:_balloonView
+                                                  attachedToPoint:NSMakePoint(NSMidX(statusRect), NSMinY(statusRect))
+                                                         inWindow:nil
+                                                           onSide:MAPositionBottom
+                                                       atDistance:5.0]];
+    [_balloonText setTextColor:[_trayWindow borderColor]];
+    [_balloonText setStringValue:[@"\n" stringByAppendingString:sender]];
+    [_trayWindow makeKeyAndOrderFront:self];
+    
+    if(_balloonTimer) {
+        [_balloonTimer invalidate];
+    }
+    _balloonTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(closeBalloon:) userInfo:self repeats:false];
+}
+
+- (IBAction)closeBalloon:(id)sender {
+    [_trayWindow orderOut:self];
+    _trayWindow = nil;
+    if(_balloonTimer) {
+        [_balloonTimer invalidate];
+        _balloonTimer = nil;
+    }
 }
 
 - (IBAction)generate:(id)sender {
@@ -77,12 +162,16 @@
 }
 
 - (IBAction)deleteEntry:(id)sender {
+    VaultEntry entry(vaults.top(), [[sender representedObject] UTF8String]);
+    RemoveDialog(&entry);
 }
 
 - (IBAction)setMaster:(id)sender {
+    [self performSelectorInBackground:@selector(setMaster_block:) withObject:sender];
 }
 
 - (IBAction)exportAll:(id)sender {
+    [self performSelectorInBackground:@selector(exportAll_block:) withObject:sender];
 }
 
 - (IBAction)openUserInput:(id)sender {
@@ -113,6 +202,8 @@
         openPanel.allowsMultipleSelection = NO;
         openPanel.allowedFileTypes = @[@"db"];
         
+        [NSApp activateIgnoringOtherApps:YES];
+
         [openPanel beginSheetModalForWindow:_window
                           completionHandler:^(NSInteger result) {
                               if (result==NSModalResponseOK) {
@@ -205,6 +296,8 @@
     vaults.readHistory();
     
     [self updateMenu];
+    
+    [self performSelectorInBackground:@selector(monitorClipboard:) withObject:self];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -218,6 +311,14 @@
     mainApp = NULL;
 }
 
+- (IBAction)exportAll_block:(id)sender {
+    ExportDialog();
+}
+
+- (IBAction)setMaster_block:(id)sender {
+    MasterPassDialog();
+}
+
 - (IBAction)saveEntry_block:(id)sender {
     SaveDialog();
 }
@@ -228,6 +329,18 @@
     }
     else {
         OpenVaultDialog(-1, [sender UTF8String]);
+    }
+}
+
+- (IBAction)monitorClipboard:(id)sender {
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    while(true) {
+        [NSThread sleepForTimeInterval:0.2f];
+        if(_clipWipeTimer) {
+            if([pasteboard changeCount] != clipReference) {
+                [mainApp performSelectorOnMainThread:@selector(cancelClipWipe:) withObject:self waitUntilDone:true];
+            }
+        }
     }
 }
 

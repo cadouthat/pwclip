@@ -6,3 +6,4 @@ by: Connor Douthat
 #import "AppDelegate.h"
 
 extern AppDelegate *mainApp;
+extern NSInteger clipReference;

@@ -29,7 +29,51 @@
 }
 
 - (void)updateLayout {
-    //
+    NSRect frame;
+    NSRect windowFrame = [[self window] frame];
+    NSInteger pad = 40;
+    NSInteger sep = 10;
+    NSInteger y = pad;
+    if(![_lblInfo isHidden]) {
+        frame = [_lblInfo frame];
+        frame.origin.y = windowFrame.size.height - y - frame.size.height;
+        [_lblInfo setFrame:frame];
+        y += frame.size.height + sep;
+    }
+    if(![_lblError isHidden]) {
+        frame = [_lblError frame];
+        frame.origin.y = windowFrame.size.height - y - frame.size.height;
+        [_lblError setFrame:frame];
+        y += frame.size.height + sep;
+    }
+    if(![_editName isHidden]) {
+        frame = [_editName frame];
+        frame.origin.y = windowFrame.size.height - y - frame.size.height;
+        [_editName setFrame:frame];
+        y += frame.size.height + sep;
+    }
+    if(![_editPassword isHidden]) {
+        frame = [_editPassword frame];
+        frame.origin.y = windowFrame.size.height - y - frame.size.height;
+        [_editPassword setFrame:frame];
+        y += frame.size.height + sep;
+    }
+    if(![_editConfirm isHidden]) {
+        frame = [_editConfirm frame];
+        frame.origin.y = windowFrame.size.height - y - frame.size.height;
+        [_editConfirm setFrame:frame];
+        y += frame.size.height + sep;
+    }
+    y += sep;
+    frame = [_btnCancel frame];
+    frame.origin.y = windowFrame.size.height - y - frame.size.height;
+    [_btnCancel setFrame:frame];
+    frame = [_btnOkay frame];
+    frame.origin.y = windowFrame.size.height - y - frame.size.height;
+    [_btnOkay setFrame:frame];
+    y += pad;
+    windowFrame.size.height = y;
+    [[self window] setFrame:windowFrame display:YES];
 }
 
 - (void)setInfo:(NSString*)text {

@@ -6,7 +6,6 @@ by: Connor Douthat
 void ExportDialog()
 {
 	//Make sure vault is open
-	OpenVaultDialog(0);
 	if(!vaults.topOpen()) return;
 
 	//Prompt for output path

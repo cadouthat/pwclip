@@ -8,7 +8,6 @@ bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key
 void MasterPassDialog()
 {
 	//Make sure vault is open
-	OpenVaultDialog(0);
 	if(!vaults.topOpen()) return;
 
 	//Prompt for new password

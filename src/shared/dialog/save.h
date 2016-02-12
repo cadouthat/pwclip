@@ -6,7 +6,6 @@ by: Connor Douthat
 void SaveDialog()
 {
 	//Make sure vault is open
-	OpenVaultDialog(0);
 	if(!vaults.topOpen()) return;
 
 	//Store plaintext from clipboard
