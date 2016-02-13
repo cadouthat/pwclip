@@ -11,8 +11,10 @@ by: Connor Douthat
 #include <commctrl.h>
 #include <shlobj.h>
 #include <unistd.h>
+#include <string>
 
 //System macros
+#define EM_SETCUEBANNER 0x1501
 #define SleepSeconds(x) Sleep(x * 1000)
 
 //Shared

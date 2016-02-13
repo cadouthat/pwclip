@@ -5,13 +5,6 @@ by: Connor Douthat
 */
 class VaultManager
 {
-	bool defaultPath(char *out)
-	{
-		if(!appDataPath[0]) return false;
-		strcpy(out, appDataPath);
-		strcat(out, "vault.db");
-		return true;
-	}
 	bool historyPath(char *out)
 	{
 		if(!appDataPath[0]) return false;
@@ -95,18 +88,10 @@ public:
 					if(FileExists(line)) history.push_back(new Vault(line));
 				}
 				fclose(f_hist);
+				return true;
 			}
 		}
-		//No history found, use default location
-		if(!history.size())
-		{
-			char def_path[256] = {0};
-			if(defaultPath(def_path))
-			{
-				history.push_back(new Vault(def_path));
-			}
-		}
-		return history.size();
+		return false;
 	}
 	bool writeHistory()
 	{

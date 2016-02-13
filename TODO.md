@@ -1,8 +1,8 @@
 Usability
 ==
-* Add create vault menu and wipe out default path logic
-* Fix dialog position on dual monitors (win7)
-* Prevent multiple instances from running (pop up tray message)
+* Add create vault menu (OSX)
+* Auto focus first field on prompt (OSX)
+* Prevent multiple instances from running (OSX)
 
 Features
 ==
@@ -11,5 +11,4 @@ Features
 
 Security
 ==
-* Test memory for plaintext
-* Execute pending clipboard wipe on exit
+* Execute pending clipboard wipe on exit (OSX)

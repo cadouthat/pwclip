@@ -38,11 +38,20 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			}
 			else switch(id)
 			{
+				char db_path[256];
+			case TRAY_CREATE_DB:
+				//Browse for db to open
+				memset(db_path, 0, sizeof(db_path));
+				if(BrowseForOutput(FILE_TYPE_DB, db_path))
+				{
+					//Open selected db
+					OpenVaultDialog(0, db_path);
+				}
+				break;
 			case TRAY_BROWSE_DB:
 				//Browse for db to open
-				char db_path[256];
 				memset(db_path, 0, sizeof(db_path));
-				if(BrowseForInput(db_path))
+				if(BrowseForInput(FILE_TYPE_DB, db_path))
 				{
 					//Open selected db
 					OpenVaultDialog(0, db_path);

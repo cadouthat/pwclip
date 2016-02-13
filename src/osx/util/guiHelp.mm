@@ -39,8 +39,19 @@ bool MenuReload() {
     return true;
 }
 
-bool BrowseForOutput(char *out, int out_max)
+bool BrowseForOutput(int type, char *out, int out_max)
 {
+    NSString *ext = nil;
+    switch(type)
+    {
+    case FILE_TYPE_DB:
+        ext = @"db";
+        break;
+    case FILE_TYPE_TXT:
+        ext = @"txt";
+        break;
+    }
+
     [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", @"txt", nil] waitUntilDone:true];
     while(![mainApp saveAsCompleted]) {
         [NSThread sleepForTimeInterval:0.2f];

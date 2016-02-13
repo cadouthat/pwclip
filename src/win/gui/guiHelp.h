@@ -22,27 +22,42 @@ bool ConfirmBox(const char *title, const char *format, ...)
 	va_end(args);
 	return result;
 }
-bool BrowseForOutput(char *out, int out_max)
+void GetFileTypeStrings(int type, OPENFILENAME *ofn)
+{
+	switch(type)
+	{
+	case FILE_TYPE_DB:
+		ofn->lpstrFilter = "Database Files\0*.db\0All Files\0*.*\0\0";
+		ofn->lpstrDefExt = "db";
+		break;
+	case FILE_TYPE_TXT:
+		ofn->lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
+		ofn->lpstrDefExt = "txt";
+		break;
+	default:
+		ofn->lpstrFilter = "All Files\0*.*\0\0";
+		ofn->lpstrDefExt = NULL;
+	}
+}
+bool BrowseForOutput(int type, char *out, int out_max)
 {
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd_main;
-	ofn.lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
-	ofn.lpstrDefExt = "txt";
+	GetFileTypeStrings(type, &ofn);
 	ofn.Flags = OFN_OVERWRITEPROMPT;
 	ofn.lpstrFile = out;
 	ofn.nMaxFile = out_max;
 	return GetSaveFileName(&ofn);
 }
-bool BrowseForInput(char *out, int out_max = 256)
+bool BrowseForInput(int type, char *out, int out_max = 256)
 {
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd_main;
-	ofn.lpstrFilter = "Database Files\0*.db\0All Files\0*.*\0\0";
-	ofn.lpstrDefExt = "db";
+	GetFileTypeStrings(type, &ofn);
 	ofn.lpstrFile = out;
 	ofn.nMaxFile = out_max;
 	return GetOpenFileName(&ofn);

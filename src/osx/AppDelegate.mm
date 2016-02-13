@@ -92,7 +92,8 @@
     savePanel.showsResizeIndicator = YES;
     savePanel.showsHiddenFiles = NO;
     savePanel.canCreateDirectories = YES;
-    savePanel.allowedFileTypes = @[[params objectAtIndex:1]];
+    NSString *type = [params objectAtIndex:1];
+    savePanel.allowedFileTypes = (type ? @[type] : nil);
     
     _saveAsCompleted = false;
     _saveAsResult = nil;
@@ -293,7 +294,9 @@
     strcpy(vaults.appDataPath, config_path);
     strcat(config_path, "pwclip.ini");
     LoadConfig(config_path);
-    vaults.readHistory();
+    if(!vaults.readHistory()) {
+        TrayBalloon("Welcome to pwclip! To get started, try creating a vault.");
+    }
     
     [self updateMenu];
     

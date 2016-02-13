@@ -8,6 +8,14 @@ by: Connor Douthat
 int main(int argc, char **argv)
 {
 	//Settings and global init
+	HANDLE instanceMutex = CreateMutex(NULL, true, "_pwclip_tray_instance");
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		if(instanceMutex) CloseHandle(instanceMutex);
+		ErrorBox("pwclip is already running");
+		return 1;
+	}
+
 	char config_path[256] = {0};
 	if(LocalUserAppData(APPDATA_NAME, config_path))
 	{
@@ -17,7 +25,7 @@ int main(int argc, char **argv)
 		strcat(config_path, "pwclip.ini");
 		LoadConfig(config_path);
 	}
-	vaults.readHistory();
+	bool skipWelcome = vaults.readHistory();
 
 	//GUI init
 	INITCOMMONCONTROLSEX icex = {0};
@@ -30,6 +38,12 @@ int main(int argc, char **argv)
 	MenuInit();
 	TrayInit();
 
+	//Welcome message for new users
+	if(!skipWelcome)
+	{
+		TrayBalloon("Welcome to pwclip! To get started, try creating a vault.");
+	}
+
 	//Main message loop
 	SetTimer(hwnd_main, TIMER_UPDATE_TRAY, 500, NULL);
 	MSG msg;
@@ -40,6 +54,15 @@ int main(int argc, char **argv)
 		DispatchMessage(&msg);
 	}
 
+	//Wipe clipboard if still owned
+	if(clip_wipe_delay)
+	{
+		if(GetClipboardSequenceNumber() == clip_sequence)
+		{
+			WipeClipboardText();
+		}
+	}
+
 	//GUI cleanup
 	TrayCleanup();
 	MenuCleanup();
@@ -47,5 +70,6 @@ int main(int argc, char **argv)
 	//GLobal cleanup
 	vaults.writeHistory();
 	vaults.close();
+	CloseHandle(instanceMutex);
 	return 0;
 }

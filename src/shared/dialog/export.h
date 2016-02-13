@@ -10,7 +10,7 @@ void ExportDialog()
 
 	//Prompt for output path
 	char out_path[256] = {0};
-	if(!BrowseForOutput(out_path)) return;
+	if(!BrowseForOutput(FILE_TYPE_TXT, out_path)) return;
 
 	//Open output file
 	FILE *f_out = fopen(out_path, "w");

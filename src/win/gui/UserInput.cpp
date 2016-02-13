@@ -26,9 +26,10 @@ class UserInput
 
 	//Window state
 	bool okay_flag;
-	HFONT font, font_ital;
+	HFONT font;
 	HWND hwnd_top;
 	int title_height;
+	std::vector<std::wstring*> *wStringsUsed;
 
 	//Output
 	char val_name[ENTRY_NAME_MAX + 1];
@@ -84,13 +85,28 @@ class UserInput
 	}
 	HWND child(int id, const char *text, const char *cn, DWORD st = 0, DWORD ex = 0)
 	{
+		bool isEdit = !stricmp(cn, "EDIT");
 		HWND hwnd_sub = CreateWindowEx(ex, cn,
-				text ? text : "",
+				(text && !isEdit) ? text : "",
 				WS_CHILD | WS_VISIBLE | st,
 				0, 0, 0, 0,
 				hwnd_top, (HMENU)id, NULL, NULL);
 		PostMessage(hwnd_sub, WM_SETFONT, (WPARAM)font, true);
-		SetWindowLongPtr(hwnd_sub, GWL_USERDATA, (long)text);
+		if(isEdit)
+		{
+			//Convert to unicode
+			std::string tmp(text);
+			std::wstring *wtext = new std::wstring(tmp.begin(), tmp.end());
+			if(!wStringsUsed) wStringsUsed = new std::vector<std::wstring*>();
+			wStringsUsed->push_back(wtext);
+			//Set cue
+			PostMessage(hwnd_sub, EM_SETCUEBANNER, (WPARAM)true, (LPARAM)wtext->c_str());
+			//Set password mask
+			if(id != UIN_ID_NAME)
+			{
+				PostMessage(hwnd_sub, EM_SETPASSWORDCHAR, 0x95, 0);
+			}
+		}
 		return hwnd_sub;
 	}
 	HWND childStatic(int id, const char *text)
@@ -101,7 +117,6 @@ class UserInput
 	{
 		HWND hwnd_sub = child(id, text, "EDIT", WS_TABSTOP, WS_EX_CLIENTEDGE);
 		PostMessage(hwnd_sub, EM_SETLIMITTEXT, max_len, 0);
-		PostMessage(hwnd_sub, WM_SETFONT, (WPARAM)font_ital, true);
 		return hwnd_sub;
 	}
 	HWND childCheckbox(int id, const char *text)
@@ -146,18 +161,6 @@ class UserInput
 			PROOF_QUALITY,
 			FF_DONTCARE,
 			"Arial");
-		font_ital = CreateFont(16, 0,
-			0, 0,
-			FW_NORMAL,
-			true,
-			false,
-			false,
-			ANSI_CHARSET,
-			OUT_DEFAULT_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			PROOF_QUALITY,
-			FF_DONTCARE,
-			"Arial");
 		//Create main window
 		hwnd_top = CreateWindowEx(0, class_name,
 			title,
@@ -172,17 +175,28 @@ class UserInput
 		//Create controls
 		childStatic(UIN_ID_INFO, info_text);
 		childStatic(UIN_ID_ERROR, error_text);
-		if(flags & UIF_NAME) childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
-		if(flags & UIF_OLDPASS) childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Master Password" : "Master Password");
+		HWND firstInput = NULL;
+		if(flags & UIF_NAME)
+		{
+			HWND child = childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
+			firstInput = firstInput ? firstInput : child;
+		}
+		if(flags & UIF_OLDPASS)
+		{
+			HWND child = childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Master Password" : "Master Password");
+			firstInput = firstInput ? firstInput : child;
+		}
 		if(flags & UIF_NEWPASS)
 		{
-			childEdit(UIN_ID_NEWPASS, "New Master Password");
+			HWND child = childEdit(UIN_ID_NEWPASS, "New Master Password");
+			firstInput = firstInput ? firstInput : child;
 			childEdit(UIN_ID_CONFIRM, "Confirm Master Password");
 		}
 		childDefButton(UIN_ID_OKAY, "Okay");
 		childButton(UIN_ID_CANCEL, "Cancel");
 		//Finalize
 		UpdateLayout();
+		if(firstInput) SetFocus(firstInput);
 		return true;
 	}
 	void close()
@@ -196,38 +210,6 @@ class UserInput
 		{
 			DeleteObject(font);
 			font = NULL;
-		}
-		if(font_ital)
-		{
-			DeleteObject(font_ital);
-			font_ital = NULL;
-		}
-	}
-	void focus(int id, HWND hwnd)
-	{
-		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
-		char text[PASSWORD_MAX + ENTRY_NAME_MAX + 1];
-		GetWindowText(hwnd, text, sizeof(text));
-		if(!strcmp(text, def_text))
-		{
-			SetWindowText(hwnd, "");
-			PostMessage(hwnd, WM_SETFONT, (WPARAM)font, true);
-		}
-		if(id != UIN_ID_NAME)
-		{
-			PostMessage(hwnd, EM_SETPASSWORDCHAR, 0x95, 0);
-		}
-	}
-	void unfocus(int id, HWND hwnd)
-	{
-		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
-		char text[PASSWORD_MAX + ENTRY_NAME_MAX + 1];
-		GetWindowText(hwnd, text, sizeof(text));
-		if(!text[0])
-		{
-			PostMessage(hwnd, EM_SETPASSWORDCHAR, 0, 0);
-			SetWindowText(hwnd, def_text);
-			PostMessage(hwnd, WM_SETFONT, (WPARAM)font_ital, true);
 		}
 	}
 	void getValue(int id, char *out, int max)
@@ -248,12 +230,6 @@ class UserInput
 		case WM_COMMAND:
 			switch(HIWORD(wParam))
 			{
-			case EN_SETFOCUS:
-				focus(LOWORD(wParam), (HWND)lParam);
-				break;
-			case EN_KILLFOCUS:
-				unfocus(LOWORD(wParam), (HWND)lParam);
-				break;
 			case BN_CLICKED:
 				switch(LOWORD(wParam))
 				{
@@ -336,6 +312,14 @@ public:
 	~UserInput()
 	{
 		if(hwnd_top) close();
+		if(wStringsUsed)
+		{
+			for(int i = 0; i < wStringsUsed->size(); i++)
+			{
+				delete (*wStringsUsed)[i];
+			}
+			delete wStringsUsed;
+		}
 		memset(this, 0, sizeof(*this));
 	}
 	const char *name() { return val_name; }
