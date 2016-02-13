@@ -10,7 +10,7 @@ void ErrorBox(const char *format, ...);
 bool ConfirmBox(const char *title, const char *format, ...);
 bool BrowseForOutput(int type, char *out, int out_max = 256);
 
-bool TrayBalloon(const char *message);
+bool TrayBalloon(const char *message, float timeout = 2.0f);
 bool TrayWipeState();
 
 void ClipboardWatchStart();

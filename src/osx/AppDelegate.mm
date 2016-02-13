@@ -23,7 +23,9 @@
 @property NSMenuItem *menuDeleteEntry;
 @property NSMenuItem *menuSetMaster;
 @property NSMenuItem *menuExportAll;
+@property NSMenuItem *menuVaults;
 @property NSMenuItem *menuOpenVault;
+@property NSMenuItem *menuSwitchVault;
 @property NSMenuItem *menuCloseVaults;
 
 @end
@@ -42,7 +44,7 @@
         return;
     }
     _clipWipeTimer = [NSTimer scheduledTimerWithTimeInterval:clip_wipe_delay target:self selector:@selector(wipeClipboard:) userInfo:self repeats:false];
-    [_statusItem setImage: [NSImage imageNamed:@"ErrorIcon"]];
+    [_statusItem setImage: [NSImage imageNamed:@"ReadyIcon"]];
 }
 
 - (IBAction)wipeClipboard:(id)sender {
@@ -111,6 +113,8 @@
 }
 
 - (IBAction)displayBalloon:(id)sender {
+    NSArray *params = sender;
+
     [NSApp activateIgnoringOtherApps:YES];
     
     NSRect statusRect = [[_statusItem valueForKey:@"window"] frame];
@@ -120,13 +124,22 @@
                                                            onSide:MAPositionBottom
                                                        atDistance:5.0]];
     [_balloonText setTextColor:[_trayWindow borderColor]];
-    [_balloonText setStringValue:[@"\n" stringByAppendingString:sender]];
+    NSString *text = [params objectAtIndex:0];
+    NSRect frame = [_balloonText frame];
+    if([text length] < 32) {
+        frame.origin.y = -16;
+    }
+    else {
+        frame.origin.y = -8;
+    }
+    [_balloonText setFrame:frame];
+    [_balloonText setStringValue:text];
     [_trayWindow makeKeyAndOrderFront:self];
     
     if(_balloonTimer) {
         [_balloonTimer invalidate];
     }
-    _balloonTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(closeBalloon:) userInfo:self repeats:false];
+    _balloonTimer = [NSTimer scheduledTimerWithTimeInterval:[[params objectAtIndex:1] floatValue] target:self selector:@selector(closeBalloon:) userInfo:self repeats:false];
 }
 
 - (IBAction)closeBalloon:(id)sender {
@@ -216,6 +229,10 @@
     }
 }
 
+- (IBAction)createVault:(id)sender {
+    [self performSelectorInBackground:@selector(createVault_block:) withObject:self];
+}
+
 - (IBAction)closeVaults:(id)sender {
     vaults.close();
     [self updateMenu];
@@ -243,6 +260,7 @@
     [_menuSetMaster setEnabled:vaultEnabled];
     [_menuExportAll setEnabled:vaultEnabled];
     [_menuCloseVaults setEnabled:vaultEnabled];
+    [_menuSwitchVault setEnabled:vaultEnabled];
     
     if(vaultEnabled) {
         MenuTree tree;
@@ -271,16 +289,23 @@
     [_statusItem setEnabled: YES];
     [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
     
+    NSMenu *vaultMenu = [[NSMenu alloc] init];
+    [vaultMenu setAutoenablesItems:false];
+    [vaultMenu addItemWithTitle:@"Create Vault" action:@selector(createVault:) keyEquivalent:@""];
+    _menuOpenVault = [vaultMenu addItemWithTitle:@"Open Vault" action:NULL keyEquivalent:@""];
+    _menuSwitchVault = [vaultMenu addItemWithTitle:@"Switch Vault" action:NULL keyEquivalent:@""];
+    _menuCloseVaults = [vaultMenu addItemWithTitle:@"Close All Vaults" action:@selector(closeVaults:) keyEquivalent:@""];
+    
     _mainMenu = [[NSMenu alloc] init];
     [_mainMenu setAutoenablesItems:false];
     _menuGenerate = [_mainMenu addItemWithTitle:@"Generate Password" action:@selector(generate:) keyEquivalent:@""];
     _menuSaveEntry = [_mainMenu addItemWithTitle:@"Save from Clipboard" action:@selector(saveEntry:) keyEquivalent:@""];
     _menuLoadEntry = [_mainMenu addItemWithTitle:@"Load to Clipboard" action:NULL keyEquivalent:@""];
     _menuDeleteEntry = [_mainMenu addItemWithTitle:@"Delete Entry" action:NULL keyEquivalent:@""];
+    _menuExportAll = [_mainMenu addItemWithTitle:@"Export Raw Entries" action:@selector(exportAll:) keyEquivalent:@""];
     _menuSetMaster = [_mainMenu addItemWithTitle:@"Change Master Password" action:@selector(setMaster:) keyEquivalent:@""];
-    _menuExportAll = [_mainMenu addItemWithTitle:@"Raw Export" action:@selector(exportAll:) keyEquivalent:@""];
-    _menuOpenVault = [_mainMenu addItemWithTitle:@"Open Vault" action:NULL keyEquivalent:@""];
-    _menuCloseVaults = [_mainMenu addItemWithTitle:@"Close All Vaults" action:@selector(closeVaults:) keyEquivalent:@""];
+    _menuVaults = [_mainMenu addItemWithTitle:@"Vaults" action:NULL keyEquivalent:@""];
+    [_mainMenu setSubmenu:vaultMenu forItem:_menuVaults];
     [_mainMenu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@"q"];
     _statusItem.menu = _mainMenu;
     
@@ -295,7 +320,7 @@
     strcat(config_path, "pwclip.ini");
     LoadConfig(config_path);
     if(!vaults.readHistory()) {
-        TrayBalloon("Welcome to pwclip! To get started, try creating a vault.");
+        TrayBalloon("Welcome to pwclip! To get started, try creating a vault.", 6.0f);
     }
     
     [self updateMenu];
@@ -304,6 +329,12 @@
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
+    //Wipe clipboard if pending
+    if(_clipWipeTimer) {
+        [self wipeClipboard:self];
+        [_clipWipeTimer invalidate];
+        _clipWipeTimer = nil;
+    }
     //GLobal cleanup
     if(!FileExists(vaults.appDataPath)) {
         [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithUTF8String:vaults.appDataPath] withIntermediateDirectories:YES attributes:nil error:NULL];
@@ -312,6 +343,13 @@
     vaults.close();
     
     mainApp = NULL;
+}
+
+- (IBAction)createVault_block:(id)sender {
+    char path[256] = {0};
+    if(BrowseForOutput(FILE_TYPE_DB, path)) {
+        [self openVault_block:[NSString stringWithUTF8String:path]];
+    }
 }
 
 - (IBAction)exportAll_block:(id)sender {

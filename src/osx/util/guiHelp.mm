@@ -3,6 +3,7 @@ GUI related helper functions (OSX implementations)
 by: Connor Douthat
 11/5/2015
 */
+#include "../../shared/util/prototypes.h"
 #import <Cocoa/Cocoa.h>
 #import "MAAttachedWindow.h"
 
@@ -29,8 +30,8 @@ bool ConfirmBox(const char *title, const char *format, ...)
     return [mainApp confirmResult];
 }
 
-bool TrayBalloon(const char *message) {
-    [mainApp performSelectorOnMainThread:@selector(displayBalloon:) withObject:[NSString stringWithUTF8String:message] waitUntilDone:false];
+bool TrayBalloon(const char *message, float timeout) {
+    [mainApp performSelectorOnMainThread:@selector(displayBalloon:) withObject:[NSArray arrayWithObjects:[NSString stringWithUTF8String:message], [NSNumber numberWithFloat:timeout], nil] waitUntilDone:false];
     return true;
 }
 
@@ -52,7 +53,7 @@ bool BrowseForOutput(int type, char *out, int out_max)
         break;
     }
 
-    [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", @"txt", nil] waitUntilDone:true];
+    [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", ext, nil] waitUntilDone:true];
     while(![mainApp saveAsCompleted]) {
         [NSThread sleepForTimeInterval:0.2f];
     }
@@ -65,7 +66,7 @@ bool BrowseForOutput(int type, char *out, int out_max)
 
 bool TrayWipeState()
 {
-    [mainApp scheduleClipWipe:mainApp];
+    [mainApp performSelectorOnMainThread:@selector(scheduleClipWipe:) withObject:mainApp waitUntilDone:true];
     return [mainApp clipWipeTimer] != nil;
 }
 

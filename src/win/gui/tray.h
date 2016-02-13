@@ -39,7 +39,7 @@ bool TrayInit()
 	strcpy(nid.szTip, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_ADD, &nid);
 }
-bool TrayBalloon(const char *message)
+bool TrayBalloon(const char *message, float timeout)
 {
 	//Update tray icon
 	NOTIFYICONDATA nid;
@@ -47,7 +47,7 @@ bool TrayBalloon(const char *message)
 	nid.cbSize = sizeof(nid);
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_INFO;
-	nid.uTimeout = 5000;
+	nid.uTimeout = (int)floor(timeout * 1000);
 	strcpy(nid.szInfo, message);
 	strcpy(nid.szInfoTitle, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);

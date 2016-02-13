@@ -96,13 +96,22 @@
     [[self btnCancel] setAction:@selector(cancelPressed:)];
     
     //Update visibility and layout
+    bool hasFocus = false;
     if(_flags & UIF_NAME) {
         [_editName setEnabled:true];
         [_editName setHidden:false];
+        if(!hasFocus) {
+            [_editName becomeFirstResponder];
+            hasFocus = true;
+        }
     }
     if(_flags & UIF_OLDPASS) {
         [_editPassword setEnabled:true];
         [_editPassword setHidden:false];
+        if(!hasFocus) {
+            [_editPassword becomeFirstResponder];
+            hasFocus = true;
+        }
     }
     if(_flags & UIF_NEWPASS) {
         [_editPassword setEnabled:true];
@@ -110,6 +119,10 @@
         [_editConfirm setEnabled:true];
         [_editConfirm setHidden:false];
         [_editPassword setPlaceholderString:@"New Master Password"];
+        if(!hasFocus) {
+            [_editPassword becomeFirstResponder];
+            hasFocus = true;
+        }
     }
     
     [self updateLayout];
