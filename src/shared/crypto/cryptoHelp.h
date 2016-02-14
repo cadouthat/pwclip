@@ -37,9 +37,13 @@ unsigned char *hex2bin(const char *hex, int *len_out)
 	*len_out = hex2bin(hex, raw, raw_len);
 	return raw;
 }
-bool RandText(char *out, int len)
+bool RandText(char *out, int len, bool include_symbols)
 {
-	const char *char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+	const char *char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	if(include_symbols)
+	{
+		char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_!@#$^&*()-=+~|[]{};:?.,<>";
+	}
 	int char_set_size = strlen(char_set);
 	unsigned char *u_out = (unsigned char*)out;
 	if(!RAND_bytes(u_out, len)) return false;

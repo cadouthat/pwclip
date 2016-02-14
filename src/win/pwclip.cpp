@@ -16,14 +16,17 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	char config_path[256] = {0};
 	if(LocalUserAppData(APPDATA_NAME, config_path))
 	{
 		//Set app data path for vaults
 		strcpy(vaults.appDataPath, config_path);
 		//Get config file path and load it
 		strcat(config_path, "pwclip.ini");
-		LoadConfig(config_path);
+		if(!LoadConfig(config_path))
+		{
+			//Create default config file
+			DumpResource("default_config", config_path);
+		}
 	}
 	bool skipWelcome = vaults.readHistory();
 

@@ -1,3 +1,6 @@
+# -- pwclip makefile for windows --
+
+# See pwclip.mk.sample
 include local/path.mk
 
 FLAGS = -static-libgcc -static-libstdc++ -O3

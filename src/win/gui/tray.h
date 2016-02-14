@@ -47,7 +47,7 @@ bool TrayBalloon(const char *message, float timeout)
 	nid.cbSize = sizeof(nid);
 	nid.hWnd = hwnd_main;
 	nid.uFlags = NIF_INFO;
-	nid.uTimeout = (int)floor(timeout * 1000);
+	nid.uTimeout = (int)(timeout * 1000);
 	strcpy(nid.szInfo, message);
 	strcpy(nid.szInfoTitle, TRAY_TOOLTIP);
 	return Shell_NotifyIcon(NIM_MODIFY, &nid);
@@ -68,6 +68,9 @@ bool TrayNormalState()
 }
 bool TrayWipeState()
 {
+	//Refresh config
+	LoadConfig(config_path);
+
 	if(!clip_wipe_delay) return false;
 	//Set timer to wipe clipboard
 	KillTimer(hwnd_main, TIMER_WIPE);

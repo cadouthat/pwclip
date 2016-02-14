@@ -40,6 +40,10 @@
     if(_clipWipeTimer) {
         [_clipWipeTimer invalidate];
     }
+
+    //Refresh config
+    LoadConfig(config_path);
+
     if(!clip_wipe_delay) {
         return;
     }
@@ -152,18 +156,7 @@
 }
 
 - (IBAction)generate:(id)sender {
-    char pass[GEN_PASS_SIZE + 1] = {0};
-    if(!RandText(pass, GEN_PASS_SIZE))
-    {
-        ErrorBox("Failed to generate password");
-        return;
-    }
-    if(!SetClipboardText(pass))
-    {
-        ErrorBox("Failed to set clipboard text");
-        return;
-    }
-    memset(pass, 0, sizeof(pass));
+    GenerateDialog();
 }
 
 - (IBAction)saveEntry:(id)sender {
@@ -311,7 +304,7 @@
     
     NSArray *appDataList = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
     NSString *basePath = [appDataList firstObject];
-    char config_path[256] = {0};
+
     strcpy(config_path, [basePath UTF8String]);
     strcat(config_path, "/");
     strcat(config_path, APPDATA_NAME);

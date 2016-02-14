@@ -29,5 +29,6 @@ by: Connor Douthat
 #include "dialog/export.h"
 #include "dialog/load.h"
 #include "dialog/save.h"
+#include "dialog/generate.h"
 #include "dialog/masterPass.h"
 #include "dialog/remove.h"

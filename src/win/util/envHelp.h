@@ -24,19 +24,29 @@ bool LocalUserAppData(const char *app_name, char *path_out)
 	strcpy(path_out, path);
 	return true;
 }
-bool GeneratePassword()
+bool DumpResource(const char *name, const char *dest)
 {
-	char pass[GEN_PASS_SIZE + 1] = {0};
-	if(!RandText(pass, GEN_PASS_SIZE))
+	HRSRC res = FindResource(NULL, name, "BINARY");
+	if(res)
 	{
-		ErrorBox("Failed to generate password");
-		return false;
+		HGLOBAL res_loaded = LoadResource(NULL, res);
+		if(res_loaded)
+		{
+			LPVOID res_data = LockResource(res_loaded);
+			if(res_data)
+			{
+				int res_size = SizeofResource(NULL, res);
+				HANDLE destFile = CreateFile(dest, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+				if(destFile != INVALID_HANDLE_VALUE)
+				{
+					DWORD written = 0;
+					WriteFile(destFile, res_data, res_size, &written, NULL);
+					SetEndOfFile(destFile);
+					CloseHandle(destFile);
+					return written == res_size;
+				}
+			}
+		}
 	}
-	if(!SetClipboardText(pass))
-	{
-		ErrorBox("Failed to set clipboard text");
-		return false;
-	}
-	memset(pass, 0, sizeof(pass));
-	return true;
+	return false;
 }

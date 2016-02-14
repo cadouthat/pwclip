@@ -65,7 +65,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				MasterPassDialog();
 				break;
 			case TRAY_GENERATE:
-				GeneratePassword();
+				GenerateDialog();
 				break;
 			case TRAY_SAVE:
 				SaveDialog();
