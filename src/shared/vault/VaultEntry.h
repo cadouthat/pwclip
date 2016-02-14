@@ -23,10 +23,11 @@ class VaultEntry
 public:
 	VaultEntry(Vault *vault_in, const char *pk_in);
 	~VaultEntry();
+	Vault *getVault();
 	bool exists();
 	const char *name();
 	const char *valuePlain();
-	const char *valuePlain(char *set);
+	const char *valuePlain(const char *set);
 	bool fatal();
 	bool decrypt(PasswordCipher *override_key = NULL);
 	bool save();

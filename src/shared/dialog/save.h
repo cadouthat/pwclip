@@ -19,6 +19,14 @@ void SaveDialog()
 
 	//Prompt for name
 	void *prompt = UserInput_new(UIF_NAME, "Save New Entry");
+	char preview_text[24] = {0};
+	char info_text[128] = {0};
+	if(password_preview)
+	{
+		stringPreview(clip_text, preview_text, sizeof(preview_text));
+		sprintf(info_text, "Creating new entry with value '%s'", preview_text);
+		UserInput_setInfo(prompt, info_text);
+	}
 	if(UserInput_get(prompt))
 	{
 		VaultEntry entry(vaults.top(), UserInput_name(prompt));
@@ -26,17 +34,21 @@ void SaveDialog()
 		bool result = true;
 		if(entry.exists())
 		{
-			if(ConfirmBox("Overwrite Warning", "Are you sure you want to replace '%s'?", entry.name()))
+			char key_short[512] = {0};
+			stringPreview(entry.name(), key_short, sizeof(key_short));
+			if(ConfirmBox("Overwrite Warning", "Are you sure you want to replace '%s'?", key_short))
 			{
-				if(!entry.remove()) result = false;
+				if(!entry.remove())
+				{
+					ErrorBox("Failed to remove existing entry!");
+					result = false;
+				}
 			}
 			else result = false;
 		}
 		if(result)
 		{
-			//Assign ownership of plaintext
 			entry.valuePlain(clip_text);
-			clip_text = NULL;
 			if(entry.save())
 			{
 				//Refresh menu
@@ -48,11 +60,10 @@ void SaveDialog()
 		}
 	}
 	UserInput_delete(prompt);
+	memset(info_text, 0, sizeof(info_text));
+	memset(preview_text, 0, sizeof(preview_text));
 
-	if(clip_text)
-	{
-		//Wipe and free plaintext
-		memset(clip_text, 0, strlen(clip_text));
-		free(clip_text);
-	}
+	//Wipe and free plaintext
+	memset(clip_text, 0, strlen(clip_text));
+	free(clip_text);
 }

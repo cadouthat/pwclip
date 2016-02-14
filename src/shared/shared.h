@@ -25,10 +25,13 @@ by: Connor Douthat
 #include "UserInput.h"
 #include "MenuTree.h"
 
+#include "dialog/preferences.h"
 #include "dialog/openVault.h"
 #include "dialog/export.h"
 #include "dialog/load.h"
 #include "dialog/save.h"
+#include "dialog/rename.h"
+#include "dialog/replace.h"
 #include "dialog/generate.h"
 #include "dialog/masterPass.h"
 #include "dialog/remove.h"

@@ -21,8 +21,8 @@ class UserInput
 	//Configuration
 	int flags;
 	const char *title;
-	const char *info_text;
-	const char *error_text;
+	char *info_text;
+	char *error_text;
 
 	//Window state
 	bool okay_flag;
@@ -32,8 +32,8 @@ class UserInput
 	std::vector<std::wstring*> *wStringsUsed;
 
 	//Output
-	char val_name[ENTRY_NAME_MAX + 1];
-	char val_pass[PASSWORD_MAX + 1];
+	char *val_name;
+	char *val_pass;
 
 	void UpdateLayout()
 	{
@@ -113,10 +113,9 @@ class UserInput
 	{
 		return child(id, text, "STATIC");
 	}
-	HWND childEdit(int id, const char *text, int max_len = PASSWORD_MAX)
+	HWND childEdit(int id, const char *text)
 	{
 		HWND hwnd_sub = child(id, text, "EDIT", WS_TABSTOP, WS_EX_CLIENTEDGE);
-		PostMessage(hwnd_sub, EM_SETLIMITTEXT, max_len, 0);
 		return hwnd_sub;
 	}
 	HWND childCheckbox(int id, const char *text)
@@ -178,19 +177,19 @@ class UserInput
 		HWND firstInput = NULL;
 		if(flags & UIF_NAME)
 		{
-			HWND child = childEdit(UIN_ID_NAME, "Entry Name", ENTRY_NAME_MAX);
+			HWND child = childEdit(UIN_ID_NAME, "Entry Name (e.g. work:email)");
 			firstInput = firstInput ? firstInput : child;
 		}
 		if(flags & UIF_OLDPASS)
 		{
-			HWND child = childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Master Password" : "Master Password");
+			HWND child = childEdit(UIN_ID_OLDPASS, (flags & UIF_NEWPASS) ? "Current Vault Password" : "Vault Password");
 			firstInput = firstInput ? firstInput : child;
 		}
 		if(flags & UIF_NEWPASS)
 		{
-			HWND child = childEdit(UIN_ID_NEWPASS, "New Master Password");
+			HWND child = childEdit(UIN_ID_NEWPASS, "New Vault Password");
 			firstInput = firstInput ? firstInput : child;
-			childEdit(UIN_ID_CONFIRM, "Confirm Master Password");
+			childEdit(UIN_ID_CONFIRM, "Confirm Vault Password");
 		}
 		childDefButton(UIN_ID_OKAY, "Okay");
 		childButton(UIN_ID_CANCEL, "Cancel");
@@ -212,16 +211,14 @@ class UserInput
 			font = NULL;
 		}
 	}
-	void getValue(int id, char *out, int max)
+	char *getValue(int id)
 	{
 		HWND hwnd = GetDlgItem(hwnd_top, id);
-		if(!hwnd) return;
-		const char *def_text = (const char*)GetWindowLong(hwnd, GWL_USERDATA);
-		GetWindowText(hwnd, out, max);
-		if(def_text && !strcmp(out, def_text))
-		{
-			*out = 0;
-		}
+		if(!hwnd) return (char*)calloc(1, 1);
+		int size = GetWindowTextLength(hwnd) + 1;
+		char *out = (char*)malloc(size);
+		GetWindowText(hwnd, out, size);
+		return out;
 	}
 	LRESULT MessageProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -237,7 +234,8 @@ class UserInput
 					okay_flag = true;
 					if(okay_flag && (flags & UIF_NAME))
 					{
-						getValue(UIN_ID_NAME, val_name, sizeof(val_name));
+						if(val_name) free(val_name);
+						val_name = getValue(UIN_ID_NAME);
 						if(!val_name[0])
 						{
 							setError("Entry name required");
@@ -246,23 +244,24 @@ class UserInput
 					}
 					if(okay_flag && (flags & UIF_OLDPASS))
 					{
-						getValue(UIN_ID_OLDPASS, val_pass, sizeof(val_pass));
+						if(val_pass) free(val_pass);
+						val_pass = getValue(UIN_ID_OLDPASS);
 					}
 					if(okay_flag && (flags & UIF_NEWPASS))
 					{
-						getValue(UIN_ID_NEWPASS, val_pass, sizeof(val_pass));
-						char tmp[PASSWORD_MAX + 1] = {0};
-						getValue(UIN_ID_CONFIRM, tmp, sizeof(tmp));
+						if(val_pass) free(val_pass);
+						val_pass = getValue(UIN_ID_NEWPASS);
+						char *tmp = getValue(UIN_ID_CONFIRM);
 						if(strcmp(tmp, val_pass))
 						{
-							memset(val_pass, 0, sizeof(val_pass));
 							setError("Passwords do not match");
 							okay_flag = false;
 						}
 						else if(!val_pass[0])
 						{
-							okay_flag = (IDYES == MessageBox(hwnd_top, "Master password is blank, encryption will not be secure. Are you sure you want to proceed?", "Confirm Empty Password", MB_YESNO));
+							okay_flag = (IDYES == MessageBox(hwnd_top, "Vault password is blank, encryption will not be secure. Are you sure you want to proceed?", "Confirm Empty Password", MB_YESNO));
 						}
+						free(tmp);
 					}
 					break;
 				case UIN_ID_CANCEL:
@@ -311,6 +310,10 @@ public:
 	}
 	~UserInput()
 	{
+		if(info_text) free(info_text);
+		if(error_text) free(error_text);
+		if(val_name) free(val_name);
+		if(val_pass) free(val_pass);
 		if(hwnd_top) close();
 		if(wStringsUsed)
 		{
@@ -326,7 +329,8 @@ public:
 	const char *pass() { return val_pass; }
 	void setInfo(const char *text)
 	{
-		info_text = text;
+		if(info_text) free(info_text);
+		info_text = strdup(text);
 		if(hwnd_top)
 		{
 			SetWindowText(GetDlgItem(hwnd_top, UIN_ID_INFO), text);
@@ -335,7 +339,8 @@ public:
 	}
 	void setError(const char *text)
 	{
-		error_text = text;
+		if(error_text) free(error_text);
+		error_text = strdup(text);
 		if(hwnd_top)
 		{
 			SetWindowText(GetDlgItem(hwnd_top, UIN_ID_ERROR), text);

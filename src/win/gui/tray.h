@@ -68,13 +68,11 @@ bool TrayNormalState()
 }
 bool TrayWipeState()
 {
-	//Refresh config
-	LoadConfig(config_path);
-
 	if(!clip_wipe_delay) return false;
 	//Set timer to wipe clipboard
 	KillTimer(hwnd_main, TIMER_WIPE);
 	SetTimer(hwnd_main, TIMER_WIPE, clip_wipe_delay * 1000, NULL);
+	clip_wipe_pending = true;
 	if(tray_state == TRAY_STATE_WIPE) return true;
 	tray_state = TRAY_STATE_WIPE;
 	//Update tray icon

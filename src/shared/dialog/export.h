@@ -38,7 +38,9 @@ void ExportDialog()
 			}
 			else
 			{
-				ErrorBox("Failed to decrypt '%s'", key);
+				char key_short[512] = {0};
+				stringPreview(key, key_short, sizeof(key_short));
+				ErrorBox("Failed to decrypt '%s'", key_short);
 				result = false;
 				break;
 			}

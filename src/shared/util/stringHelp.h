@@ -28,3 +28,29 @@ void trim(char *buf)
 	//Truncate the rest
 	buf[len] = 0;
 }
+
+void stringPreview(const char *str, char *out, int out_size)
+{
+	int len = strlen(str);
+	if(len < out_size)
+	{
+		strcpy(out, str);
+	}
+	else
+	{
+		strncpy(out, str, out_size - 4);
+		out[out_size - 4] = 0;
+		strcat(out, "...");
+	}
+	//Strip out endlines
+	int out_len = strlen(out);
+	int i_write = 0;
+	for(int i = 0; i < out_len; i++)
+	{
+		if(out[i] != '\r' && out[i] != '\n')
+		{
+			out[i_write++] = out[i];
+		}
+	}
+	out[i_write] = 0;
+}

@@ -16,17 +16,14 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	char config_path[256] = {0};
 	if(LocalUserAppData(APPDATA_NAME, config_path))
 	{
 		//Set app data path for vaults
 		strcpy(vaults.appDataPath, config_path);
 		//Get config file path and load it
 		strcat(config_path, "pwclip.ini");
-		if(!LoadConfig(config_path))
-		{
-			//Create default config file
-			DumpResource("default_config", config_path);
-		}
+		LoadConfig(config_path);
 	}
 	bool skipWelcome = vaults.readHistory();
 
@@ -58,7 +55,7 @@ int main(int argc, char **argv)
 	}
 
 	//Wipe clipboard if still owned
-	if(clip_wipe_delay)
+	if(clip_wipe_pending)
 	{
 		if(GetClipboardSequenceNumber() == clip_sequence)
 		{
@@ -73,6 +70,7 @@ int main(int argc, char **argv)
 	//GLobal cleanup
 	vaults.writeHistory();
 	vaults.close();
+	SaveConfig(config_path);
 	CloseHandle(instanceMutex);
 	return 0;
 }

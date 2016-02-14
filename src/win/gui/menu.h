@@ -7,29 +7,29 @@ unsigned int NextMenuId()
 {
 	return menu_keys.size();
 }
-unsigned int AddMenuKey(char *key)
+int AddMenuKey(const char *key)
 {
 	unsigned int id = NextMenuId();
-	menu_keys.push_back(key);
-	return id;
+	menu_keys.push_back(strdup(key));
+	return TRAY_KEY + id;
 }
-HMENU EntryListMenu()
+HMENU EntryListMenu(bool includeTreeItems = false)
 {
 	if(vaults.topOpen())
 	{
-		MenuTree tree;
+		MenuTree tree(AddMenuKey);
 		sqlite3_stmt *stmt;
 		if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
 		{
 			while(sqlite3_step(stmt) == SQLITE_ROW)
 			{
 				//Duplicate key and append menu
-				char *key = strdup((const char*)sqlite3_column_text(stmt, 0));
-				tree.parse(key, TRAY_KEY + AddMenuKey(key));
+				const char *key = (const char*)sqlite3_column_text(stmt, 0);
+				tree.parse(key);
 			}
 			sqlite3_finalize(stmt);
 		}
-		return tree.create();
+		return tree.create(includeTreeItems);
 	}
 	else return CreatePopupMenu();
 }
@@ -68,14 +68,24 @@ bool MenuInit()
 	recall_menu_end = NextMenuId();
 	HMENU removeMenu = EntryListMenu();
 	remove_menu_end = NextMenuId();
+	HMENU renameMenu = EntryListMenu(true);
+	rename_menu_end = NextMenuId();
+	save_menu = EntryListMenu();
+	save_menu_end = NextMenuId();
+	AppendMenu(save_menu, MF_STRING, TRAY_SAVE, "Create New Entry");
+	//Build edit menu
+	HMENU editMenu = CreatePopupMenu();
+	AppendMenu(editMenu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)renameMenu, "Rename");
+	AppendMenu(editMenu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)removeMenu, "Delete Entry");
+	AppendMenu(editMenu, MF_STRING | need_vault, TRAY_SET_MASTER, "Change Vault Password");
+	AppendMenu(editMenu, MF_STRING, TRAY_CONFIG, "Preferences");
 	//Append top level menus
 	AppendMenu(popup_menu, MF_STRING, TRAY_EXIT, "Exit");
 	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)vaultMenu, "Vaults");
-	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, TRAY_SET_MASTER, "Change Master Password");
 	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_EXPORT, "Export Raw Entries");
-	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)removeMenu, "Delete Entry");
+	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)editMenu, "Edit");
 	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
-	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_SAVE, "Save from Clipboard");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)save_menu, "Save Clipboard as");
 	AppendMenu(popup_menu, MF_STRING, TRAY_GENERATE, "Generate Password");
 	return true;
 }

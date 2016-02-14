@@ -7,3 +7,4 @@ by: Connor Douthat
 
 extern AppDelegate *mainApp;
 extern NSInteger clipReference;
+extern char config_path[256];

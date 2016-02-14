@@ -30,6 +30,14 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				{
 					RemoveDialog(&entry);
 				}
+				else if(id < rename_menu_end)
+				{
+					RenameDialog(&entry);
+				}
+				else if(id < save_menu_end)
+				{
+					ReplaceDialog(&entry);
+				}
 			}
 			else if(id >= TRAY_SWITCH_DB && id - TRAY_SWITCH_DB < MAX_DB_HIST)
 			{
@@ -73,6 +81,9 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			case TRAY_EXPORT:
 				ExportDialog();
 				break;
+			case TRAY_CONFIG:
+				PreferencesDialog();
+				break;
 			case TRAY_EXIT:
 				DestroyWindow(hwnd);
 				break;
@@ -88,7 +99,12 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow(hwnd);
-			if(!command_active) TrackPopupMenu(popup_menu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
+			if(!command_active)
+			{
+				bool saveEnabled = ClipboardHasText() && vaults.topOpen();
+				EnableMenuItem(popup_menu, (UINT)save_menu, saveEnabled ? MF_ENABLED : MF_GRAYED);
+				TrackPopupMenu(popup_menu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
+			}
 			break;
 		}
 		break;
@@ -104,6 +120,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			//Return tray to normal state
 			TrayNormalState();
 			KillTimer(hwnd, wParam);
+			clip_wipe_pending = false;
 			break;
 		case TIMER_UPDATE_TRAY:
 			//Cancel clipboard wipe if contents change
@@ -111,6 +128,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			{
 				TrayNormalState();
 				KillTimer(hwnd, TIMER_WIPE);
+				clip_wipe_pending = false;
 			}
 			break;
 		}

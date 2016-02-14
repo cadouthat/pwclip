@@ -5,9 +5,6 @@ by: Connor Douthat
 */
 void GenerateDialog()
 {
-	//Refresh config
-	LoadConfig(config_path);
-
 	char *pass = (char*)malloc(generate_length + 1);
 	if(!RandText(pass, generate_length, generate_include_symbols))
 	{
@@ -22,7 +19,7 @@ void GenerateDialog()
 		free(pass);
 		return;
 	}
-	if(generate_echo)
+	if(password_preview)
 	{
 		char *message = (char*)malloc(generate_length + 64);
 		sprintf(message, "Copied %s to clipboard", pass);

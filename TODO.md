@@ -1,6 +1,18 @@
+Usability
+==
+* Edit preferences menu (OSX)
+* Fix clip wipe exit bug (OSX)
+* Rework menu - also fix switch vault (OSX)
+* Create "Edit" container for rename, delete, and vault password menus (OSX)
+* Entry name hint (OSX)
+* Disable save when clipboard is empty (OSX)
+
 Features
 ==
-* Package and dump default INI (OSX)
-* Editable entries (name or value) - best way to streamline?
-	* Edit name via "rename" menu, including categories
-	* Allow value replacement with "Save from Clipboard" as value tree with extra option for "Save as New Entry"
+* Preferences dialog
+* "Create new entry" in each submenu
+
+Testing
+==
+* Test EVERYTHING
+* Attempt entry with leading/trailing/duplicate colons

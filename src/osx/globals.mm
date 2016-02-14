@@ -7,3 +7,4 @@
 
 AppDelegate *mainApp = NULL;
 NSInteger clipReference = 0;
+char config_path[256] = {0};

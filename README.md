@@ -13,7 +13,6 @@ Usage Tips
 ----------
 * Colons in entry names are treated as sub-menus. For example, an entry named "finance:banks:mybank" will appear as "mybank" nested under "banks" nested under "finance".
 * pwclip does not have a separate mechanism for storing usernames. In cases where usernames are hard to remember, creating two entries is recommended, such as "account-user" and "account-pass".
-* For configuration options, edit pwclip.ini in the local application directory (Windows - C:\Users\YourUser\AppData\Local\pwclip\, OSX - /Users/YourUser/Library/Application Support/pwclip/).
 
 Password Storage
 ----------------

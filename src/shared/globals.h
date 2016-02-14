@@ -7,8 +7,7 @@ by: Connor Douthat
 int clip_wipe_delay = 0;
 int generate_length = 0;
 bool generate_include_symbols = 0;
-bool generate_echo = 0;
+bool password_preview = 0;
 
 //Runtime
-char config_path[256] = {0};
 VaultManager vaults;

@@ -118,7 +118,7 @@
         [_editPassword setHidden:false];
         [_editConfirm setEnabled:true];
         [_editConfirm setHidden:false];
-        [_editPassword setPlaceholderString:@"New Master Password"];
+        [_editPassword setPlaceholderString:@"New Vault Password"];
         if(!hasFocus) {
             [_editPassword becomeFirstResponder];
             hasFocus = true;

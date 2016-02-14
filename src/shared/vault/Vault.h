@@ -75,7 +75,7 @@ public:
 		VaultEntry meta(this, "__meta__");
 		if(needs_init)
 		{
-			meta.valuePlain(strdup(meta.name()));
+			meta.valuePlain(meta.name());
 			//First time setup for new files
 			char *err;
 			int schema_result = sqlite3_exec(db_handle, SCHEMA_SQL, NULL, NULL, &err);

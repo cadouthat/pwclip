@@ -83,6 +83,10 @@ VaultEntry::~VaultEntry()
 {
 	clear();
 }
+Vault *VaultEntry::getVault()
+{
+	return vault;
+}
 bool VaultEntry::exists()
 {
 	return (value && iv);
@@ -95,14 +99,14 @@ const char *VaultEntry::valuePlain()
 {
 	return value_plain;
 }
-const char *VaultEntry::valuePlain(char *set)
+const char *VaultEntry::valuePlain(const char *set)
 {
 	if(value_plain)
 	{
 		memset(value_plain, 0, strlen(value_plain));
 		free(value_plain);
 	}
-	value_plain = set;
+	value_plain = set ? strdup(set) : NULL;
 	return value_plain;
 }
 bool VaultEntry::fatal()

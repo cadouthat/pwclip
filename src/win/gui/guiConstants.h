@@ -16,7 +16,8 @@ by: Connor Douthat
 #define TRAY_CLOSE_DB 6
 #define TRAY_BROWSE_DB 7
 #define TRAY_CREATE_DB 8
-#define TRAY_SWITCH_DB 9
+#define TRAY_CONFIG 9
+#define TRAY_SWITCH_DB 10
 #define TRAY_KEY (TRAY_SWITCH_DB + MAX_DB_HIST + 1)
 
 #define TIMER_WIPE 1

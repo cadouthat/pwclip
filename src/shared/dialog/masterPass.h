@@ -11,7 +11,7 @@ void MasterPassDialog()
 	if(!vaults.topOpen()) return;
 
 	//Prompt for new password
-	void *prompt = UserInput_new(UIF_NEWPASS, "Change Master Password");
+	void *prompt = UserInput_new(UIF_NEWPASS, "Change Vault Password");
 	if(UserInput_get(prompt))
 	{
 		//Update all entries with new key
@@ -20,7 +20,7 @@ void MasterPassDialog()
 		{
 			//Transfer key to vault
 			vaults.top()->key(new_key);
-			TrayBalloon("Master password successfully changed.");
+			TrayBalloon("Vault password successfully changed.");
 		}
 		else
 		{
@@ -48,7 +48,9 @@ bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key
 			if(!entry.reEncrypt(old_key, new_key))
 			{
 				//Abort
-				if(verbose) ErrorBox("Failed to update '%s'", key);
+				char key_short[128] = {0};
+				stringPreview(key, key_short, sizeof(key_short));
+				if(verbose) ErrorBox("Failed to update '%s'", key_short);
 				result = false;
 				break;
 			}

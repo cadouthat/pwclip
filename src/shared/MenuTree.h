@@ -3,84 +3,85 @@ MenuTree class for building nested popup menus
 by: Connor Douthat
 10/29/2015
 */
+
+typedef int(*MenuTreeValueGenerator)(const char*);
+
 class MenuTree
 {
-	MenuTree *treeChild(char *match_name)
+	MenuTreeValueGenerator genValue;
+
+	MenuTree *treeChild(char *match_name, const char *key_in)
 	{
 		for(int i = 0; i < nodes.size(); i++)
 		{
 			if(!nodes[i]->value && !strcmp(nodes[i]->name, match_name))
 			{
+				//Free name without owner
+				free(match_name);
+				//Return existing node
 				return nodes[i];
 			}
 		}
-		MenuTree *child = new MenuTree();
-		strcpy(child->name, match_name);
+		MenuTree *child = new MenuTree(genValue, match_name);
+		child->treeValue = genValue(key_in);
 		nodes.push_back(child);
 		return child;
 	}
-	MenuTree *valueChild(char *match_name, const char *key_in, int value_in)
+	MenuTree *valueChild(char *match_name, const char *key_in)
 	{
-		for(int i = 0; i < nodes.size(); i++)
-		{
-			if(nodes[i]->value && !strcmp(nodes[i]->name, match_name))
-			{
-				if(nodes[i]->key) free(nodes[i]->key);
-				nodes[i]->key = strdup(key_in);
-				nodes[i]->value = value_in;
-				return nodes[i];
-			}
-		}
-		MenuTree *child = new MenuTree();
-		strcpy(child->name, match_name);
-		child->key = strdup(key_in);
-		child->value = value_in;
+		MenuTree *child = new MenuTree(genValue, match_name);
+		child->value = genValue(key_in);
 		nodes.push_back(child);
 		return child;
 	}
 
 public:
 
-	char name[256];
-	char *key;
+	char *name;
 	int value;
+	int treeValue;
 	std::vector<MenuTree*> nodes;
 
-	MenuTree()
+	MenuTree(MenuTreeValueGenerator genValueIn, const char *name_in = NULL)
 	{
-		memset(name, 0, sizeof(name));
-		key = NULL;
+		name = strdup(name_in);
+		genValue = genValueIn;
 		value = 0;
+		treeValue = 0;
 	}
 	~MenuTree()
 	{
+		if(name) free(name);
 		for(int i = 0; i < nodes.size(); i++)
 		{
 			delete nodes[i];
 		}
-		if(key) free(key);
 	}
-	void parse(char *str, const char *key_in, int value_in)
+	void parse(const char *str, const char *parent_key = NULL)
 	{
 		if(!str[0]) return;
+
+		std::string cur_key;
+		if(parent_key) cur_key = parent_key;
+
 		int delim = 0;
 		while(str[delim] && str[delim] != ':') delim++;
-		int name_len = sizeof(name) - 1;
-		if(delim < name_len) name_len = delim;
-		char name_tmp[256] = {0};
-		strncpy(name_tmp, str, name_len);
+
+		char *name_tmp = (char*)malloc(delim + 1);
+		strncpy(name_tmp, str, delim);
+		name_tmp[delim] = 0;
+
+		cur_key += name_tmp;
+
 		if(str[delim])
 		{
-			MenuTree *child = treeChild(name_tmp);
-			child->parse(str + delim + 1, key_in, value_in);
+			cur_key += ":";
+			MenuTree *child = treeChild(name_tmp, cur_key.c_str());
+			child->parse(str + delim + 1, cur_key.c_str());
 		}
-		else valueChild(name_tmp, key_in, value_in);
-	}
-	void parse(char *str, int value_in)
-	{
-		parse(str, str, value_in);
+		else valueChild(name_tmp, cur_key.c_str());
 	}
 #ifdef __WIN32__
-	HMENU create();
+	HMENU create(bool includeTreeItems);
 #endif
 };

@@ -41,9 +41,6 @@
         [_clipWipeTimer invalidate];
     }
 
-    //Refresh config
-    LoadConfig(config_path);
-
     if(!clip_wipe_delay) {
         return;
     }
@@ -256,7 +253,7 @@
     [_menuSwitchVault setEnabled:vaultEnabled];
     
     if(vaultEnabled) {
-        MenuTree tree;
+        MenuTree tree(GenerateMenuValue);
         sqlite3_stmt *stmt;
         if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
         {
@@ -264,8 +261,8 @@
             while(sqlite3_step(stmt) == SQLITE_ROW)
             {
                 //Duplicate key and append menu
-                char *key = strdup((const char*)sqlite3_column_text(stmt, 0));
-                tree.parse(key, i++);
+                const char *key = (const char*)sqlite3_column_text(stmt, 0);
+                tree.parse(key);
             }
             sqlite3_finalize(stmt);
         }
@@ -334,6 +331,7 @@
     }
     vaults.writeHistory();
     vaults.close();
+    SaveConfig(config_path);
     
     mainApp = NULL;
 }
