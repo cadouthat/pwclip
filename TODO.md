@@ -16,3 +16,7 @@ Testing
 ==
 * Test EVERYTHING
 * Attempt entry with leading/trailing/duplicate colons
+
+Cleanup
+==
+* Split up UserInput

@@ -31,13 +31,24 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 	Vault *vault = new Vault(path);
 	bool needs_init = !vault->exists();
 	//Prepare password prompt (first attempt at opening skips prompt)
-	void *prompt = UserInput_new(needs_init ? UIF_NEWPASS : UIF_OLDPASS, needs_init ? "Create Vault" : "Open Vault");
+	void *prompt = UserInput_new(needs_init ? "Create Vault" : "Open Vault");
+	if(needs_init)
+	{
+		UserInput_addField(prompt, UIF_NEWPASS, "New Vault Password");
+	}
+	else
+	{
+		UserInput_addField(prompt, UIF_OLDPASS, "Vault Password");
+	}
 	bool first_pass = true;
 	bool result = false;
 	while((first_pass && !needs_init) || UserInput_get(prompt))
 	{
 		//Set vault key from password
-		vault->key(new PasswordCipher(UserInput_pass(prompt)));
+		char *value = UserInput_stringValue(prompt, 0);
+		vault->key(new PasswordCipher(value));
+		memset(value, 0, strlen(value));
+		free(value);
 		//Attempt opening
 		result = vault->open();
 		//Abort if successful or fatal

@@ -18,7 +18,8 @@ void SaveDialog()
 	ClipboardWatchStart();
 
 	//Prompt for name
-	void *prompt = UserInput_new(UIF_NAME, "Save New Entry");
+	void *prompt = UserInput_new("Save New Entry");
+	UserInput_addField(prompt,  UIF_TEXT, "Entry Name");
 	char preview_text[24] = {0};
 	char info_text[128] = {0};
 	if(password_preview)
@@ -29,7 +30,8 @@ void SaveDialog()
 	}
 	if(UserInput_get(prompt))
 	{
-		VaultEntry entry(vaults.top(), UserInput_name(prompt));
+		char *name = UserInput_stringValue(prompt, 0);
+		VaultEntry entry(vaults.top(), name);
 		//Confirm overwrite if value exists
 		bool result = true;
 		if(entry.exists())
@@ -58,6 +60,7 @@ void SaveDialog()
 				TrayBalloon("Entry successfully saved.");
 			}
 		}
+		free(name);
 	}
 	UserInput_delete(prompt);
 	memset(info_text, 0, sizeof(info_text));

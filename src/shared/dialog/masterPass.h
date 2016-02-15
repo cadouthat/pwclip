@@ -11,11 +11,16 @@ void MasterPassDialog()
 	if(!vaults.topOpen()) return;
 
 	//Prompt for new password
-	void *prompt = UserInput_new(UIF_NEWPASS, "Change Vault Password");
+	void *prompt = UserInput_new("Change Vault Password");
+	UserInput_addField(prompt, UIF_NEWPASS, "New Vault Password");
 	if(UserInput_get(prompt))
 	{
+		//Build cipher from new password
+		char *value = UserInput_stringValue(prompt, 0);
+		PasswordCipher *new_key = new PasswordCipher(value);
+		memset(value, 0, strlen(value));
+		free(value);
 		//Update all entries with new key
-		PasswordCipher *new_key = new PasswordCipher(UserInput_pass(prompt));
 		if(ReEncryptAll(vaults.top(), vaults.top()->key(), new_key))
 		{
 			//Transfer key to vault

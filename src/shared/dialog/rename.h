@@ -26,37 +26,18 @@ void RenameDialog(VaultEntry *entry)
 
 	//Parse base key and current name
 	bool is_tree = false;
-	char *base_key = strdup(entry->name());
-	char *cur_name = NULL;
-	int delim = strlen(base_key) - 1;
-	if(base_key[delim] == ':')
+	char *key_orig = strdup(entry->name());
+	int last = strlen(key_orig) - 1;
+	if(key_orig[last] == ':')
 	{
 		//Trim trailing separator
-		base_key[delim--] = 0;
+		key_orig[last--] = 0;
 		is_tree = true;
-	}
-	//Find last separator
-	while(delim >= 0 && base_key[delim] != ':') delim--;
-	if(delim >= 0)
-	{
-		//Split at separator
-		cur_name = strdup(base_key + delim + 1);
-		base_key[delim + 1] = 0;
-	}
-	else
-	{
-		//Name is at root
-		cur_name = strdup(base_key);
-		base_key[0] = 0;
 	}
 
 	//Prompt for new name
-	void *prompt = UserInput_new(UIF_NAME, "Rename");
-
-	char *info_text = (char*)malloc(strlen(cur_name) + 64);
-	sprintf(info_text, "Enter new name for '%s'", cur_name);
-	UserInput_setInfo(prompt, info_text);
-	free(info_text);
+	void *prompt = UserInput_new("Rename");
+	UserInput_addField(prompt, UIF_TEXT, "Entry Name", key_orig);
 
 	char *error_text = NULL;
 	char *new_key = NULL;
@@ -65,12 +46,12 @@ void RenameDialog(VaultEntry *entry)
 	{
 		bool name_conflict = false;
 		//Build new key
-		const char *replace_name = UserInput_name(prompt);
+		char *new_name = UserInput_stringValue(prompt, 0);
 		if(new_key) free(new_key);
-		new_key = (char*)malloc(strlen(base_key) + strlen(replace_name) + 2);
-		strcpy(new_key, base_key);
-		strcat(new_key, replace_name);
+		new_key = (char*)malloc(strlen(new_name) + 2);
+		strcpy(new_key, new_name);
 		if(is_tree) strcat(new_key, ":");
+		free(new_name);
 		//Execute replacement
 		if(is_tree)
 		{
@@ -130,8 +111,7 @@ void RenameDialog(VaultEntry *entry)
 	}
 	UserInput_delete(prompt);
 	if(new_key) free(new_key);
-	if(cur_name) free(cur_name);
-	if(base_key) free(base_key);
+	if(key_orig) free(key_orig);
 	if(error_text) free(error_text);
 
 	if(success)
