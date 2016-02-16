@@ -11,7 +11,7 @@ by: Connor Douthat
 
 void *UserInput_new(const char *title_in);
 void UserInput_delete(void *ui);
-void UserInput_addField(void *ui, int type, const char *text, void *valueIn = NULL);
+void UserInput_addField(void *ui, int type, const char *text, const void *valueIn = NULL);
 void UserInput_setInfo(void *ui, const char *text);
 void UserInput_setError(void *ui, const char *text);
 bool UserInput_get(void *ui);

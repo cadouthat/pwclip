@@ -8,6 +8,14 @@ void ReplaceDialog(VaultEntry *entry)
 	//Make sure vault is open
 	if(!vaults.topOpen()) return;
 
+	//Special logic for adding new entry to submenu
+	int last_char = strlen(entry->name()) - 1;
+	if(last_char >= 0 && entry->name()[last_char] == ':')
+	{
+		SaveDialog(entry->name());
+		return;
+	}
+
 	//Store plaintext from clipboard
 	char *clip_text = GetClipboardText();
 	if(!clip_text)

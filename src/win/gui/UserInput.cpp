@@ -171,6 +171,7 @@ public:
 			case UIF_UINT:
 				if(GetWindowTextLength(hwnd_input) < sizeof(istr))
 				{
+					memset(istr, 0, sizeof(istr));
 					GetWindowText(hwnd_input, istr, sizeof(istr));
 					for(int i = 0; i < strlen(istr); i++)
 					{
@@ -186,7 +187,7 @@ public:
 			}
 			return NULL;
 		}
-		void value(void *valueIn)
+		void value(const void *valueIn)
 		{
 			if(!hwnd_input) return;
 			char istr[32] = {0};
@@ -482,7 +483,7 @@ public:
 
 		return okay_flag;
 	}
-	void addField(int type, const char *text, void *valueIn)
+	void addField(int type, const char *text, const void *valueIn)
 	{
 		if(!hwnd_top)
 		{
@@ -519,7 +520,7 @@ void UserInput_delete(void *ui)
 {
 	delete (UserInput*)ui;
 }
-void UserInput_addField(void *ui, int type, const char *text, void *valueIn)
+void UserInput_addField(void *ui, int type, const char *text, const void *valueIn)
 {
 	((UserInput*)ui)->addField(type, text, valueIn);
 }

@@ -82,6 +82,6 @@ public:
 		else valueChild(name_tmp, cur_key.c_str());
 	}
 #ifdef __WIN32__
-	HMENU create(bool includeTreeItems);
+	HMENU create(const char *treeItemText);
 #endif
 };

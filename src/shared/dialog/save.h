@@ -3,7 +3,7 @@ Interaction to save an entry
 by: Connor Douthat
 10/24/2015
 */
-void SaveDialog()
+void SaveDialog(const char *base = NULL)
 {
 	//Make sure vault is open
 	if(!vaults.topOpen()) return;
@@ -19,7 +19,7 @@ void SaveDialog()
 
 	//Prompt for name
 	void *prompt = UserInput_new("Save New Entry");
-	UserInput_addField(prompt,  UIF_TEXT, "Entry Name");
+	UserInput_addField(prompt, UIF_TEXT, "Entry Name", base);
 	char preview_text[24] = {0};
 	char info_text[128] = {0};
 	if(password_preview)

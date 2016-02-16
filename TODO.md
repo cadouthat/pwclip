@@ -7,11 +7,6 @@ Usability
 * Entry name hint (OSX)
 * Disable save when clipboard is empty (OSX)
 
-Features
-==
-* Preferences dialog
-* "Create new entry" in each submenu
-
 Testing
 ==
 * Test EVERYTHING

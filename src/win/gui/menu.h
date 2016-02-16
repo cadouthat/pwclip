@@ -13,7 +13,7 @@ int AddMenuKey(const char *key)
 	menu_keys.push_back(strdup(key));
 	return TRAY_KEY + id;
 }
-HMENU EntryListMenu(bool includeTreeItems = false)
+HMENU EntryListMenu(const char *treeItemText = NULL)
 {
 	if(vaults.topOpen())
 	{
@@ -29,7 +29,7 @@ HMENU EntryListMenu(bool includeTreeItems = false)
 			}
 			sqlite3_finalize(stmt);
 		}
-		return tree.create(includeTreeItems);
+		return tree.create(treeItemText);
 	}
 	else return CreatePopupMenu();
 }
@@ -68,11 +68,11 @@ bool MenuInit()
 	recall_menu_end = NextMenuId();
 	HMENU removeMenu = EntryListMenu();
 	remove_menu_end = NextMenuId();
-	HMENU renameMenu = EntryListMenu(true);
+	HMENU renameMenu = EntryListMenu("(this tree)");
 	rename_menu_end = NextMenuId();
-	save_menu = EntryListMenu();
+	save_menu = EntryListMenu("(new entry)");
 	save_menu_end = NextMenuId();
-	AppendMenu(save_menu, MF_STRING, TRAY_SAVE, "Create New Entry");
+	InsertMenu(save_menu, 0, MF_BYPOSITION | MF_STRING, TRAY_SAVE, "(new entry)");
 	//Build edit menu
 	HMENU editMenu = CreatePopupMenu();
 	AppendMenu(editMenu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)renameMenu, "Rename");
