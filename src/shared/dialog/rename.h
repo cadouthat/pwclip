@@ -13,6 +13,7 @@ void RenameDialog(VaultEntry *entry)
 
 	//Entry name must be nonempty
 	if(!entry->name() || !entry->name()[0]) return;
+	int entry_name_len = strlen(entry->name());
 
 	//For single entry, decrypt early
 	if(entry->exists())
@@ -44,6 +45,7 @@ void RenameDialog(VaultEntry *entry)
 	bool success = false;
 	while(UserInput_get(prompt))
 	{
+		success = false;
 		bool name_conflict = false;
 		//Build new key
 		char *new_name = UserInput_stringValue(prompt, 0);
@@ -52,54 +54,68 @@ void RenameDialog(VaultEntry *entry)
 		strcpy(new_key, new_name);
 		if(is_tree) strcat(new_key, ":");
 		free(new_name);
+		//Special case - no change
+		if(!strcmp(new_key, entry->name()))
+		{
+			free(new_key);
+			break;
+		}
 		//Execute replacement
 		if(is_tree)
 		{
-			//To replace trees, get entries starting with tree name
+			//Find all entries within tree
+			std::vector<VaultEntry*> subentries;
+			std::vector<char*> new_subkeys;
 			sqlite3_stmt *stmt;
-			if(SQLITE_OK == sqlite3_prepare_v2(entry->getVault()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' AND `key` LIKE ?||'%' ORDER BY `key`", -1, &stmt, NULL))
+			if(SQLITE_OK == sqlite3_prepare_v2(entry->getVault()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
 			{
-				if(SQLITE_OK == sqlite3_bind_text(stmt, 1, entry->name(), -1, SQLITE_STATIC))
+				while(sqlite3_step(stmt) == SQLITE_ROW)
 				{
-					//Verification loop
-					while(sqlite3_step(stmt) == SQLITE_ROW)
+					const char *subkey = (const char*)sqlite3_column_text(stmt, 0);
+					if(!strncmp(subkey, entry->name(), entry_name_len))
 					{
-						const char *subkey = (const char*)sqlite3_column_text(stmt, 0);
-						VaultEntry subentry(entry->getVault(), subkey);
-						//Validate rename
+						//Get sub entry and determine new key
+						VaultEntry *subentry = new VaultEntry(entry->getVault(), subkey);
 						char *new_subkey = RenameEntryKey(entry->name(), new_key, subkey);
-						success = RenameEntry(&subentry, new_subkey, name_conflict, error_text, prompt, false);
-						free(new_subkey);
+						subentries.push_back(subentry);
+						new_subkeys.push_back(new_subkey);
+						//Probe rename
+						success = RenameEntry(subentry, new_subkey, name_conflict, error_text, prompt, false);
 						if(!success) break;
-					}
-					if(success)
-					{
-						//Commit loop
-						sqlite3_reset(stmt);
-						while(sqlite3_step(stmt) == SQLITE_ROW)
-						{
-							const char *subkey = (const char*)sqlite3_column_text(stmt, 0);
-							VaultEntry subentry(entry->getVault(), subkey);
-							//Decrypt entry
-							if(subentry.decrypt() && subentry.valuePlain())
-							{
-								//Commit rename
-								char *new_subkey = RenameEntryKey(entry->name(), new_key, subkey);
-								success = RenameEntry(&subentry, new_subkey, name_conflict, error_text, prompt);
-								free(new_subkey);
-							}
-							else
-							{
-								char subkey_short[512] = {0};
-								stringPreview(subkey, subkey_short, sizeof(subkey_short));
-								ErrorBox("Failed to decrypt '%s'", subkey_short);
-								success = false;
-							}
-							if(!success) break;
-						}
 					}
 				}
 				sqlite3_finalize(stmt);
+			}
+			//No results - unknown error
+			if(!subentries.size()) break;
+			if(success)
+			{
+				for(int i = 0; i < subentries.size(); i++)
+				{
+					VaultEntry *subentry = subentries[i];
+					char *new_subkey = new_subkeys[i];
+					//Decrypt entry
+					if(subentry->decrypt() && subentry->valuePlain())
+					{
+						//Commit rename
+						success = RenameEntry(subentry, new_subkey, name_conflict, error_text, prompt);
+						if(!success) break;
+					}
+					else
+					{
+						char subkey_short[512] = {0};
+						stringPreview(subentry->name(), subkey_short, sizeof(subkey_short));
+						ErrorBox("Failed to decrypt '%s'", subkey_short);
+						success = false;
+						break;
+					}
+				}
+			}
+			//Clean up
+			for(int i = 0; i < subentries.size(); i++)
+			{
+				delete subentries[i];
+				delete new_subkeys[i];
 			}
 		}
 		else

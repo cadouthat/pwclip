@@ -51,7 +51,7 @@ public:
 		//Remove duplicates
 		for(int i = 0; i < history.size();)
 		{
-			if(!stricmp(history[i]->path(), vault->path()))
+			if(!strcmp(history[i]->path(), vault->path()))
 			{
 				delete history[i];
 				history.erase(history.begin() + i);

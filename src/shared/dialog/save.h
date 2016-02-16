@@ -19,7 +19,7 @@ void SaveDialog(const char *base = NULL)
 
 	//Prompt for name
 	void *prompt = UserInput_new("Save New Entry");
-	UserInput_addField(prompt, UIF_TEXT, "Entry Name", base);
+	UserInput_addField(prompt, UIF_TEXT, "Entry Name (e.g. work:email)", base);
 	char preview_text[24] = {0};
 	char info_text[128] = {0};
 	if(password_preview)

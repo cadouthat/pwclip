@@ -59,7 +59,7 @@ VaultEntry::VaultEntry(Vault *vault_in, const char *pk_in)
 {
 	memset(this, 0, sizeof(*this));
 	vault = vault_in;
-	pk = pk_in;
+	pk = strdup(pk_in);
 	//Find existing value (if any)
 	sqlite3_stmt *stmt;
 	if(vault->db())
@@ -82,6 +82,7 @@ VaultEntry::VaultEntry(Vault *vault_in, const char *pk_in)
 VaultEntry::~VaultEntry()
 {
 	clear();
+	if(pk) free(pk);
 }
 Vault *VaultEntry::getVault()
 {

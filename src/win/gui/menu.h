@@ -13,8 +13,9 @@ int AddMenuKey(const char *key)
 	menu_keys.push_back(strdup(key));
 	return TRAY_KEY + id;
 }
-HMENU EntryListMenu(const char *treeItemText = NULL)
+HMENU EntryListMenu(const char *emptyText = NULL, const char *treeItemText = NULL)
 {
+	HMENU result = NULL;
 	if(vaults.topOpen())
 	{
 		MenuTree tree(AddMenuKey);
@@ -29,18 +30,34 @@ HMENU EntryListMenu(const char *treeItemText = NULL)
 			}
 			sqlite3_finalize(stmt);
 		}
-		return tree.create(treeItemText);
+		result = tree.create(treeItemText);
 	}
-	else return CreatePopupMenu();
+	else result = CreatePopupMenu();
+	if(emptyText && !GetMenuItemCount(result))
+	{
+		AppendMenu(result, MF_STRING | MF_GRAYED, (UINT_PTR)AddMenuKey(""), emptyText);
+	}
+	return result;
 }
 HMENU DBHistoryMenu(bool open)
 {
 	HMENU hm = CreatePopupMenu();
 	for(int i = 0; i < vaults.history.size(); i++)
 	{
+		const char *name = fileNameInPath(vaults.history[i]->path());
+		for(int j = 0; j < vaults.history.size(); j++)
+		{
+			if(j == i) continue;
+			const char *name_compare = fileNameInPath(vaults.history[j]->path());
+			if(!stricmp(name, name_compare))
+			{
+				name = vaults.history[i]->path();
+				break;
+			}
+		}
 		if(vaults.history[i]->isOpen() == open)
 		{
-			AppendMenu(hm, MF_STRING, TRAY_SWITCH_DB + i, vaults.history[i]->path());
+			AppendMenu(hm, MF_STRING, TRAY_SWITCH_DB + i, name);
 		}
 	}
 	if(!open) AppendMenu(hm, MF_STRING, TRAY_BROWSE_DB, "Browse...");
@@ -64,13 +81,13 @@ bool MenuInit()
 	AppendMenu(vaultMenu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)dbSwitchMenu, "Switch Vault");
 	AppendMenu(vaultMenu, MF_STRING | need_vault | MF_POPUP, TRAY_CLOSE_DB, "Close All Vaults");
 	//Create entry-based menus
-	HMENU recallMenu = EntryListMenu();
+	HMENU recallMenu = EntryListMenu("(no entries)");
 	recall_menu_end = NextMenuId();
-	HMENU removeMenu = EntryListMenu();
+	HMENU removeMenu = EntryListMenu("(no entries)");
 	remove_menu_end = NextMenuId();
-	HMENU renameMenu = EntryListMenu("(this tree)");
+	HMENU renameMenu = EntryListMenu("(no entries)", "(this tree)");
 	rename_menu_end = NextMenuId();
-	save_menu = EntryListMenu("(new entry)");
+	save_menu = EntryListMenu(NULL, "(new entry)");
 	save_menu_end = NextMenuId();
 	InsertMenu(save_menu, 0, MF_BYPOSITION | MF_STRING, TRAY_SAVE, "(new entry)");
 	//Build edit menu
@@ -84,9 +101,9 @@ bool MenuInit()
 	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)vaultMenu, "Vaults");
 	AppendMenu(popup_menu, MF_STRING | need_vault, TRAY_EXPORT, "Export Raw Entries");
 	AppendMenu(popup_menu, MF_STRING | MF_POPUP, (UINT_PTR)editMenu, "Edit");
-	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
 	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)save_menu, "Save Clipboard as");
 	AppendMenu(popup_menu, MF_STRING, TRAY_GENERATE, "Generate Password");
+	AppendMenu(popup_menu, MF_STRING | need_vault | MF_POPUP, (UINT_PTR)recallMenu, "Load to Clipboard");
 	return true;
 }
 bool MenuCleanup()

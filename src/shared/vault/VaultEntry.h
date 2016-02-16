@@ -9,7 +9,7 @@ class VaultEntry
 {
 	Vault *vault;
 	bool fatal_flag;
-	const char *pk;
+	char *pk;
 	char *value;
 	char *iv;
 	char *value_plain;

@@ -5,10 +5,10 @@ by: Connor Douthat
 */
 void PreferencesDialog()
 {
-	void *prompt = UserInput_new("Edit Preferences");
-	UserInput_addField(prompt, UIF_UINT, "Clipboard wipe timer", &clip_wipe_delay);
-	UserInput_addField(prompt, UIF_UINT, "Generate length", &generate_length);
-	UserInput_addField(prompt, UIF_TOGGLE, "Generate with symbols", &generate_include_symbols);
+	void *prompt = UserInput_new("pwclip Preferences");
+	UserInput_addField(prompt, UIF_UINT, "Clipboard wipe timer (seconds)", &clip_wipe_delay);
+	UserInput_addField(prompt, UIF_UINT, "Generated password length (characters)", &generate_length);
+	UserInput_addField(prompt, UIF_TOGGLE, "Include symbols in generated passwords", &generate_include_symbols);
 	UserInput_addField(prompt, UIF_TOGGLE, "Preview new passwords", &password_preview);
 	if(UserInput_get(prompt))
 	{
