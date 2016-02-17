@@ -21,7 +21,9 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 				vaults.history.erase(vaults.history.begin() + hist_index);
 				vaults.history.insert(vaults.history.begin(), from_history);
 				MenuReload();
-				TrayBalloon("Active vault changed.");
+				char message[512] = {0};
+				sprintf(message, "Active vault changed to '%s'.", fileNameInPath(from_history->path()));
+				TrayBalloon(message);
 			}
 			return;
 		}

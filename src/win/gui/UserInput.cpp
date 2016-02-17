@@ -15,6 +15,8 @@ enum { UIN_ID_INFO = 1, UIN_ID_ERROR, UIN_ID_OKAY, UIN_ID_CANCEL, UIN_ID_DYNAMIC
 class UserInput
 {
 public:
+	typedef void(*FieldHandler)(void *ui, int i_field);
+
 	class Field
 	{
 		int type;
@@ -34,6 +36,8 @@ public:
 		}
 
 	public:
+		FieldHandler handler;
+
 		Field(int type_in, const char *label_in)
 		{
 			memset(this, 0, sizeof(*this));
@@ -48,11 +52,12 @@ public:
 		void init(HWND owner, int &next_id, HFONT font)
 		{
 			hwnd_owner = owner;
-			bool isButton = (type == UIF_TOGGLE);
+			bool isButton = (type == UIF_TOGGLE || type == UIF_BUTTON);
 			DWORD styleEx = isButton ? 0 : WS_EX_CLIENTEDGE;
 			const char *classname = isButton ? "BUTTON" : "EDIT";
 			const char *winText = isButton ? label : "";
-			DWORD style = isButton ? BS_AUTOCHECKBOX : 0;
+			DWORD style = 0;
+			if(type == UIF_TOGGLE) style |= BS_AUTOCHECKBOX;
 			//Window creation
 			hwnd_input = CreateWindowEx(styleEx, classname, winText,
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | style,
@@ -113,24 +118,30 @@ public:
 			case UIF_UINT:
 				SetWindowPos(hwnd_extra, NULL, x, y, w - w_small - 20, h,  SWP_NOZORDER);
 				SetWindowPos(hwnd_input, NULL, x + w - w_small, y, w_small, h,  SWP_NOZORDER);
+				return y_next;
+			case UIF_BUTTON:
+				w /= 2;
 				break;
 			case UIF_NEWPASS:
 				SetWindowPos(hwnd_extra, NULL, x, y_next, w, h, SWP_NOZORDER);
 				y_next += h + spacing;
-				//Continue to default
-			default:
-				SetWindowPos(hwnd_input, NULL, x, y, w, h, SWP_NOZORDER);
+				break;
 			}
+			SetWindowPos(hwnd_input, NULL, x, y, w, h, SWP_NOZORDER);
 			return y_next;
+		}
+		bool owns(HWND hwnd)
+		{
+			if(hwnd)
+			{
+				if(hwnd == hwnd_input) return true;
+				if(hwnd == hwnd_extra) return true;
+			}
+			return false;
 		}
 		void focus()
 		{
 			SetFocus(hwnd_input);
-			if(type != UIF_TOGGLE)
-			{
-				int len = GetWindowTextLength(hwnd_input);
-				PostMessage(hwnd_input, EM_SETSEL, len, len);
-			}
 		}
 		const char *error()
 		{
@@ -158,14 +169,7 @@ public:
 				free(val_extra);
 				//Passwords must match
 				if(!is_match) return "Passwords do not match";
-				if(is_empty)
-				{
-					//Warning for blank passwords
-					if(IDYES != MessageBox(hwnd_owner, "Password is blank, encryption will not be secure. Are you sure you want to proceed?", "Confirm Empty Password", MB_YESNO))
-					{
-						return "";
-					}
-				}
+				if(is_empty) return "Please enter a value";
 				break;
 			}
 			case UIF_UINT:
@@ -190,20 +194,32 @@ public:
 		void value(const void *valueIn)
 		{
 			if(!hwnd_input) return;
+			const char *valueInStr = valueIn ? (const char*)valueIn : "";
 			char istr[32] = {0};
 			switch(type)
 			{
+			case UIF_NEWPASS:
+				SetWindowText(hwnd_extra, valueInStr);
+			case UIF_OLDPASS:
 			case UIF_TEXT:
-				SetWindowText(hwnd_input, (const char*)valueIn);
+				SetWindowText(hwnd_input, valueInStr);
 				break;
 			case UIF_UINT:
 				sprintf(istr, "%d", *((int*)valueIn));
 				SetWindowText(hwnd_input, istr);
 				break;
 			case UIF_TOGGLE:
-				bool toggled = *((bool*)valueIn);
-				PostMessage(hwnd_input, BM_SETCHECK, toggled ? BST_CHECKED : BST_UNCHECKED, 0);
+				PostMessage(hwnd_input, BM_SETCHECK, *((bool*)valueIn) ? BST_CHECKED : BST_UNCHECKED, 0);
 				break;
+			case UIF_BUTTON:
+				handler = (FieldHandler)valueIn;
+				break;
+			}
+			//For text-based inputs, move cursor to the end
+			if(type != UIF_TOGGLE && type != UIF_BUTTON)
+			{
+				int len = GetWindowTextLength(hwnd_input);
+				PostMessage(hwnd_input, EM_SETSEL, len, len);
 			}
 		}
 		char *stringValue()
@@ -384,6 +400,15 @@ private:
 				case IDCANCEL:
 					DestroyWindow(hwnd_top);
 					break;
+				default:
+					for(int i = 0; i < fields.size(); i++)
+					{
+						if(fields[i]->owns((HWND)lParam))
+						{
+							if(fields[i]->handler) fields[i]->handler(this, i);
+							break;
+						}
+					}
 				}
 				break;
 			}
@@ -503,6 +528,11 @@ public:
 
 		UpdateLayout();
 	}
+	void setValue(int i_field, const void *valueIn)
+	{
+		Field *f = fields[i_field];
+		f->value(valueIn);
+	}
 	Field *getField(int index)
 	{
 		return fields[index];
@@ -531,6 +561,10 @@ void UserInput_setInfo(void *ui, const char *text)
 void UserInput_setError(void *ui, const char *text)
 {
 	((UserInput*)ui)->setError(text);
+}
+void UserInput_setValue(void *ui, int i_field, const void *valueIn)
+{
+	((UserInput*)ui)->setValue(i_field, valueIn);
 }
 bool UserInput_get(void *ui)
 {

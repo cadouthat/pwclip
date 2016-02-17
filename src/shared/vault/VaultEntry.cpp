@@ -36,6 +36,7 @@ void VaultEntry::clear()
 bool VaultEntry::encrypt(PasswordCipher *override_key)
 {
 	clearValue();
+	if(!value_plain) return false;
 	//Encrypt plaintext from clipboard
 	if(!override_key) override_key = vault->key();
 	if(!override_key) return false;
@@ -60,7 +61,20 @@ VaultEntry::VaultEntry(Vault *vault_in, const char *pk_in)
 	memset(this, 0, sizeof(*this));
 	vault = vault_in;
 	pk = strdup(pk_in);
+}
+VaultEntry::~VaultEntry()
+{
+	clear();
+	if(pk) free(pk);
+}
+Vault *VaultEntry::getVault()
+{
+	return vault;
+}
+bool VaultEntry::exists()
+{
 	//Find existing value (if any)
+	clearValue();
 	sqlite3_stmt *stmt;
 	if(vault->db())
 	{
@@ -78,18 +92,6 @@ VaultEntry::VaultEntry(Vault *vault_in, const char *pk_in)
 			sqlite3_finalize(stmt);
 		}
 	}
-}
-VaultEntry::~VaultEntry()
-{
-	clear();
-	if(pk) free(pk);
-}
-Vault *VaultEntry::getVault()
-{
-	return vault;
-}
-bool VaultEntry::exists()
-{
 	return (value && iv);
 }
 const char *VaultEntry::name()

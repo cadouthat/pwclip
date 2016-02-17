@@ -5,7 +5,7 @@ by: Connor Douthat
 */
 bool ReEncryptAll(Vault *vault, PasswordCipher *old_key, PasswordCipher *new_key, bool verbose = true);
 
-void MasterPassDialog()
+void ChangeVaultPassDialog()
 {
 	//Make sure vault is open
 	if(!vaults.topOpen()) return;
@@ -25,7 +25,7 @@ void MasterPassDialog()
 		{
 			//Transfer key to vault
 			vaults.top()->key(new_key);
-			TrayBalloon("Vault password successfully changed.");
+			TrayBalloon("Vault password changed.");
 		}
 		else
 		{

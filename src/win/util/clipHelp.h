@@ -82,24 +82,3 @@ char *GetClipboardText()
 	CloseClipboard();
 	return clipCopy;
 }
-bool ClipboardHasText()
-{
-	if(!OpenClipboard(NULL)) return false;
-	bool hasText = false;
-	HANDLE hClip = GetClipboardData(CF_TEXT);
-	if(hClip)
-	{
-		LPVOID clipData = GlobalLock(hClip);
-		if(clipData)
-		{
-			SIZE_T clipSize = GlobalSize(hClip);
-			if(clipSize)
-			{
-				hasText = true;
-			}
-			GlobalUnlock(hClip);
-		}
-	}
-	CloseClipboard();
-	return hasText;
-}

@@ -39,12 +39,33 @@ public:
 		if(!top()) return false;
 		return top()->isOpen();
 	}
-	void close()
+	void close(int i)
 	{
+		if(history[i]->isOpen())
+		{
+			int first_closed = i;
+			while(first_closed < history.size() && history[first_closed]->isOpen()) first_closed++;
+			history[i]->close();
+			//Move below open vaults
+			if(first_closed > i + 1)
+			{
+				history.insert(history.begin() + first_closed, history[i]);
+				history.erase(history.begin() + i);
+			}
+		}
+	}
+	int close()
+	{
+		int num_closed = 0;
 		for(int i = 0; i < history.size(); i++)
 		{
-			history[i]->close();
+			if(history[i]->isOpen())
+			{
+				history[i]->close();
+				num_closed++;
+			}
 		}
+		return num_closed;
 	}
 	void push(Vault *vault)
 	{

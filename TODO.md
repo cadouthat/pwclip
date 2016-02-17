@@ -8,20 +8,17 @@ Usability
 * Disable save when clipboard is empty (OSX)
 * Hide vault path unless ambiguous (OSX)
 * Grayed out "no entries" for empty vaults (OSX)
-* Add "Vaults -> Close Vault"
-* Move export to Vaults -> Export Vault (select vault file and re-enter password)
-* Create entry menu (generate, from clipboard, manual entry)
-* Move entry overwriting into new menu under edit
-
-Features
-==
-* Vault auto-close timer (vault specific)
+* UserInput additions (OSX)
 
 Testing
 ==
 * Test EVERYTHING
 * Attempt entry with leading/trailing/duplicate colons
 
-Cleanup
+Code Cleanup
 ==
 * Split up UserInput
+
+Future Features
+==
+* Vault auto-close timer (vault specific)

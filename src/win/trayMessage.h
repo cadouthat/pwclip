@@ -13,36 +13,42 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		{
 			command_active = true;
 			int id = LOWORD(wParam);
-			if(id >= TRAY_KEY && id - TRAY_KEY < menu_keys.size())
+			if(id >= TRAY_ENTRY_KEY && id - TRAY_ENTRY_KEY < menu_keys.size())
 			{
 				//Shouldn't be here without vault open
 				if(!vaults.topOpen()) break;
 				//Initialize selected entry
-				id -= TRAY_KEY;
+				id -= TRAY_ENTRY_KEY;
 				char *name = menu_keys[id];
 				VaultEntry entry(vaults.top(), name);
 				//Determine appropriate action
 				if(id < recall_menu_end)
 				{
-					LoadDialog(&entry);
+					RecallEntryDialog(&entry);
 				}
 				else if(id < remove_menu_end)
 				{
-					RemoveDialog(&entry);
+					RemoveEntryDialog(&entry);
 				}
-				else if(id < rename_menu_end)
+				else if(id < change_menu_end)
 				{
-					RenameDialog(&entry);
-				}
-				else if(id < save_menu_end)
-				{
-					ReplaceDialog(&entry);
+					ChangeEntryDialog(&entry);
 				}
 			}
 			else if(id >= TRAY_SWITCH_DB && id - TRAY_SWITCH_DB < MAX_DB_HIST)
 			{
 				//Open db from history
 				OpenVaultDialog(id - TRAY_SWITCH_DB);
+			}
+			else if(id >= TRAY_EXPORT_DB && id - TRAY_EXPORT_DB < MAX_DB_HIST)
+			{
+				//Export db from history
+				ExportVaultDialog(id - TRAY_EXPORT_DB);
+			}
+			else if(id >= TRAY_CLOSE_DB && id - TRAY_CLOSE_DB < MAX_DB_HIST)
+			{
+				//Close specific db
+				CloseVaultDialog(id - TRAY_CLOSE_DB);
 			}
 			else switch(id)
 			{
@@ -65,23 +71,16 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 					OpenVaultDialog(0, db_path);
 				}
 				break;
-			case TRAY_CLOSE_DB:
-				vaults.close();
-				MenuReload();
+			case TRAY_CLOSE_ALL:
+				CloseAllVaultsDialog();
 				break;
-			case TRAY_SET_MASTER:
-				MasterPassDialog();
+			case TRAY_VAULT_PASS:
+				ChangeVaultPassDialog();
 				break;
-			case TRAY_GENERATE:
-				GenerateDialog();
+			case TRAY_CREATE_ENTRY:
+				CreateEntryDialog();
 				break;
-			case TRAY_SAVE:
-				SaveDialog();
-				break;
-			case TRAY_EXPORT:
-				ExportDialog();
-				break;
-			case TRAY_CONFIG:
+			case TRAY_PREFERENCES:
 				PreferencesDialog();
 				break;
 			case TRAY_EXIT:
@@ -99,12 +98,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow(hwnd);
-			if(!command_active)
-			{
-				bool saveEnabled = ClipboardHasText() && vaults.topOpen();
-				EnableMenuItem(popup_menu, (UINT)save_menu, saveEnabled ? MF_ENABLED : MF_GRAYED);
-				TrackPopupMenu(popup_menu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
-			}
+			if(!command_active) TrackPopupMenu(popup_menu, TPM_BOTTOMALIGN | TPM_RIGHTALIGN, p.x, p.y, 0, hwnd, NULL);
 			break;
 		}
 		break;

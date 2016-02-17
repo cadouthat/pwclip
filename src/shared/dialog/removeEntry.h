@@ -3,7 +3,7 @@ Interaction to remove an entry
 by: Connor Douthat
 10/24/2015
 */
-void RemoveDialog(VaultEntry *entry)
+void RemoveEntryDialog(VaultEntry *entry)
 {
 	//Ask user for confirmation
 	char key_short[512] = {0};

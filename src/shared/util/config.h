@@ -8,8 +8,7 @@ bool LoadConfig(const char *path)
 	//Default values
 	clip_wipe_delay = 10;
 	generate_length = 16;
-	generate_include_symbols = false;
-	password_preview = true;
+	generate_include_symbols = true;
 
 	FILE *f = fopen(path, "r");
 	if(!f) return false;
@@ -38,10 +37,6 @@ bool LoadConfig(const char *path)
 		{
 			generate_include_symbols = atoi(value) > 0;
 		}
-		if(!stricmp(line, "password_preview"))
-		{
-			password_preview = atoi(value) > 0;
-		}
 	}
 	fclose(f);
 	return true;
@@ -53,7 +48,6 @@ bool SaveConfig(const char *path)
 	fprintf(f, "clip_wipe_delay = %d\n", clip_wipe_delay);
 	fprintf(f, "generate_length = %d\n", generate_length);
 	fprintf(f, "generate_include_symbols = %d\n", generate_include_symbols ? 1 : 0);
-	fprintf(f, "password_preview = %d\n", password_preview ? 1 : 0);
 	fclose(f);
 	return true;
 }
