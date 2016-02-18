@@ -20,3 +20,8 @@ bool MenuReload();
 void ClipboardWatchStart();
 char *GetClipboardText();
 bool SetClipboardText(const char *text);
+
+#ifdef __WIN32__
+bool CheckStartupValue();
+bool SetStartupValue(bool enabled);
+#endif

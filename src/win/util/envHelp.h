@@ -50,3 +50,58 @@ bool DumpResource(const char *name, const char *dest)
 	}
 	return false;
 }
+bool CheckStartupValue()
+{
+	bool result = false;
+	//Get running path
+	char curPath[MAX_PATH + 1] = {0};
+	if(GetModuleFileName(GetModuleHandle(NULL), curPath, MAX_PATH))
+	{
+		//Open Run key
+		HKEY key = NULL;
+		if(RegOpenKeyEx(HKEY_CURRENT_USER, REG_RUN_KEY, 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &key) == ERROR_SUCCESS)
+		{
+			//Get Run value
+			char startPath[MAX_PATH + 1] = {0};
+			DWORD startPathSize = MAX_PATH;
+			if(RegQueryValueEx(key, APPDATA_NAME, NULL,
+				NULL, (LPBYTE)startPath, &startPathSize) == ERROR_SUCCESS)
+			{
+				if(strcmp(curPath, startPath))
+				{
+					//Update to current path
+					result = (RegSetValueEx(key, APPDATA_NAME, 0, REG_SZ, (LPBYTE)curPath, strlen(curPath) + 1) == ERROR_SUCCESS);
+				}
+				else result = true;
+			}
+			RegCloseKey(key);
+		}
+	}
+	return result;
+}
+bool SetStartupValue(bool enabled)
+{
+	bool result = false;
+	//Get running path
+	char curPath[MAX_PATH + 1] = {0};
+	if(GetModuleFileName(GetModuleHandle(NULL), curPath, MAX_PATH))
+	{
+		//Open Run key
+		HKEY key = NULL;
+		if(RegOpenKeyEx(HKEY_CURRENT_USER, REG_RUN_KEY, 0, KEY_QUERY_VALUE | KEY_SET_VALUE, &key) == ERROR_SUCCESS)
+		{
+			if(enabled)
+			{
+				//Set to current path
+				result = (RegSetValueEx(key, APPDATA_NAME, 0, REG_SZ, (LPBYTE)curPath, strlen(curPath) + 1) == ERROR_SUCCESS);
+			}
+			else
+			{
+				//Remove value
+				result = (RegDeleteValue(key, APPDATA_NAME) == ERROR_SUCCESS);
+			}
+			RegCloseKey(key);
+		}
+	}
+	return result;
+}

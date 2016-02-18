@@ -4,6 +4,7 @@ by: Connor Douthat
 10/3/2015
 */
 #define APPDATA_NAME "pwclip"
+#define REG_RUN_KEY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
 
 #define CRYPTO_KEY_SIZE 32
 #define CRYPTO_BLOCK_SIZE 16

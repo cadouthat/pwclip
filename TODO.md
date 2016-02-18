@@ -13,12 +13,9 @@ Usability
 Testing
 ==
 * Test EVERYTHING
-* Attempt entry with leading/trailing/duplicate colons
 
 Code Cleanup
 ==
+* Maximize shared features
 * Split up UserInput
-
-Future Features
-==
-* Vault auto-close timer (vault specific)
+* Clean up directory structure and filenames

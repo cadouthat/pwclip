@@ -25,7 +25,7 @@ by: Connor Douthat
 
 #include "gui/UserInput.cpp"
 #include "gui/guiConstants.h"
-#include "gui/MenuTree.cpp"
+#include "gui/menuHelp.h"
 #include "gui/guiHelp.h"
 #include "gui/tray.h"
 #include "gui/menu.h"

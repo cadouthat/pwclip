@@ -30,7 +30,7 @@ HMENU EntryListMenu(const char *emptyText = NULL, const char *treeItemText = NUL
 			}
 			sqlite3_finalize(stmt);
 		}
-		result = tree.create(treeItemText);
+		result = BuildMenuTree(&tree, treeItemText);
 	}
 	else result = CreatePopupMenu();
 	if(emptyText && !GetMenuItemCount(result))
