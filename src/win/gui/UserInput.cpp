@@ -149,10 +149,6 @@ public:
 			char istr[32] = {0};
 			switch(type)
 			{
-			case UIF_TEXT:
-				GetWindowText(hwnd_input, istr, sizeof(istr));
-				if(!istr[0]) return "Please enter a value";
-				break;
 			case UIF_NEWPASS:
 			{
 				if(!hwnd_extra) return NULL;
@@ -168,8 +164,8 @@ public:
 				free(val_input);
 				free(val_extra);
 				//Passwords must match
-				if(!is_match) return "Passwords do not match";
 				if(is_empty) return "Please enter a value";
+				if(!is_match) return "Passwords do not match";
 				break;
 			}
 			case UIF_UINT:

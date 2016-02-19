@@ -12,5 +12,3 @@ by: Connor Douthat
 
 //OSX implementations
 #import "globals.h"
-
-NSMenu *buildMenuTree(MenuTree *root, SEL action);

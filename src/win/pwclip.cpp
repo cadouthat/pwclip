@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 		ErrorBox("Failed to initialize common controls, cannot create window");
 		return 1;
 	}
-	MenuInit();
+	popup_menu = MenuInit();
 	TrayInit();
 
 	//Welcome message for new users

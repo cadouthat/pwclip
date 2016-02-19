@@ -7,6 +7,7 @@
 //
 
 #import "MenuBalloonController.h"
+#import "AppDelegate.h"
 
 @interface MenuBalloonController ()
 

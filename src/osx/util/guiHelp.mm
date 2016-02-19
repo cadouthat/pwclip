@@ -2,8 +2,9 @@
 GUI related helper functions (OSX implementations)
 by: Connor Douthat
 11/5/2015
-*/
-#include "../../shared/util/prototypes.h"
+ */
+#include "../../shared/def.h"
+
 #import <Cocoa/Cocoa.h>
 #import "MAAttachedWindow.h"
 
@@ -35,30 +36,48 @@ bool TrayBalloon(const char *message, float timeout) {
     return true;
 }
 
-bool MenuReload() {
-    [mainApp updateMenu];
-    return true;
-}
-
 bool BrowseForOutput(int type, char *out, int out_max)
 {
     NSString *ext = nil;
     switch(type)
     {
-    case FILE_TYPE_DB:
-        ext = @"db";
-        break;
-    case FILE_TYPE_TXT:
-        ext = @"txt";
-        break;
+        case FILE_TYPE_DB:
+            ext = @"db";
+            break;
+        case FILE_TYPE_TXT:
+            ext = @"txt";
+            break;
     }
-
+    
     [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", ext, nil] waitUntilDone:true];
     while(![mainApp saveAsCompleted]) {
         [NSThread sleepForTimeInterval:0.2f];
     }
     if([mainApp saveAsResult]) {
         strncpy(out, [[mainApp saveAsResult] UTF8String], out_max);
+        return true;
+    }
+    else return false;
+}
+bool BrowseForInput(int type, char *out, int out_max)
+{
+    NSString *ext = nil;
+    switch(type)
+    {
+        case FILE_TYPE_DB:
+            ext = @"db";
+            break;
+        case FILE_TYPE_TXT:
+            ext = @"txt";
+            break;
+    }
+    
+    [mainApp performSelectorOnMainThread:@selector(displayOpenFile:) withObject:[NSArray arrayWithObjects:@"Open File", ext, nil] waitUntilDone:true];
+    while(![mainApp openFileCompleted]) {
+        [NSThread sleepForTimeInterval:0.2f];
+    }
+    if([mainApp openFileResult]) {
+        strncpy(out, [[mainApp openFileResult] UTF8String], out_max);
         return true;
     }
     else return false;

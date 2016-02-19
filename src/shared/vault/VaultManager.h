@@ -39,6 +39,15 @@ public:
 		if(!top()) return false;
 		return top()->isOpen();
 	}
+	int totalOpen()
+	{
+		int total = 0;
+		for(int i = 0; i < history.size(); i++)
+		{
+			if(history[i]->isOpen()) total++;
+		}
+		return total;
+	}
 	void close(int i)
 	{
 		if(history[i]->isOpen())

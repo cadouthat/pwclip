@@ -7,6 +7,7 @@ by: Connor Douthat
 #include <cstdlib>
 #include <stdio.h>
 #include <vector>
+#include <string>
 
 //Third party
 #include <sqlite3/sqlite3.h>

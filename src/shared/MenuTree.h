@@ -4,65 +4,86 @@ by: Connor Douthat
 10/29/2015
 */
 
-typedef int(*MenuTreeValueGenerator)(const char*);
+typedef void(*DoMenuAction)(const char*);
+
+class MenuItemMeta
+{
+public:
+	DoMenuAction action;
+	const char *key;
+
+	MenuItemMeta(DoMenuAction actionIn, const char *keyIn = NULL)
+	{
+		action = actionIn;
+		key = keyIn;
+	}
+	void activate()
+	{
+		if(action) action(key);
+	}
+};
 
 class MenuTree
 {
-	MenuTreeValueGenerator genValue;
+	char *name;
+	char *key;
+	std::vector<MenuTree*> nodes;
+	std::vector<MenuItemMeta*> meta_cache;
 
+	MenuItemMeta *addMeta(DoMenuAction action, const char *key)
+	{
+		MenuItemMeta *meta = new MenuItemMeta(action, key);
+		meta_cache.push_back(meta);
+		return meta;
+	}
+	MenuTree *newChild(char *match_name, const char *key_in)
+	{
+		MenuTree *child = new MenuTree(match_name, key_in);
+		nodes.push_back(child);
+		return child;
+	}
 	MenuTree *treeChild(char *match_name, const char *key_in)
 	{
 		for(int i = 0; i < nodes.size(); i++)
 		{
-			if(!nodes[i]->value && !strcmp(nodes[i]->name, match_name))
+			if(nodes[i]->nodes.size() && !strcmp(nodes[i]->name, match_name))
 			{
-				//Free name without owner
-				free(match_name);
 				//Return existing node
 				return nodes[i];
 			}
 		}
-		MenuTree *child = new MenuTree(genValue, match_name);
-		child->treeValue = genValue(key_in);
-		nodes.push_back(child);
-		return child;
-	}
-	MenuTree *valueChild(char *match_name, const char *key_in)
-	{
-		MenuTree *child = new MenuTree(genValue, match_name);
-		child->value = genValue(key_in);
-		nodes.push_back(child);
-		return child;
+		return newChild(match_name, key_in);
 	}
 
 public:
 
-	char *name;
-	int value;
-	int treeValue;
-	std::vector<MenuTree*> nodes;
-
-	MenuTree(MenuTreeValueGenerator genValueIn, const char *name_in = NULL)
+	MenuTree(const char *name_in = NULL, const char *key_in = NULL)
 	{
-		name = strdup(name_in);
-		genValue = genValueIn;
-		value = 0;
-		treeValue = 0;
+		name = name_in ? strdup(name_in) : NULL;
+		key = key_in ? strdup(key_in) : NULL;
 	}
 	~MenuTree()
 	{
 		if(name) free(name);
+		if(key) free(key);
 		for(int i = 0; i < nodes.size(); i++)
 		{
 			delete nodes[i];
 		}
+		for(int i = 0; i < meta_cache.size(); i++)
+		{
+			delete meta_cache[i];
+		}
 	}
-	void parse(const char *str, const char *parent_key = NULL)
+	unsigned int count()
+	{
+		return nodes.size();
+	}
+	void parse(const char *str)
 	{
 		if(!str[0]) return;
 
-		std::string cur_key;
-		if(parent_key) cur_key = parent_key;
+		std::string cur_key = key ? key : "";
 
 		int delim = 0;
 		while(str[delim] && str[delim] != ':') delim++;
@@ -76,9 +97,32 @@ public:
 		if(str[delim])
 		{
 			cur_key += ":";
-			MenuTree *child = treeChild(name_tmp, cur_key.c_str());
-			child->parse(str + delim + 1, cur_key.c_str());
+			treeChild(name_tmp, cur_key.c_str())->parse(str + delim + 1);
 		}
-		else valueChild(name_tmp, cur_key.c_str());
+		else newChild(name_tmp, cur_key.c_str());
+
+		free(name_tmp);
+	}
+	void *build(DoMenuAction action, const char *treeItemText = NULL)
+	{
+		void *menu = CreateMenuContainer();
+		for(int i = 0; i < nodes.size(); i++)
+		{
+			MenuTree *child = nodes[i];
+			if(!child->nodes.size())
+			{
+				AddMenuItem(menu, child->name, addMeta(action, child->key));
+			}
+			else
+			{
+				void *sub = child->build(action, treeItemText);
+				if(treeItemText)
+				{
+					AddMenuItem(sub, treeItemText, addMeta(action, child->key), NULL, true, 0);
+				}
+				AddMenuItem(menu, child->name, NULL, sub);
+			}
+		}
+		return menu;
 	}
 };

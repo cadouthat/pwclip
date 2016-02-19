@@ -12,80 +12,11 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		if(HIWORD(wParam) == BN_CLICKED)
 		{
 			command_active = true;
-			int id = LOWORD(wParam);
-			if(id >= TRAY_ENTRY_KEY && id - TRAY_ENTRY_KEY < menu_keys.size())
+			int mapInd = LOWORD(wParam) - MENU_BASE_ID;
+			if(mapInd >= 0 && mapInd < menu_map.size())
 			{
-				//Shouldn't be here without vault open
-				if(!vaults.topOpen()) break;
-				//Initialize selected entry
-				id -= TRAY_ENTRY_KEY;
-				char *name = menu_keys[id];
-				VaultEntry entry(vaults.top(), name);
-				//Determine appropriate action
-				if(id < recall_menu_end)
-				{
-					RecallEntryDialog(&entry);
-				}
-				else if(id < remove_menu_end)
-				{
-					RemoveEntryDialog(&entry);
-				}
-				else if(id < change_menu_end)
-				{
-					ChangeEntryDialog(&entry);
-				}
-			}
-			else if(id >= TRAY_SWITCH_DB && id - TRAY_SWITCH_DB < MAX_DB_HIST)
-			{
-				//Open db from history
-				OpenVaultDialog(id - TRAY_SWITCH_DB);
-			}
-			else if(id >= TRAY_EXPORT_DB && id - TRAY_EXPORT_DB < MAX_DB_HIST)
-			{
-				//Export db from history
-				ExportVaultDialog(id - TRAY_EXPORT_DB);
-			}
-			else if(id >= TRAY_CLOSE_DB && id - TRAY_CLOSE_DB < MAX_DB_HIST)
-			{
-				//Close specific db
-				CloseVaultDialog(id - TRAY_CLOSE_DB);
-			}
-			else switch(id)
-			{
-				char db_path[256];
-			case TRAY_CREATE_DB:
-				//Browse for db to open
-				memset(db_path, 0, sizeof(db_path));
-				if(BrowseForOutput(FILE_TYPE_DB, db_path))
-				{
-					//Open selected db
-					OpenVaultDialog(0, db_path);
-				}
-				break;
-			case TRAY_BROWSE_DB:
-				//Browse for db to open
-				memset(db_path, 0, sizeof(db_path));
-				if(BrowseForInput(FILE_TYPE_DB, db_path))
-				{
-					//Open selected db
-					OpenVaultDialog(0, db_path);
-				}
-				break;
-			case TRAY_CLOSE_ALL:
-				CloseAllVaultsDialog();
-				break;
-			case TRAY_VAULT_PASS:
-				ChangeVaultPassDialog();
-				break;
-			case TRAY_CREATE_ENTRY:
-				CreateEntryDialog();
-				break;
-			case TRAY_PREFERENCES:
-				PreferencesDialog();
-				break;
-			case TRAY_EXIT:
-				DestroyWindow(hwnd);
-				break;
+				MenuItemMeta *meta = menu_map[i];
+				if(meta) meta->activate();
 			}
 			command_active = false;
 		}

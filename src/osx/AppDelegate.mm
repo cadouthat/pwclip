@@ -17,16 +17,6 @@
 @property (weak) IBOutlet NSWindow *window;
 @property NSStatusItem *statusItem;
 @property NSMenu *mainMenu;
-@property NSMenuItem *menuGenerate;
-@property NSMenuItem *menuSaveEntry;
-@property NSMenuItem *menuLoadEntry;
-@property NSMenuItem *menuDeleteEntry;
-@property NSMenuItem *menuSetMaster;
-@property NSMenuItem *menuExportAll;
-@property NSMenuItem *menuVaults;
-@property NSMenuItem *menuOpenVault;
-@property NSMenuItem *menuSwitchVault;
-@property NSMenuItem *menuCloseVaults;
 
 @end
 
@@ -49,7 +39,10 @@
 }
 
 - (IBAction)wipeClipboard:(id)sender {
-    SetClipboardText("");
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    if([pasteboard changeCount] == clipReference) {
+        SetClipboardText("");
+    }
     _clipWipeTimer = nil;
     [self setNormalTray];
 }
@@ -113,11 +106,40 @@
                       }];
 }
 
+- (IBAction)displayOpenFile:(id)sender {
+    NSArray *params = sender;
+    
+    NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+    
+    openPanel.title = [params objectAtIndex:0];
+    openPanel.showsResizeIndicator = YES;
+    openPanel.showsHiddenFiles = NO;
+    openPanel.canChooseDirectories = NO;
+    openPanel.canCreateDirectories = NO;
+    openPanel.allowsMultipleSelection = NO;
+    NSString *type = [params objectAtIndex:1];
+    openPanel.allowedFileTypes = (type ? @[type] : nil);
+    
+    _openFileCompleted = false;
+    _openFileResult = nil;
+    
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    [openPanel beginSheetModalForWindow:_window
+                      completionHandler:^(NSInteger result) {
+                          if (result==NSModalResponseOK) {
+                              NSURL *selection = openPanel.URLs[0];
+                              _openFileResult = [selection.path stringByResolvingSymlinksInPath];
+                          }
+                          _openFileCompleted = true;
+                      }];
+}
+
 - (IBAction)displayBalloon:(id)sender {
     NSArray *params = sender;
 
     [NSApp activateIgnoringOtherApps:YES];
-    
+ 
     NSRect statusRect = [[_statusItem valueForKey:@"window"] frame];
     [mainApp setTrayWindow:[[MAAttachedWindow alloc] initWithView:_balloonView
                                                   attachedToPoint:NSMakePoint(NSMidX(statusRect), NSMinY(statusRect))
@@ -140,42 +162,23 @@
     if(_balloonTimer) {
         [_balloonTimer invalidate];
     }
-    _balloonTimer = [NSTimer scheduledTimerWithTimeInterval:[[params objectAtIndex:1] floatValue] target:self selector:@selector(closeBalloon:) userInfo:self repeats:false];
+    _balloonTimer = [NSTimer scheduledTimerWithTimeInterval:[[params objectAtIndex:1] floatValue] target:self selector:@selector(closeBalloon_timer:) userInfo:self repeats:false];
 }
 
 - (IBAction)closeBalloon:(id)sender {
-    [_trayWindow orderOut:self];
-    _trayWindow = nil;
+    if(_trayWindow) {
+        [_trayWindow orderOut:self];
+        _trayWindow = nil;
+    }
     if(_balloonTimer) {
         [_balloonTimer invalidate];
         _balloonTimer = nil;
     }
 }
 
-- (IBAction)generate:(id)sender {
-    GenerateDialog();
-}
-
-- (IBAction)saveEntry:(id)sender {
-    [self performSelectorInBackground:@selector(saveEntry_block:) withObject:sender];
-}
-
-- (IBAction)loadEntry:(id)sender {
-    VaultEntry entry(vaults.top(), [[sender representedObject] UTF8String]);
-    LoadDialog(&entry);
-}
-
-- (IBAction)deleteEntry:(id)sender {
-    VaultEntry entry(vaults.top(), [[sender representedObject] UTF8String]);
-    RemoveDialog(&entry);
-}
-
-- (IBAction)setMaster:(id)sender {
-    [self performSelectorInBackground:@selector(setMaster_block:) withObject:sender];
-}
-
-- (IBAction)exportAll:(id)sender {
-    [self performSelectorInBackground:@selector(exportAll_block:) withObject:sender];
+- (IBAction)closeBalloon_timer:(id)sender {
+    _balloonTimer = nil;
+    [self closeBalloon:self];
 }
 
 - (IBAction)openUserInput:(id)sender {
@@ -184,120 +187,51 @@
     [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (IBAction)addUserInputField:(id)sender {
+    [_activeDialog addField:[[sender objectAtIndex:0] intValue] withText:[sender objectAtIndex:1] withValue:[[sender objectAtIndex:2] pointerValue]];
+}
+
+- (IBAction)setUserInputInfo:(id)sender {
+    [_activeDialog setInfo:sender];
+}
+- (IBAction)setUserInputError:(id)sender {
+    [_activeDialog setError:sender];
+}
+- (IBAction)setUserInputValue:(id)sender {
+    [_activeDialog setFieldValue:[[sender objectAtIndex:0] intValue] withValue:[[sender objectAtIndex:1] pointerValue]];
+}
+- (IBAction)getUserInputStringValue:(id)sender {
+    _userInputString = [_activeDialog fieldStringValue:[sender intValue]];
+}
+- (IBAction)getUserInputBoolValue:(id)sender {
+    _userInputBool = [_activeDialog fieldBoolValue:[sender intValue]];
+}
+- (IBAction)getUserInputUintValue:(id)sender {
+    _userInputUint = [_activeDialog fieldUintValue:[sender intValue]];
+}
+
 - (IBAction)closeUserInput:(id) sender {
     [_activeDialog close];
     _activeDialog = NULL;
 }
 
-- (IBAction)openVault:(id)sender {
-    NSMenuItem *item = (NSMenuItem*)sender;
-    NSNumber *indObj = [item representedObject];
-    if([indObj intValue] >= 0) {
-        [self performSelectorInBackground:@selector(openVault_block:) withObject:indObj];
-    }
-    else {
-        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
-        
-        openPanel.title = @"Choose a vault file";
-        openPanel.showsResizeIndicator = YES;
-        openPanel.showsHiddenFiles = NO;
-        openPanel.canChooseDirectories = NO;
-        openPanel.canCreateDirectories = YES;
-        openPanel.allowsMultipleSelection = NO;
-        openPanel.allowedFileTypes = @[@"db"];
-        
-        [NSApp activateIgnoringOtherApps:YES];
-
-        [openPanel beginSheetModalForWindow:_window
-                          completionHandler:^(NSInteger result) {
-                              if (result==NSModalResponseOK) {
-                                  NSURL *selection = openPanel.URLs[0];
-                                  NSString* path = [selection.path stringByResolvingSymlinksInPath];
-                                  [self performSelectorInBackground:@selector(openVault_block:) withObject:path];
-                              }
-                          }];
-    }
-}
-
-- (IBAction)createVault:(id)sender {
-    [self performSelectorInBackground:@selector(createVault_block:) withObject:self];
-}
-
-- (IBAction)closeVaults:(id)sender {
-    vaults.close();
-    [self updateMenu];
+- (IBAction)menuMainDispatch:(id)sender {
+    [self performSelectorInBackground:@selector(menuMainDispatch_block:) withObject:sender];
 }
 
 - (void)updateMenu {
-    NSMenu *subMenu = [[NSMenu alloc] init];
-    
-    for(int i = 0; i < vaults.history.size(); i++)
-    {
-        NSMenuItem *subItem = [subMenu addItemWithTitle:[NSString stringWithUTF8String:vaults.history[i]->path()] action:@selector(openVault:) keyEquivalent:@""];
-        [subItem setRepresentedObject:[NSNumber numberWithInt:i]];
-        if(i == 0 && vaults.topOpen()) {
-            [subItem setState:NSOnState];
-        }
-    }
-    [[subMenu addItemWithTitle:@"Other..." action:@selector(openVault:) keyEquivalent:@""] setRepresentedObject:[NSNumber numberWithInt:-1]];
-    
-    [_mainMenu setSubmenu:subMenu forItem:_menuOpenVault];
-    
-    bool vaultEnabled = vaults.topOpen();
-    [_menuSaveEntry setEnabled:vaultEnabled];
-    [_menuLoadEntry setEnabled:vaultEnabled];
-    [_menuDeleteEntry setEnabled:vaultEnabled];
-    [_menuSetMaster setEnabled:vaultEnabled];
-    [_menuExportAll setEnabled:vaultEnabled];
-    [_menuCloseVaults setEnabled:vaultEnabled];
-    [_menuSwitchVault setEnabled:vaultEnabled];
-    
-    if(vaultEnabled) {
-        MenuTree tree(GenerateMenuValue);
-        sqlite3_stmt *stmt;
-        if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
-        {
-            int i = 0;
-            while(sqlite3_step(stmt) == SQLITE_ROW)
-            {
-                //Duplicate key and append menu
-                const char *key = (const char*)sqlite3_column_text(stmt, 0);
-                tree.parse(key);
-            }
-            sqlite3_finalize(stmt);
-        }
-        [_mainMenu setSubmenu:buildMenuTree(&tree, @selector(deleteEntry:)) forItem:_menuDeleteEntry];
-        [_mainMenu setSubmenu:buildMenuTree(&tree, @selector(loadEntry:)) forItem:_menuLoadEntry];
-    }
+    MenuCleanup();
+    _mainMenu = (__bridge NSMenu*)MenuInit();
+    [_mainMenu setDelegate:self];
+    _statusItem.menu = _mainMenu;
+}
+
+- (IBAction)menuWillOpen:(NSMenu *)menu {
+    [self closeBalloon:self];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     mainApp = self;
-
-    _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-    [_statusItem setHighlightMode: YES];
-    [_statusItem setEnabled: YES];
-    [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
-    
-    NSMenu *vaultMenu = [[NSMenu alloc] init];
-    [vaultMenu setAutoenablesItems:false];
-    [vaultMenu addItemWithTitle:@"Create Vault" action:@selector(createVault:) keyEquivalent:@""];
-    _menuOpenVault = [vaultMenu addItemWithTitle:@"Open Vault" action:NULL keyEquivalent:@""];
-    _menuSwitchVault = [vaultMenu addItemWithTitle:@"Switch Vault" action:NULL keyEquivalent:@""];
-    _menuCloseVaults = [vaultMenu addItemWithTitle:@"Close All Vaults" action:@selector(closeVaults:) keyEquivalent:@""];
-    
-    _mainMenu = [[NSMenu alloc] init];
-    [_mainMenu setAutoenablesItems:false];
-    _menuGenerate = [_mainMenu addItemWithTitle:@"Generate Password" action:@selector(generate:) keyEquivalent:@""];
-    _menuSaveEntry = [_mainMenu addItemWithTitle:@"Save from Clipboard" action:@selector(saveEntry:) keyEquivalent:@""];
-    _menuLoadEntry = [_mainMenu addItemWithTitle:@"Load to Clipboard" action:NULL keyEquivalent:@""];
-    _menuDeleteEntry = [_mainMenu addItemWithTitle:@"Delete Entry" action:NULL keyEquivalent:@""];
-    _menuExportAll = [_mainMenu addItemWithTitle:@"Export Raw Entries" action:@selector(exportAll:) keyEquivalent:@""];
-    _menuSetMaster = [_mainMenu addItemWithTitle:@"Change Master Password" action:@selector(setMaster:) keyEquivalent:@""];
-    _menuVaults = [_mainMenu addItemWithTitle:@"Vaults" action:NULL keyEquivalent:@""];
-    [_mainMenu setSubmenu:vaultMenu forItem:_menuVaults];
-    [_mainMenu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@"q"];
-    _statusItem.menu = _mainMenu;
     
     NSArray *appDataList = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
     NSString *basePath = [appDataList firstObject];
@@ -309,12 +243,20 @@
     strcpy(vaults.appDataPath, config_path);
     strcat(config_path, "pwclip.ini");
     LoadConfig(config_path);
+    
+    _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    [_statusItem setHighlightMode: YES];
+    [_statusItem setEnabled: YES];
+    [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
+
     if(!vaults.readHistory()) {
         TrayBalloon("Welcome to pwclip! To get started, try creating a vault.", 6.0f);
     }
     
-    [self updateMenu];
-    
+    _mainMenu = (__bridge NSMenu*)MenuInit();
+    [_mainMenu setDelegate:self];
+    _statusItem.menu = _mainMenu;
+
     [self performSelectorInBackground:@selector(monitorClipboard:) withObject:self];
 }
 
@@ -326,6 +268,9 @@
         _clipWipeTimer = nil;
     }
     //GLobal cleanup
+    MenuCleanup();
+    _mainMenu = nil;
+
     if(!FileExists(vaults.appDataPath)) {
         [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithUTF8String:vaults.appDataPath] withIntermediateDirectories:YES attributes:nil error:NULL];
     }
@@ -336,32 +281,10 @@
     mainApp = NULL;
 }
 
-- (IBAction)createVault_block:(id)sender {
-    char path[256] = {0};
-    if(BrowseForOutput(FILE_TYPE_DB, path)) {
-        [self openVault_block:[NSString stringWithUTF8String:path]];
-    }
-}
-
-- (IBAction)exportAll_block:(id)sender {
-    ExportDialog();
-}
-
-- (IBAction)setMaster_block:(id)sender {
-    MasterPassDialog();
-}
-
-- (IBAction)saveEntry_block:(id)sender {
-    SaveDialog();
-}
-
-- (IBAction)openVault_block:(id)sender {
-    if([sender isKindOfClass:[NSNumber class]]) {
-        OpenVaultDialog([sender intValue]);
-    }
-    else {
-        OpenVaultDialog(-1, [sender UTF8String]);
-    }
+- (IBAction)menuMainDispatch_block:(id)sender {
+    NSMenuItem *item = sender;
+    MenuItemMeta *meta = (MenuItemMeta*)[[item representedObject] pointerValue];
+    if(meta) meta->activate();
 }
 
 - (IBAction)monitorClipboard:(id)sender {

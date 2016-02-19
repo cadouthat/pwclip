@@ -40,7 +40,7 @@ void ChangeEntryDialog(VaultEntry *entry)
 		char *new_name = UserInput_stringValue(prompt, 0);
 		char *new_key = (char*)malloc(strlen(new_name) + 2);
 		strcpy(new_key, new_name);
-		strcat(new_key, ":");
+		if(*new_key) strcat(new_key, ":");
 		free(new_name);
 		//Special case - no change
 		if(!strcmp(new_key, entry->name()))

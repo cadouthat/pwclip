@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B30CFEB51C5EF42300F895ED /* guiHelp.mm */; };
-		B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */ = {isa = PBXBuildFile; fileRef = B344635F1C6C20E0009B2FB7 /* MenuTree.mm */; };
+		B34463601C6C20E0009B2FB7 /* menuHelp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B344635F1C6C20E0009B2FB7 /* menuHelp.mm */; };
 		B34E14A41C6D6E3600A9FB78 /* MAAttachedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */; };
 		B34E14B81C6D902800A9FB78 /* MenuBalloonController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */; };
 		B35653971BF405470038B3D3 /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = B35653961BF405470038B3D3 /* Base.lproj */; };
@@ -16,8 +16,6 @@
 		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */; };
 		B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B37D20861BF3FD6F00BB9EC5 /* main.m */; };
 		B37D208D1BF3FD8800BB9EC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */; };
-		B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */; };
-		B37D20921BF3FDF000BB9EC5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B37D20911BF3FDF000BB9EC5 /* libcrypto.a */; };
 		B37D209E1BF4029100BB9EC5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B37D20851BF3FD6F00BB9EC5 /* Info.plist */; };
 		B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3071C604D02004355E0 /* UserInputBridge.mm */; };
 		B39FD3111C60568A004355E0 /* globals.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3101C60568A004355E0 /* globals.mm */; };
@@ -30,7 +28,7 @@
 		B30CFEB31C5EEF1B00F895ED /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = SOURCE_ROOT; };
 		B30CFEB41C5EEF1B00F895ED /* includes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = includes.h; sourceTree = SOURCE_ROOT; };
 		B30CFEB51C5EF42300F895ED /* guiHelp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = guiHelp.mm; path = util/guiHelp.mm; sourceTree = SOURCE_ROOT; };
-		B344635F1C6C20E0009B2FB7 /* MenuTree.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuTree.mm; sourceTree = SOURCE_ROOT; };
+		B344635F1C6C20E0009B2FB7 /* menuHelp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = menuHelp.mm; sourceTree = SOURCE_ROOT; };
 		B34E14A21C6D6E3600A9FB78 /* MAAttachedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAAttachedWindow.h; sourceTree = SOURCE_ROOT; };
 		B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAAttachedWindow.m; sourceTree = SOURCE_ROOT; };
 		B34E14B51C6D902800A9FB78 /* MenuBalloonController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuBalloonController.h; sourceTree = "<group>"; };
@@ -42,8 +40,6 @@
 		B37D20851BF3FD6F00BB9EC5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		B37D20861BF3FD6F00BB9EC5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
 		B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../../../sqlite3/sqlite3.c; sourceTree = "<group>"; };
-		B37D20911BF3FDF000BB9EC5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../openssl/libcrypto.a; sourceTree = "<group>"; };
 		B39FD3071C604D02004355E0 /* UserInputBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UserInputBridge.mm; sourceTree = SOURCE_ROOT; };
 		B39FD3101C60568A004355E0 /* globals.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = globals.mm; sourceTree = SOURCE_ROOT; };
 		B39FD3121C6057BE004355E0 /* UserInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInput.h; sourceTree = SOURCE_ROOT; };
@@ -56,7 +52,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B37D20921BF3FDF000BB9EC5 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,11 +61,14 @@
 		B30840FD1BEF3FED0079C46A = {
 			isa = PBXGroup;
 			children = (
-				B34E14B51C6D902800A9FB78 /* MenuBalloonController.h */,
-				B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */,
-				B35653981BF405640038B3D3 /* MainMenu.xib */,
-				B37D20911BF3FDF000BB9EC5 /* libcrypto.a */,
-				B37D208F1BF3FDDB00BB9EC5 /* sqlite3.c */,
+				B30CFEB31C5EEF1B00F895ED /* globals.h */,
+				B39FD3101C60568A004355E0 /* globals.mm */,
+				B30CFEB41C5EEF1B00F895ED /* includes.h */,
+				B3CD5C171C76E9C20005F321 /* util */,
+				B3CD5C161C76E9100005F321 /* thirdparty */,
+				B3CD5C151C76E9010005F321 /* app */,
+				B3CD5C141C76E8CF0005F321 /* UserInput */,
+				B3CD5C131C76E8960005F321 /* menu */,
 				B30841081BEF3FED0079C46A /* pwclip */,
 				B30841071BEF3FED0079C46A /* Products */,
 			);
@@ -87,25 +85,60 @@
 		B30841081BEF3FED0079C46A /* pwclip */ = {
 			isa = PBXGroup;
 			children = (
-				B34E14A21C6D6E3600A9FB78 /* MAAttachedWindow.h */,
-				B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */,
-				B30CFEB51C5EF42300F895ED /* guiHelp.mm */,
-				B30CFEB31C5EEF1B00F895ED /* globals.h */,
-				B30CFEB41C5EEF1B00F895ED /* includes.h */,
 				B35653961BF405470038B3D3 /* Base.lproj */,
 				B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */,
-				B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */,
-				B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */,
 				B37D20851BF3FD6F00BB9EC5 /* Info.plist */,
-				B37D20861BF3FD6F00BB9EC5 /* main.m */,
+			);
+			path = pwclip;
+			sourceTree = "<group>";
+		};
+		B3CD5C131C76E8960005F321 /* menu */ = {
+			isa = PBXGroup;
+			children = (
+				B344635F1C6C20E0009B2FB7 /* menuHelp.mm */,
+				B34E14B51C6D902800A9FB78 /* MenuBalloonController.h */,
+				B34E14B61C6D902800A9FB78 /* MenuBalloonController.m */,
+				B35653981BF405640038B3D3 /* MainMenu.xib */,
+			);
+			name = menu;
+			sourceTree = "<group>";
+		};
+		B3CD5C141C76E8CF0005F321 /* UserInput */ = {
+			isa = PBXGroup;
+			children = (
 				B39FD3071C604D02004355E0 /* UserInputBridge.mm */,
-				B39FD3101C60568A004355E0 /* globals.mm */,
 				B39FD3121C6057BE004355E0 /* UserInput.h */,
 				B39FD3131C6057BE004355E0 /* UserInput.mm */,
 				B39FD3141C6057BE004355E0 /* UserInput.xib */,
-				B344635F1C6C20E0009B2FB7 /* MenuTree.mm */,
 			);
-			path = pwclip;
+			name = UserInput;
+			sourceTree = "<group>";
+		};
+		B3CD5C151C76E9010005F321 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				B37D20861BF3FD6F00BB9EC5 /* main.m */,
+				B37D20821BF3FD6F00BB9EC5 /* AppDelegate.h */,
+				B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */,
+			);
+			name = app;
+			sourceTree = "<group>";
+		};
+		B3CD5C161C76E9100005F321 /* thirdparty */ = {
+			isa = PBXGroup;
+			children = (
+				B34E14A21C6D6E3600A9FB78 /* MAAttachedWindow.h */,
+				B34E14A31C6D6E3600A9FB78 /* MAAttachedWindow.m */,
+			);
+			name = thirdparty;
+			sourceTree = "<group>";
+		};
+		B3CD5C171C76E9C20005F321 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				B30CFEB51C5EF42300F895ED /* guiHelp.mm */,
+			);
+			name = util;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,11 +215,10 @@
 			files = (
 				B30CFEB61C5EF42300F895ED /* guiHelp.mm in Sources */,
 				B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */,
-				B34463601C6C20E0009B2FB7 /* MenuTree.mm in Sources */,
+				B34463601C6C20E0009B2FB7 /* menuHelp.mm in Sources */,
 				B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */,
 				B34E14B81C6D902800A9FB78 /* MenuBalloonController.m in Sources */,
 				B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */,
-				B37D20901BF3FDDB00BB9EC5 /* sqlite3.c in Sources */,
 				B34E14A41C6D6E3600A9FB78 /* MAAttachedWindow.m in Sources */,
 				B39FD3111C60568A004355E0 /* globals.mm in Sources */,
 				B39FD3151C6057BE004355E0 /* UserInput.mm in Sources */,
@@ -292,12 +324,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/connor/,
-					/Users/connor/openssl/include/,
+					/usr/local/lib/openssl/include/,
+					/usr/local/lib/sqlite3/include/,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /Users/connor/openssl/;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib/openssl/;
+				OTHER_LDFLAGS = (
+					/usr/local/lib/sqlite3/sqlite3.o,
+					"-lcrypto",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cadouthat.pwclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -309,12 +345,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/connor/,
-					/Users/connor/openssl/include/,
+					/usr/local/lib/openssl/include/,
+					/usr/local/lib/sqlite3/include/,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /Users/connor/openssl/;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib/openssl/;
+				OTHER_LDFLAGS = (
+					/usr/local/lib/sqlite3/sqlite3.o,
+					"-lcrypto",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cadouthat.pwclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

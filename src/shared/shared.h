@@ -18,12 +18,12 @@ by: Connor Douthat
 #include "vault/VaultManager.h"
 #include "vault/VaultEntry.cpp"
 
+#include "UserInput.h"
+#include "MenuTree.h"
+
 #include "globals.h"
 
 #include "util/config.h"
-
-#include "UserInput.h"
-#include "MenuTree.h"
 
 #include "dialog/preferences.h"
 #include "dialog/openVault.h"
@@ -35,3 +35,6 @@ by: Connor Douthat
 #include "dialog/changeEntry.h"
 #include "dialog/changeVaultPass.h"
 #include "dialog/removeEntry.h"
+
+#include "gui/menuActions.h"
+#include "gui/menu.h"
