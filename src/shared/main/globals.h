@@ -13,3 +13,4 @@ VaultManager vaults;
 void *main_menu = NULL;
 std::vector<MenuTree*> dynamic_menus;
 std::vector<MenuItemMeta*> global_menu_cache;
+char *last_generated_pass = NULL;

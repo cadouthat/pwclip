@@ -14,7 +14,7 @@ void CreateEntryDialog(VaultEntry *modifyEntry = NULL)
 	if(!vaults.topOpen()) return;
 
 	//Prompt for name
-	void *prompt = UserInput_new("Save New Entry");
+	void *prompt = UserInput_new(modifyEntry ? "Edit Entry" : "Save New Entry");
 	BuildEntryForm(prompt);
 	if(modifyEntry)
 	{
@@ -49,7 +49,21 @@ void CreateEntryDialog(VaultEntry *modifyEntry = NULL)
 		if(entry.save())
 		{
 			MenuReload();
-			TrayBalloon("Entry saved.");
+			//Load generated entries to clipboard for reference
+			bool loadedToClip = false;
+			if(last_generated_pass && !strcmp(pass, last_generated_pass))
+			{
+				//Move plaintext to clipboard
+				if(SetClipboardText(last_generated_pass))
+				{
+					//Update tray on success
+					ClipboardWatchStart();
+					TrayWipeState();
+					loadedToClip = true;
+					TrayBalloon("Entry saved and loaded to clipboard.");
+				}
+			}
+			if(!loadedToClip) TrayBalloon("Entry saved.");
 			//Keep track of last submenu created
 			if(!modifyEntry)
 			{
@@ -66,7 +80,15 @@ void CreateEntryDialog(VaultEntry *modifyEntry = NULL)
 		free(pass);
 		break;
 	}
+
+	//Cleanup
 	UserInput_delete(prompt);
+	if(last_generated_pass)
+	{
+		memset(last_generated_pass, 0, strlen(last_generated_pass));
+		free(last_generated_pass);
+		last_generated_pass = NULL;
+	}
 }
 
 void PasswordGenerationHandler(void *ui, int i_field)
@@ -90,8 +112,9 @@ void PasswordGenerationHandler(void *ui, int i_field)
 	memset(info_text, 0, sizeof(info_text));
 	//Set password values
 	UserInput_setValue(ui, 1, pass);
-	memset(pass, 0, strlen(pass));
-	free(pass);
+	//Cache generated password
+	if(last_generated_pass) free(last_generated_pass);
+	last_generated_pass = pass;
 }
 void BuildEntryForm(void *prompt)
 {

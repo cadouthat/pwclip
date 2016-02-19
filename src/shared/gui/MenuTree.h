@@ -10,12 +10,16 @@ class MenuItemMeta
 {
 public:
 	DoMenuAction action;
-	const char *key;
+	char *key;
 
 	MenuItemMeta(DoMenuAction actionIn, const char *keyIn = NULL)
 	{
 		action = actionIn;
-		key = keyIn;
+		key = keyIn ? strdup(keyIn) : NULL;
+	}
+	~MenuItemMeta()
+	{
+		if(key) free(key);
 	}
 	void activate()
 	{
