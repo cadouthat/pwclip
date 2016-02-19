@@ -51,7 +51,7 @@ bool BrowseForOutput(int type, char *out, int out_max)
 	ofn.nMaxFile = out_max;
 	return GetSaveFileName(&ofn);
 }
-bool BrowseForInput(int type, char *out, int out_max = 256)
+bool BrowseForInput(int type, char *out, int out_max)
 {
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));

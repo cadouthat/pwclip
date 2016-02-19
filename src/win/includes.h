@@ -21,16 +21,17 @@ by: Connor Douthat
 #include "../shared/shared.h"
 
 //Windows implementations
-#include "globals.h"
+#include "main/def.h"
+#include "main/globals.h"
 
-#include "gui/UserInput.cpp"
-#include "gui/guiConstants.h"
+#include "gui/UserInputField.h"
+#include "gui/UserInput.h"
+#include "gui/UserInputConnector.h"
 #include "gui/menuHelp.h"
 #include "gui/guiHelp.h"
-#include "gui/tray.h"
-#include "gui/menu.h"
+#include "gui/trayHelp.h"
 
 #include "util/clipHelp.h"
 #include "util/envHelp.h"
 
-#include "trayMessage.h"
+#include "main/messageHandler.h"

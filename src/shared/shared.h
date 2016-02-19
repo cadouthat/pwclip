@@ -3,8 +3,8 @@ Shared include files
 by: Connor Douthat
 10/2/2015
 */
-#include "libs.h"
-#include "def.h"
+#include "main/libs.h"
+#include "main/def.h"
 
 #include "util/stringHelp.h"
 #include "util/prototypes.h"
@@ -18,12 +18,11 @@ by: Connor Douthat
 #include "vault/VaultManager.h"
 #include "vault/VaultEntry.cpp"
 
-#include "UserInput.h"
-#include "MenuTree.h"
+#include "gui/GenericUserInput.h"
+#include "gui/MenuTree.h"
 
-#include "globals.h"
-
-#include "util/config.h"
+#include "main/globals.h"
+#include "main/config.h"
 
 #include "dialog/preferences.h"
 #include "dialog/openVault.h"
@@ -36,5 +35,5 @@ by: Connor Douthat
 #include "dialog/changeVaultPass.h"
 #include "dialog/removeEntry.h"
 
-#include "gui/menuActions.h"
-#include "gui/menu.h"
+#include "main/menuActions.h"
+#include "main/menu.h"

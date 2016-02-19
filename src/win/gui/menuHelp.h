@@ -46,7 +46,7 @@ void AddMenuItem(void *menu, const char *text, MenuItemMeta *data, void *subItem
 }
 void CheckMenuItem(void *menu, int index)
 {
-	CheckMenuRadioItem(dbSwitchMenu, index, index, index, MF_BYPOSITION);
+	CheckMenuRadioItem((HMENU)menu, index, index, index, MF_BYPOSITION);
 }
 void DestroyMenuContainer(void *menu)
 {
@@ -56,6 +56,6 @@ bool MenuReload()
 {
 	menu_map.clear();
 	MenuCleanup();
-	popup_menu = MenuInit();
+	popup_menu = (HMENU)MenuInit();
 	return true;
 }

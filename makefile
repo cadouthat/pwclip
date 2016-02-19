@@ -7,8 +7,8 @@ FLAGS = -static-libgcc -static-libstdc++ -O3
 
 default: pre win clean
 
-bin/pwclip.o: src/win/pwclip.cpp
-	g++ -c src/win/pwclip.cpp -o bin/pwclip.o $(INC) $(FLAGS)
+bin/pwclip.o: src/win/main/pwclip.cpp
+	g++ -c src/win/main/pwclip.cpp -o bin/pwclip.o $(INC) $(FLAGS)
 
 win: bin/pwclip.o
 	windres --input src/win/resources/pwclip.rc --output bin/pwclip.res --output-format=coff
