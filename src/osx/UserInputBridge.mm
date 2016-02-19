@@ -13,6 +13,10 @@
 #import "globals.h"
 
 void *UserInput_new(const char *title_in) {
+    if([mainApp showActiveDialog]) {
+        return NULL;
+    }
+    
     UserInput *dlg = [[UserInput alloc] initWithWindowNibName:@"UserInput"];
     [dlg setTitle:[NSString stringWithUTF8String:title_in]];
     [mainApp performSelectorOnMainThread:@selector(openUserInput:) withObject:dlg waitUntilDone:true];

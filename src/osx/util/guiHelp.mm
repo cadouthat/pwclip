@@ -38,6 +38,10 @@ bool TrayBalloon(const char *message, float timeout) {
 
 bool BrowseForOutput(int type, char *out, int out_max)
 {
+    if([mainApp showActiveDialog]) {
+        return true;
+    }
+    
     NSString *ext = nil;
     switch(type)
     {
@@ -50,7 +54,7 @@ bool BrowseForOutput(int type, char *out, int out_max)
     }
     
     [mainApp performSelectorOnMainThread:@selector(displaySaveAs:) withObject:[NSArray arrayWithObjects:@"Choose export destination", ext, nil] waitUntilDone:true];
-    while(![mainApp saveAsCompleted]) {
+    while([mainApp saveAsActive]) {
         [NSThread sleepForTimeInterval:0.2f];
     }
     if([mainApp saveAsResult]) {
@@ -61,6 +65,10 @@ bool BrowseForOutput(int type, char *out, int out_max)
 }
 bool BrowseForInput(int type, char *out, int out_max)
 {
+    if([mainApp showActiveDialog]) {
+        return false;
+    }
+    
     NSString *ext = nil;
     switch(type)
     {
@@ -71,9 +79,9 @@ bool BrowseForInput(int type, char *out, int out_max)
             ext = @"txt";
             break;
     }
-    
+
     [mainApp performSelectorOnMainThread:@selector(displayOpenFile:) withObject:[NSArray arrayWithObjects:@"Open File", ext, nil] waitUntilDone:true];
-    while(![mainApp openFileCompleted]) {
+    while([mainApp openFileActive]) {
         [NSThread sleepForTimeInterval:0.2f];
     }
     if([mainApp openFileResult]) {

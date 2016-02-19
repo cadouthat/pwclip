@@ -176,26 +176,30 @@
     switch(type) {
         case UIF_NEWPASS:
         case UIF_OLDPASS:
-            widget = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 30, 100, 30)];
+            widget = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
             [widget setPlaceholderString:text];
             [field addObject:widget];
             if(type == UIF_NEWPASS) {
-                widget = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 30, 100, 30)];
+                widget = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
                 [widget setPlaceholderString:[@"Confirm " stringByAppendingString:text]];
                 [field addObject:widget];
             }
             break;
-        case UIF_UINT:
         case UIF_TEXT:
             widget = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
             [widget setPlaceholderString:text];
             [field addObject:widget];
-            if(type == UIF_UINT) {
-                widget = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
-                [widget setTitle:text];
-                [widget setEditable:false];
-                [field addObject:widget];
-            }
+            break;
+        case UIF_UINT:
+            widget = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
+            [field addObject:widget];
+            widget = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
+            [widget setStringValue:text];
+            [widget setBezeled:NO];
+            [widget setDrawsBackground:NO];
+            [widget setEditable:NO];
+            [widget setSelectable:NO];
+            [field addObject:widget];
             break;
         case UIF_TOGGLE:
         case UIF_BUTTON:

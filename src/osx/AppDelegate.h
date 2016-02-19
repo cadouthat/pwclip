@@ -23,12 +23,14 @@
 @property bool userInputBool;
 @property int userInputUint;
 
-@property bool saveAsCompleted;
+@property bool saveAsActive;
 @property NSString *saveAsResult;
-@property bool openFileCompleted;
+@property bool openFileActive;
 @property NSString *openFileResult;
 
 @property bool confirmResult;
+
+- (bool)showActiveDialog;
 
 - (void)updateMenu;
 

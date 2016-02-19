@@ -91,8 +91,9 @@
     NSString *type = [params objectAtIndex:1];
     savePanel.allowedFileTypes = (type ? @[type] : nil);
     
-    _saveAsCompleted = false;
+    _saveAsActive = true;
     _saveAsResult = nil;
+    [self updateStatusAction];
     
     [NSApp activateIgnoringOtherApps:YES];
     
@@ -102,7 +103,8 @@
                               NSURL *selection = savePanel.URL;
                               _saveAsResult = [selection.path stringByResolvingSymlinksInPath];
                           }
-                          _saveAsCompleted = true;
+                          _saveAsActive = false;
+                          [mainApp updateStatusAction];
                       }];
 }
 
@@ -120,8 +122,9 @@
     NSString *type = [params objectAtIndex:1];
     openPanel.allowedFileTypes = (type ? @[type] : nil);
     
-    _openFileCompleted = false;
+    _openFileActive = true;
     _openFileResult = nil;
+    [self updateStatusAction];
     
     [NSApp activateIgnoringOtherApps:YES];
     
@@ -131,7 +134,8 @@
                               NSURL *selection = openPanel.URLs[0];
                               _openFileResult = [selection.path stringByResolvingSymlinksInPath];
                           }
-                          _openFileCompleted = true;
+                          _openFileActive = false;
+                          [self updateStatusAction];
                       }];
 }
 
@@ -183,6 +187,7 @@
 
 - (IBAction)openUserInput:(id)sender {
     _activeDialog = (UserInput*)sender;
+    [self updateStatusAction];
     [_activeDialog showWindow:mainApp];
     [NSApp activateIgnoringOtherApps:YES];
 }
@@ -213,21 +218,49 @@
 - (IBAction)closeUserInput:(id) sender {
     [_activeDialog close];
     _activeDialog = NULL;
+    [self updateStatusAction];
 }
 
 - (IBAction)menuMainDispatch:(id)sender {
     [self performSelectorInBackground:@selector(menuMainDispatch_block:) withObject:sender];
 }
 
+- (IBAction)menuWillOpen:(NSMenu *)menu {
+    [self closeBalloon:self];
+}
+
+- (IBAction)rejectMenuOpen:(id)sender {
+    [NSApp activateIgnoringOtherApps:true];
+}
+
+- (bool)hasActiveDialog {
+    return _activeDialog || _saveAsActive || _openFileActive;
+}
+
+- (bool)showActiveDialog {
+    if([self hasActiveDialog]) {
+        [NSApp activateIgnoringOtherApps:true];
+        return true;
+    }
+    return false;
+}
+
+- (void)updateStatusAction {
+    if([self hasActiveDialog]) {
+        _statusItem.menu = nil;
+        [_statusItem setAction:@selector(rejectMenuOpen:)];
+    }
+    else {
+        [_mainMenu setDelegate:self];
+        _statusItem.menu = _mainMenu;
+        [_statusItem setAction:nil];
+    }
+}
+
 - (void)updateMenu {
     MenuCleanup();
     _mainMenu = (__bridge NSMenu*)MenuInit();
-    [_mainMenu setDelegate:self];
-    _statusItem.menu = _mainMenu;
-}
-
-- (IBAction)menuWillOpen:(NSMenu *)menu {
-    [self closeBalloon:self];
+    [self updateStatusAction];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
@@ -248,14 +281,14 @@
     [_statusItem setHighlightMode: YES];
     [_statusItem setEnabled: YES];
     [_statusItem setImage: [NSImage imageNamed:@"MenuIcon"]];
+    [_statusItem setTarget:self];
 
     if(!vaults.readHistory()) {
         TrayBalloon("Welcome to pwclip! To get started, try creating a vault.", 6.0f);
     }
     
     _mainMenu = (__bridge NSMenu*)MenuInit();
-    [_mainMenu setDelegate:self];
-    _statusItem.menu = _mainMenu;
+    [self updateStatusAction];
 
     [self performSelectorInBackground:@selector(monitorClipboard:) withObject:self];
 }
