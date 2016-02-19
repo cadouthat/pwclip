@@ -16,7 +16,6 @@
 		B37D20871BF3FD6F00BB9EC5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B37D20831BF3FD6F00BB9EC5 /* AppDelegate.mm */; };
 		B37D208A1BF3FD6F00BB9EC5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B37D20861BF3FD6F00BB9EC5 /* main.m */; };
 		B37D208D1BF3FD8800BB9EC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B37D208B1BF3FD8800BB9EC5 /* Assets.xcassets */; };
-		B37D209E1BF4029100BB9EC5 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B37D20851BF3FD6F00BB9EC5 /* Info.plist */; };
 		B39FD3081C604D02004355E0 /* UserInputBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3071C604D02004355E0 /* UserInputBridge.mm */; };
 		B39FD3111C60568A004355E0 /* globals.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3101C60568A004355E0 /* globals.mm */; };
 		B39FD3151C6057BE004355E0 /* UserInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = B39FD3131C6057BE004355E0 /* UserInput.mm */; };
@@ -199,7 +198,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B356539A1BF405640038B3D3 /* MainMenu.xib in Resources */,
-				B37D209E1BF4029100BB9EC5 /* Info.plist in Resources */,
 				B35653971BF405470038B3D3 /* Base.lproj in Resources */,
 				B37D208D1BF3FD8800BB9EC5 /* Assets.xcassets in Resources */,
 				B39FD3161C6057BE004355E0 /* UserInput.xib in Resources */,

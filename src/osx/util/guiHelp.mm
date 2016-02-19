@@ -3,7 +3,7 @@ GUI related helper functions (OSX implementations)
 by: Connor Douthat
 11/5/2015
  */
-#include "../../shared/def.h"
+#include "../../shared/main/def.h"
 
 #import <Cocoa/Cocoa.h>
 #import "MAAttachedWindow.h"

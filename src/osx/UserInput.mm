@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "UserInput.h"
-#import "../shared/UserInput.h"
+#import "../shared/gui/GenericUserInput.h"
 
 @interface UserInput ()
 
