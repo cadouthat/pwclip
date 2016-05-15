@@ -25,3 +25,5 @@ If they do not exist, create 'bin' and 'local' directories in the pwclip directo
 Building on OSX
 ---------------
 The Xcode project is located in src/osx.
+
+Copyright 2016 Connor Douthat
