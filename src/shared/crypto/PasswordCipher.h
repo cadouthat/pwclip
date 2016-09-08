@@ -76,20 +76,16 @@ public:
 	{
 		memset(key, 0, sizeof(key));
 	}
-	PasswordCipher(const char *pass)
+	PasswordCipher(const char *pass, const unsigned char *salt)
 	{
 		memset(key, 0, sizeof(key));
-		//Generate key via PBKDF2-SHA256, with no salt (we need the same key every time)
-		PKCS5_PBKDF2_HMAC(pass, -1, NULL, 0, CRYPTO_ITERATIONS, EVP_sha256(), sizeof(key), key);
+		//Generate key via PBKDF2-SHA256
+		PKCS5_PBKDF2_HMAC(pass, -1, salt, CRYPTO_SALT_SIZE, CRYPTO_ITERATIONS, EVP_sha256(), sizeof(key), key);
 	}
 	~PasswordCipher()
 	{
 		//Wipe key
 		memset(key, 0, sizeof(key));
-	}
-	void setKey(unsigned char *key_in)
-	{
-		memcpy(key, key_in, sizeof(key));
 	}
 	char *encrypt(const char *plain, unsigned char *iv_out)
 	{

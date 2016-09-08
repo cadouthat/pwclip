@@ -7,6 +7,7 @@ by: Connor Douthat
 #define REG_RUN_KEY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
 
 #define CRYPTO_KEY_SIZE 32
+#define CRYPTO_SALT_SIZE 16
 #define CRYPTO_BLOCK_SIZE 16
 #define CRYPTO_ITERATIONS 1500
 

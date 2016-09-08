@@ -20,7 +20,7 @@ void CreateEntryDialog(VaultEntry *modifyEntry = NULL)
 	{
 		UserInput_setValue(prompt, 0, modifyEntry->name());
 		modifyEntry->decrypt();
-		UserInput_setValue(prompt, 1, modifyEntry->valuePlain());
+		UserInput_setValue(prompt, 1, modifyEntry->plaintext());
 	}
 	else if(last_base)
 	{
@@ -45,7 +45,7 @@ void CreateEntryDialog(VaultEntry *modifyEntry = NULL)
 		//For updating, remove old entry
 		if(modifyEntry) modifyEntry->remove();
 		//Save new entry
-		entry.valuePlain(pass);
+		entry.plaintext(pass);
 		if(entry.save())
 		{
 			MenuReload();

@@ -5,10 +5,10 @@ by: Connor Douthat
 */
 void RecallEntryDialog(VaultEntry *entry)
 {
-	if(entry->decrypt() && entry->valuePlain())
+	if(entry->decrypt() && entry->plaintext())
 	{
 		//Move plaintext to clipboard
-		if(SetClipboardText(entry->valuePlain()))
+		if(SetClipboardText(entry->plaintext()))
 		{
 			//Update tray on success
 			ClipboardWatchStart();

@@ -10,13 +10,13 @@ class VaultEntry
 	Vault *vault;
 	bool fatal_flag;
 	char *pk;
-	char *value;
+	char *v_ciphertext;
 	char *iv;
-	char *value_plain;
+	char *v_plaintext;
 	unsigned char iv_raw[CRYPTO_BLOCK_SIZE];
 
 	void clearPlaintext();
-	void clearValue();
+	void clearCiphertext();
 	void clear();
 	bool encrypt(PasswordCipher *override_key = NULL);
 
@@ -26,8 +26,10 @@ public:
 	Vault *getVault();
 	bool exists();
 	const char *name();
-	const char *valuePlain();
-	const char *valuePlain(const char *set);
+	const char *ciphertext();
+	const char *ciphertext(const char *set);
+	const char *plaintext();
+	const char *plaintext(const char *set);
 	bool fatal();
 	bool decrypt(PasswordCipher *override_key = NULL);
 	bool save();

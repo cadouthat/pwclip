@@ -15,7 +15,7 @@ void *EntryListMenu(DoMenuAction action, const char *emptyText = NULL, const cha
 	if(vaults.topOpen())
 	{
 		sqlite3_stmt *stmt;
-		if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
+		if(SQLITE_OK == sqlite3_prepare_v2(vaults.top()->db(), "SELECT `key` FROM `entries` WHERE `key` NOT LIKE '__meta__%' ORDER BY `key`", -1, &stmt, NULL))
 		{
 			while(sqlite3_step(stmt) == SQLITE_ROW)
 			{

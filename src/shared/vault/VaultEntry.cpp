@@ -6,21 +6,21 @@ by: Connor Douthat
 //Private
 void VaultEntry::clearPlaintext()
 {
-	if(value_plain)
+	if(v_plaintext)
 	{
 		//Wipe plaintext before freeing
-		memset(value_plain, 0, strlen(value_plain));
-		free(value_plain);
-		value_plain = NULL;
+		memset(v_plaintext, 0, strlen(v_plaintext));
+		free(v_plaintext);
+		v_plaintext = NULL;
 	}
 	memset(iv_raw, 0, sizeof(iv_raw));
 }
-void VaultEntry::clearValue()
+void VaultEntry::clearCiphertext()
 {
-	if(value)
+	if(v_ciphertext)
 	{
-		free(value);
-		value = NULL;
+		free(v_ciphertext);
+		v_ciphertext = NULL;
 	}
 	if(iv)
 	{
@@ -31,23 +31,23 @@ void VaultEntry::clearValue()
 void VaultEntry::clear()
 {
 	clearPlaintext();
-	clearValue();
+	clearCiphertext();
 }
 bool VaultEntry::encrypt(PasswordCipher *override_key)
 {
-	clearValue();
-	if(!value_plain) return false;
+	clearCiphertext();
+	if(!v_plaintext) return false;
 	//Encrypt plaintext from clipboard
 	if(!override_key) override_key = vault->key();
 	if(!override_key) return false;
-	value = override_key->encrypt(value_plain, iv_raw);
+	v_ciphertext = override_key->encrypt(v_plaintext, iv_raw);
 	//Verify encryption success
-	if(!value) return false;
+	if(!v_ciphertext) return false;
 	//Convert IV to hex encoding
 	iv = bin2hex(iv_raw, sizeof(iv_raw));
 	if(!iv)
 	{
-		clearValue();
+		clearCiphertext();
 		ErrorBox("Failed to encode IV");
 		fatal_flag = true;
 		return false;
@@ -73,8 +73,8 @@ Vault *VaultEntry::getVault()
 }
 bool VaultEntry::exists()
 {
+	bool found = false;
 	//Find existing value (if any)
-	clearValue();
 	sqlite3_stmt *stmt;
 	if(vault->db())
 	{
@@ -85,32 +85,49 @@ bool VaultEntry::exists()
 				if(sqlite3_step(stmt) == SQLITE_ROW)
 				{
 					//Keep internal copy of value/iv
-					value = strdup((const char*)sqlite3_column_text(stmt, 0));
+					clearCiphertext();
+					v_ciphertext = strdup((const char*)sqlite3_column_text(stmt, 0));
 					iv = strdup((const char*)sqlite3_column_text(stmt, 1));
+					found = true;
 				}
 			}
 			sqlite3_finalize(stmt);
 		}
 	}
-	return (value && iv);
+	return found;
 }
 const char *VaultEntry::name()
 {
 	return pk;
 }
-const char *VaultEntry::valuePlain()
+const char *VaultEntry::ciphertext()
 {
-	return value_plain;
+	return v_ciphertext;
 }
-const char *VaultEntry::valuePlain(const char *set)
+const char *VaultEntry::ciphertext(const char *set)
 {
-	if(value_plain)
+	if(v_ciphertext)
 	{
-		memset(value_plain, 0, strlen(value_plain));
-		free(value_plain);
+		memset(v_ciphertext, 0, strlen(v_ciphertext));
+		free(v_ciphertext);
 	}
-	value_plain = set ? strdup(set) : NULL;
-	return value_plain;
+	v_ciphertext = set ? strdup(set) : NULL;
+	return v_ciphertext;
+}
+const char *VaultEntry::plaintext()
+{
+	return v_plaintext;
+}
+const char *VaultEntry::plaintext(const char *set)
+{
+	clearCiphertext();
+	if(v_plaintext)
+	{
+		memset(v_plaintext, 0, strlen(v_plaintext));
+		free(v_plaintext);
+	}
+	v_plaintext = set ? strdup(set) : NULL;
+	return v_plaintext;
 }
 bool VaultEntry::fatal()
 {
@@ -121,7 +138,7 @@ bool VaultEntry::fatal()
 bool VaultEntry::decrypt(PasswordCipher *override_key)
 {
 	//Existing plaintext can be reused
-	if(value_plain) return true;
+	if(v_plaintext) return true;
 	//Must have existing value to decrypt
 	if(!exists())
 	{
@@ -134,8 +151,8 @@ bool VaultEntry::decrypt(PasswordCipher *override_key)
 	//Decrypt value
 	if(!override_key) override_key = vault->key();
 	if(!override_key) return false;
-	value_plain = override_key->decrypt(value, iv_raw);
-	return (value_plain != NULL);
+	v_plaintext = override_key->decrypt(v_ciphertext, iv_raw);
+	return (v_plaintext != NULL);
 }
 bool VaultEntry::save()
 {
@@ -146,8 +163,12 @@ bool VaultEntry::save()
 		fatal_flag = true;
 		return false;
 	}
-	if(!value_plain) return false;
-	if(!encrypt()) return false;
+	if(!v_ciphertext && !encrypt())
+	{
+		ErrorBox("Failed to encrypt entry for saving");
+		fatal_flag = true;
+		return false;
+	}
 	clearPlaintext();
 	//Attempt insert
 	bool insert_ok = false;
@@ -157,8 +178,8 @@ bool VaultEntry::save()
 		if(SQLITE_OK == sqlite3_prepare_v2(vault->db(), "INSERT INTO `entries` (`key`, `value`, `iv`) VALUES (?, ?, ?)", -1, &stmt, NULL))
 		{
 			if(SQLITE_OK == sqlite3_bind_text(stmt, 1, pk, -1, SQLITE_STATIC) &&
-				SQLITE_OK == sqlite3_bind_text(stmt, 2, value, -1, SQLITE_STATIC) &&
-				SQLITE_OK == sqlite3_bind_text(stmt, 3, iv, -1, SQLITE_STATIC))
+				SQLITE_OK == sqlite3_bind_text(stmt, 2, v_ciphertext, -1, SQLITE_STATIC) &&
+				SQLITE_OK == sqlite3_bind_text(stmt, 3, iv ? iv : "", -1, SQLITE_STATIC))
 			{
 				insert_ok = (sqlite3_step(stmt) == SQLITE_DONE);
 			}
@@ -179,9 +200,9 @@ bool VaultEntry::reEncrypt(PasswordCipher *decrypt_key, PasswordCipher *encrypt_
 	//Decrypt
 	if(!decrypt(decrypt_key)) return false;
 	//Displace original encrypted value for now
-	char *value_old = value;
+	char *v_ciphertext_old = v_ciphertext;
 	char *iv_old = iv;
-	value = NULL;
+	v_ciphertext = NULL;
 	iv = NULL;
 	//Re-encrypt with appropriate prompt
 	bool result = encrypt(encrypt_key);
@@ -195,7 +216,7 @@ bool VaultEntry::reEncrypt(PasswordCipher *decrypt_key, PasswordCipher *encrypt_
 		{
 			if(SQLITE_OK == sqlite3_prepare_v2(vault->db(), "UPDATE `entries` SET `value`=?, `iv`=? WHERE `key`=?", -1, &stmt, NULL))
 			{
-				if(SQLITE_OK == sqlite3_bind_text(stmt, 1, value, -1, SQLITE_STATIC) &&
+				if(SQLITE_OK == sqlite3_bind_text(stmt, 1, v_ciphertext, -1, SQLITE_STATIC) &&
 					SQLITE_OK == sqlite3_bind_text(stmt, 2, iv, -1, SQLITE_STATIC) &&
 					SQLITE_OK == sqlite3_bind_text(stmt, 3, pk, -1, SQLITE_STATIC))
 				{
@@ -214,14 +235,14 @@ bool VaultEntry::reEncrypt(PasswordCipher *decrypt_key, PasswordCipher *encrypt_
 	if(result)
 	{
 		//Free original value
-		if(value_old) free(value_old);
+		if(v_ciphertext_old) free(v_ciphertext_old);
 		if(iv_old) free(iv_old);
 	}
 	else
 	{
 		//Rollback value
-		clearValue();
-		value = value_old;
+		clearCiphertext();
+		v_ciphertext = v_ciphertext_old;
 		iv = iv_old;
 	}
 	return result;

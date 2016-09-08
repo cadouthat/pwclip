@@ -46,13 +46,16 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 	bool result = false;
 	while((first_pass && !needs_init) || UserInput_get(prompt))
 	{
-		//Set vault key from password
-		char *value = UserInput_stringValue(prompt, 0);
-		vault->key(new PasswordCipher(value));
-		memset(value, 0, strlen(value));
-		free(value);
 		//Attempt opening
 		result = vault->open();
+		if(result)
+		{
+			//Generate key from password and verify
+			char *value = UserInput_stringValue(prompt, 0);
+			result = vault->key(new PasswordCipher(value, vault->salt()));
+			memset(value, 0, strlen(value));
+			free(value);
+		}
 		//Abort if successful or fatal
 		if(result || vault->fatal() || needs_init) break;
 		//Feedback for successive passes

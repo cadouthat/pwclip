@@ -9,6 +9,7 @@ class Vault
 	char *db_path;
 	sqlite3 *db_handle;
 	PasswordCipher *db_key;
+	unsigned char db_salt[CRYPTO_SALT_SIZE];
 
 public:
 	Vault(const char *db_path_in)
@@ -30,10 +31,27 @@ public:
 	bool isOpen() { return (db_handle && db_key); }
 	sqlite3 *db() { return db_handle; }
 	PasswordCipher *key() { return db_key; }
-	void key(PasswordCipher *key_in)
+	unsigned char *salt() { return db_salt; }
+	bool key(PasswordCipher *key_in)
 	{
 		if(db_key) delete db_key;
 		db_key = key_in;
+
+		VaultEntry meta(this, "__meta__");
+		if(!meta.exists())
+		{
+			//Initialize new key
+			meta.plaintext(meta.name());
+			if(meta.save()) return true;
+			else fatal_flag = true;
+		}
+		else
+		{
+			//Key verification
+			if(meta.decrypt()) return true;
+		}
+		close();
+		return false;
 	}
 	bool fatal()
 	{
@@ -57,14 +75,40 @@ public:
 			db_key = NULL;
 		}
 	}
+	bool setSalt(unsigned char *salt_in)
+	{
+		VaultEntry meta_salt(this, "__meta__salt");
+		if(meta_salt.exists() && !meta_salt.remove())
+		{
+			return false;
+		}
+		//Hex encode salt
+		char *salt_hex = bin2hex(db_salt, sizeof(db_salt));
+		meta_salt.ciphertext(salt_hex);
+		free(salt_hex);
+		//Save salt
+		if(!meta_salt.save()) return false;
+		//Copy salt
+		memcpy(db_salt, salt_in, sizeof(db_salt));
+		return true;
+	}
+	bool genSalt()
+	{
+		//Generate random salt
+		unsigned char tmp_salt[CRYPTO_SALT_SIZE];
+		if(RAND_bytes(tmp_salt, sizeof(tmp_salt)))
+		{
+			//Save new salt
+			return setSalt(tmp_salt);
+		}
+		return false;
+	}
 	bool open()
 	{
 		//Already open
 		if(db_handle) return true;
 		//Check for existing file
 		bool needs_init = !exists();
-		//Key will be needed
-		if(!db_key) return false;
 		//Open database
 		if(sqlite3_open(db_path, &db_handle) != SQLITE_OK)
 		{
@@ -72,14 +116,17 @@ public:
 			ErrorBox("Failed to open '%s'", db_path);
 			return false;
 		}
-		VaultEntry meta(this, "__meta__");
+		//First time setup for new files
 		if(needs_init)
 		{
-			meta.valuePlain(meta.name());
-			//First time setup for new files
+			//Init schema
 			char *err;
 			int schema_result = sqlite3_exec(db_handle, SCHEMA_SQL, NULL, NULL, &err);
-			if(schema_result != SQLITE_OK || !meta.save())
+			if(schema_result == SQLITE_OK)
+			{
+				if(genSalt()) needs_init = false;
+			}
+			if(needs_init)
 			{
 				//Abort and cleanup traces
 				close();
@@ -91,10 +138,13 @@ public:
 		}
 		else
 		{
-			//Key verification
-			if(!meta.decrypt())
+			//Load salt
+			VaultEntry meta_salt(this, "__meta__salt");
+			if(!meta_salt.exists() || !meta_salt.ciphertext() ||
+				hex2bin(meta_salt.ciphertext(), db_salt, sizeof(db_salt)) != sizeof(db_salt))
 			{
 				close();
+				fatal_flag = true;
 				return false;
 			}
 		}

@@ -52,7 +52,7 @@ void ChangeEntryDialog(VaultEntry *entry)
 		std::vector<VaultEntry*> subentries;
 		std::vector<char*> new_subkeys;
 		sqlite3_stmt *stmt;
-		if(SQLITE_OK == sqlite3_prepare_v2(entry->getVault()->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
+		if(SQLITE_OK == sqlite3_prepare_v2(entry->getVault()->db(), "SELECT `key` FROM `entries` WHERE `key` NOT LIKE '__meta__%' ORDER BY `key`", -1, &stmt, NULL))
 		{
 			while(sqlite3_step(stmt) == SQLITE_ROW)
 			{
@@ -78,7 +78,7 @@ void ChangeEntryDialog(VaultEntry *entry)
 				VaultEntry *subentry = subentries[i];
 				char *new_subkey = new_subkeys[i];
 				//Decrypt entry
-				if(subentry->decrypt() && subentry->valuePlain())
+				if(subentry->decrypt() && subentry->plaintext())
 				{
 					//Commit rename
 					success = RenameEntry(subentry, new_subkey, get_name, prompt);
@@ -118,7 +118,7 @@ bool RenameEntry(VaultEntry *entry, const char *new_key, bool &name_conflict, vo
 	if(!new_entry.exists())
 	{
 		if(!commit) return true;
-		new_entry.valuePlain(entry->valuePlain());
+		new_entry.plaintext(entry->plaintext());
 		if(new_entry.save())
 		{
 			entry->remove();

@@ -24,7 +24,7 @@ void ExportVaultDialog(int hist_index)
 	//Perform dump
 	bool result = true;
 	sqlite3_stmt *stmt;
-	if(SQLITE_OK == sqlite3_prepare_v2(vault->db(), "SELECT `key` FROM `entries` WHERE `key`!='__meta__' ORDER BY `key`", -1, &stmt, NULL))
+	if(SQLITE_OK == sqlite3_prepare_v2(vault->db(), "SELECT `key` FROM `entries` WHERE `key` NOT LIKE '__meta__%' ORDER BY `key`", -1, &stmt, NULL))
 	{
 		while(sqlite3_step(stmt) == SQLITE_ROW)
 		{
@@ -32,10 +32,10 @@ void ExportVaultDialog(int hist_index)
 			const char *key = (const char*)sqlite3_column_text(stmt, 0);
 			VaultEntry entry(vault, key);
 			//Verify decryption
-			if(entry.decrypt() && entry.valuePlain())
+			if(entry.decrypt() && entry.plaintext())
 			{
 				//Write to output
-				fprintf(f_out, "%s = '%s'\n", key, entry.valuePlain());
+				fprintf(f_out, "%s = '%s'\n", key, entry.plaintext());
 			}
 			else
 			{
