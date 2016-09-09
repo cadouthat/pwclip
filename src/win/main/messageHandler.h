@@ -24,8 +24,12 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 	case MSG_TRAYICON:
 		switch(lParam)
 		{
-		case WM_RBUTTONUP:
 		case WM_LBUTTONUP:
+			command_active = true;
+			QuickRecallDialog();
+			command_active = false;
+			break;
+		case WM_RBUTTONUP:
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow(hwnd);

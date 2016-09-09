@@ -83,13 +83,13 @@ public:
 			return false;
 		}
 		//Hex encode salt
-		char *salt_hex = bin2hex(db_salt, sizeof(db_salt));
+		char *salt_hex = bin2hex(salt_in, CRYPTO_SALT_SIZE);
 		meta_salt.ciphertext(salt_hex);
 		free(salt_hex);
 		//Save salt
 		if(!meta_salt.save()) return false;
 		//Copy salt
-		memcpy(db_salt, salt_in, sizeof(db_salt));
+		memcpy(db_salt, salt_in, CRYPTO_SALT_SIZE);
 		return true;
 	}
 	bool genSalt()
@@ -102,6 +102,22 @@ public:
 			return setSalt(tmp_salt);
 		}
 		return false;
+	}
+	void peek(std::vector<char*> *names_out)
+	{
+		if(!db_handle && (!exists() || !open()))
+		{
+			return;
+		}
+		sqlite3_stmt *stmt;
+		if(SQLITE_OK == sqlite3_prepare_v2(db_handle, "SELECT `key` FROM `entries` WHERE `key` NOT LIKE '__meta__%' ORDER BY `key`", -1, &stmt, NULL))
+		{
+			while(sqlite3_step(stmt) == SQLITE_ROW)
+			{
+				names_out->push_back(strdup((const char*)sqlite3_column_text(stmt, 0)));
+			}
+			sqlite3_finalize(stmt);
+		}
 	}
 	bool open()
 	{

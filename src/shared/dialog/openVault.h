@@ -30,6 +30,7 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 		path = from_history->path();
 	}
 	//Prepare vault object
+	if(from_history) from_history->close();
 	Vault *vault = new Vault(path);
 	bool needs_init = !vault->exists();
 	//Prepare password prompt (first attempt at opening skips prompt)

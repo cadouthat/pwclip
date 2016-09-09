@@ -34,6 +34,7 @@ by: Connor Douthat
 #include "dialog/changeEntry.h"
 #include "dialog/changeVaultPass.h"
 #include "dialog/removeEntry.h"
+#include "dialog/quickRecall.h"
 
 #include "main/menuActions.h"
 #include "main/menu.h"
