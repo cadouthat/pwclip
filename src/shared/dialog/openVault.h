@@ -3,14 +3,14 @@ Interaction to open a vault
 by: Connor Douthat
 11/1/2015
 */
-void OpenVaultDialog(int hist_index, const char *path = NULL)
+bool OpenVaultDialog(int hist_index, const char *path = NULL)
 {
 	//Special cases for opening from history
 	Vault *from_history = NULL;
 	if(!path)
 	{
 		//Check bounds
-		if(hist_index < 0 || hist_index >= vaults.history.size()) return;
+		if(hist_index < 0 || hist_index >= vaults.history.size()) return false;
 		from_history = vaults.history[hist_index];
 		//Already open
 		if(from_history->isOpen())
@@ -25,7 +25,7 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 				sprintf(message, "Active vault changed to '%s'.", fileNameInPath(from_history->path()));
 				TrayBalloon(message);
 			}
-			return;
+			return true;
 		}
 		path = from_history->path();
 	}
@@ -76,10 +76,12 @@ void OpenVaultDialog(int hist_index, const char *path = NULL)
 		vaults.push(vault);
 		MenuReload();
 		TrayBalloon("Vault opened.");
+		return true;
 	}
 	else
 	{
 		//Discard vault
 		delete vault;
+		return false;
 	}
 }

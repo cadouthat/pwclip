@@ -3,8 +3,6 @@ Field-specific operations for UserInput
 by: Connor Douthat
 2/18/2016
 */
-typedef void(*UserInputFieldHandler)(void *ui, int i_field);
-
 class UserInputField
 {
 	int type;
@@ -25,6 +23,8 @@ class UserInputField
 
 public:
 	UserInputFieldHandler handler;
+	UserInputFieldEditHandler editHandler;
+	void *editHandlerExtra;
 
 	UserInputField(int type_in, const char *label_in)
 	{

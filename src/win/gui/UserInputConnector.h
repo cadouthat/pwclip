@@ -15,6 +15,10 @@ void UserInput_addField(void *ui, int type, const char *text, const void *valueI
 {
 	((UserInput*)ui)->addField(type, text, valueIn);
 }
+void UserInput_onEdit(void *ui, int index, UserInputFieldEditHandler cb, void *extra)
+{
+	((UserInput*)ui)->onEdit(index, cb, extra);
+}
 void UserInput_setInfo(void *ui, const char *text)
 {
 	((UserInput*)ui)->setInfo(text);

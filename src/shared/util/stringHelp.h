@@ -5,6 +5,25 @@ by: Connor Douthat
 */
 #define _is_whitespace(c) ((c) == ' ' || (c) == '	' || (c) == '\r' || (c) == '\n')
 
+const char *stristr(const char *haystack, const char *needle)
+{
+	if(*needle == 0) return haystack;
+	while(*haystack)
+	{
+		const char *haytmp = haystack;
+		const char *neetmp = needle;
+		while(tolower(*haytmp) == tolower(*neetmp))
+		{
+			haytmp++;
+			neetmp++;
+			if(*neetmp == 0) return haystack;
+			if(*haytmp == 0) return NULL;
+		}
+		haystack++;
+	}
+	return NULL;
+}
+
 void trim(char *buf)
 {
 	//Locate first and last non-whitespace

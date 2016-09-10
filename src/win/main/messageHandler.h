@@ -26,6 +26,7 @@ LRESULT CALLBACK HandleTrayMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		{
 		case WM_LBUTTONUP:
 			command_active = true;
+			SetForegroundWindow(hwnd);
 			QuickRecallDialog();
 			command_active = false;
 			break;

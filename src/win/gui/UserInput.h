@@ -147,6 +147,16 @@ class UserInput
 		case WM_COMMAND:
 			switch(HIWORD(wParam))
 			{
+			case EN_CHANGE:
+				for(int i = 0; i < fields.size(); i++)
+				{
+					if(fields[i]->owns((HWND)lParam))
+					{
+						if(fields[i]->editHandler) fields[i]->editHandler(this, i, fields[i]->editHandlerExtra);
+						break;
+					}
+				}
+				break;
 			case BN_CLICKED:
 				switch(LOWORD(wParam))
 				{
@@ -297,6 +307,12 @@ public:
 		fields.push_back(f);
 
 		UpdateLayout();
+	}
+	void onEdit(int i_field, UserInputFieldEditHandler cb, void *extra)
+	{
+		UserInputField *f = fields[i_field];
+		f->editHandler = cb;
+		f->editHandlerExtra = extra;
 	}
 	void setValue(int i_field, const void *valueIn)
 	{
