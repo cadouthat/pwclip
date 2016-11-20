@@ -1,5 +1,6 @@
 # pwclip
 Lightweight local password vault for Windows and OSX
+![preview](https://github.com/cadouthat/pwclip/raw/screenshots/pwclip-sample.png)
 
 Overview
 --------
